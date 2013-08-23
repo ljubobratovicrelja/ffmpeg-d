@@ -1,0 +1,114 @@
+/*
+ * copyright (c) 2005 Michael Niedermayer <michaelni@gmx.at>
+ *
+ * This file is part of FFmpeg.
+ *
+ * FFmpeg is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * FFmpeg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+module ffmpeg.libavutil.mathematics;
+import std.stdint;
+import ffmpeg.libavutil.rational;
+import ffmpeg.libavutil.intfloat;
+
+enum M_E          =  2.7182818284590452354;   /* e */
+enum M_LN2        =  0.69314718055994530942;  /* log_e 2 */
+enum M_LN10       =  2.30258509299404568402;  /* log_e 10 */
+enum M_LOG2_10    =  3.32192809488736234787;  /* log_2 10 */
+enum M_PHI        =  1.61803398874989484820;   /* phi / golden ratio */
+enum M_PI         =  3.14159265358979323846;  /* pi */
+enum M_SQRT1_2    =  0.70710678118654752440;  /* 1/sqrt(2) */
+enum M_SQRT2      =  1.41421356237309504880; /* sqrt(2) */
+enum NAN          =  av_int2float(0x7fc00000);
+enum INFINITY     =  av_int2float(0x7f800000);
+
+
+extern (C):
+ /**
+ * @addtogroup lavu_math
+ * @{
+ */
+enum AVRounding {
+      AV_ROUND_ZERO = 0,
+      AV_ROUND_INF = 1,
+      AV_ROUND_DOWN = 2,
+      AV_ROUND_UP = 3,
+      AV_ROUND_NEAR_INF = 5,
+}
+
+/**
+ * Return the greatest common divisor of a and b.
+ * If both a and b are 0 or either or both are <0 then behavior is
+ * undefined.
+ */
+int64_t av_gcd(int64_t a, int64_t b);
+
+/**
+ * Rescale a 64-bit integer with rounding to nearest.
+ * A simple a*b/c isn't possible as it can overflow.
+ */
+int64_t av_rescale(int64_t a, int64_t b, int64_t c);
+
+/**
+ * Rescale a 64-bit integer with specified rounding.
+ * A simple a*b/c isn't possible as it can overflow.
+ */
+int64_t av_rescale_rnd(int64_t a, int64_t b, int64_t c, AVRounding);
+
+/**
+ * Rescale a 64-bit integer by 2 rational numbers.
+ */
+int64_t av_rescale_q(int64_t a, AVRational bq, AVRational cq);
+
+/**
+ * Rescale a 64-bit integer by 2 rational numbers with specified rounding.
+ */
+int64_t av_rescale_q_rnd(int64_t a, AVRational bq, AVRational cq,
+                         AVRounding);
+
+/**
+ * Compare 2 timestamps each in its own timebases.
+ * The result of the function is undefined if one of the timestamps
+ * is outside the int64_t range when represented in the others timebase.
+ * @return -1 if ts_a is before ts_b, 1 if ts_a is after ts_b or 0 if they represent the same position
+ */
+int av_compare_ts(int64_t ts_a, AVRational tb_a, int64_t ts_b, AVRational tb_b);
+
+/**
+ * Compare 2 integers modulo mod.
+ * That is we compare integers a and b for which only the least
+ * significant log2(mod) bits are known.
+ *
+ * @param mod must be a power of 2
+ * @return a negative value if a is smaller than b
+ *         a positive value if a is greater than b
+ *         0                if a equals          b
+ */
+int64_t av_compare_mod(uint64_t a, uint64_t b, uint64_t mod);
+
+
+/**
+ * Rescale a timestamp while preserving known durations.
+ *
+ * @param in_ts Input timestamp
+ * @param in_tb Input timesbase
+ * @param fs_tb Duration and *last timebase
+ * @param duration duration till the next call
+ * @param out_tb Output timesbase
+ */
+int64_t av_rescale_delta(AVRational in_tb, int64_t in_ts,  AVRational fs_tb, int duration, int64_t *last, AVRational out_tb);
+
+/**
+ * @}
+ */
