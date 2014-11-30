@@ -13,10 +13,6 @@
 	],
 
 	"targetType": "sourceLibrary",
-	"sourceFiles": [
-		"source/ffmpeg/libavcodec/avcodec.di", "source/ffmpeg/libavfilter/avfilter.di", 
-		"source/ffmpeg/libavformat/avformat.di", "source/ffmpeg/libavutil/avutil.di"
-	],
 
 	"configurations": [
 		{

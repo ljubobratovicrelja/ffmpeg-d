@@ -16,16 +16,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-module ffmpeg.libavutil.error;
 /**
  * @file
  * error code definitions
  */
 
+module ffmpeg.libavutil.error;
 import core.stdc.errno;
 import core.stdc.stddef;
 import ffmpeg.libavutil.common;
 
+extern(C):
 /**
  * @addtogroup lavu_error
  *
@@ -35,43 +36,43 @@ import ffmpeg.libavutil.common;
 
 /* error handling */
 static if (EDOM > 0) {
-template AVERROR(int e) {   ///< Returns a negative error code from a POSIX error code, to return from library functions.
-  const int AVERROR = (-(e));
-}
-template AVUNERROR(int e) { ///< Returns a POSIX error code from a library function error return value.
-  const int AVUNERROR = (-(e));
-}
-}
-else {
+    template AVERROR(int e) {   ///< Returns a negative error code from a POSIX error code, to return from library functions.
+      const int AVERROR = (-(e));
+    }
+    template AVUNERROR(int e) { ///< Returns a POSIX error code from a library function error return value.
+      const int AVUNERROR = (-(e));
+   }
+} else {
 /* Some platforms have E* and errno already negated. */
-template AVERROR(int e) {   
-  const int AVERROR = e;
-}
-template AVUNERROR(int e) { 
-  const int AVUNERROR = e;
-}
+    template AVERROR(int e) {   
+      const int AVERROR = e;
+    }
+    template AVUNERROR(int e) { 
+      const int AVUNERROR = e;
+   }
 }
 
 template FFERRTAG(int a, int b, int c, int d) {
   const int FFERRTAG = -(MKTAG!(a, b, c, d));
 }
 
-
 enum AVERROR_BSF_NOT_FOUND    = FFERRTAG!(0xF8,'B','S','F'); ///< Bitstream filter not found
 enum AVERROR_BUG              = FFERRTAG!( 'B','U','G','!'); ///< Internal bug, also see AVERROR_BUG2
+enum AVERROR_BUFFER_TOO_SMALL = FFERRTAG!( 'B','U','F','S'); ///< Buffer too small
 enum AVERROR_DECODER_NOT_FOUND= FFERRTAG!(0xF8,'D','E','C'); ///< Decoder not found
 enum AVERROR_DEMUXER_NOT_FOUND= FFERRTAG!(0xF8,'D','E','M'); ///< Demuxer not found
 enum AVERROR_ENCODER_NOT_FOUND= FFERRTAG!(0xF8,'E','N','C'); ///< Encoder not found
 enum AVERROR_EOF              = FFERRTAG!( 'E','O','F',' '); ///< End of file
 enum AVERROR_EXIT             = FFERRTAG!( 'E','X','I','T'); ///< Immediate exit was requested; the called function should not be restarted
+enum AVERROR_EXTERNAL         = FFERRTAG!( 'E','X','T',' '); ///< Generic error in an external library
 enum AVERROR_FILTER_NOT_FOUND = FFERRTAG!(0xF8,'F','I','L'); ///< Filter not found
 enum AVERROR_INVALIDDATA      = FFERRTAG!( 'I','N','D','A'); ///< Invalid data found when processing input
 enum AVERROR_MUXER_NOT_FOUND  = FFERRTAG!(0xF8,'M','U','X'); ///< Muxer not found
 enum AVERROR_OPTION_NOT_FOUND = FFERRTAG!(0xF8,'O','P','T'); ///< Option not found
 enum AVERROR_PATCHWELCOME     = FFERRTAG!( 'P','A','W','E'); ///< Not yet implemented in FFmpeg, patches welcome
 enum AVERROR_PROTOCOL_NOT_FOUND=FFERRTAG!(0xF8,'P','R','O'); ///< Protocol not found
-enum AVERROR_STREAM_NOT_FOUND = FFERRTAG!(0xF8,'S','T','R'); ///< Stream not found
 
+enum AVERROR_STREAM_NOT_FOUND = FFERRTAG!(0xF8,'S','T','R'); ///< Stream not found
 /**
  * This is semantically identical to AVERROR_BUG
  * it has been introduced in Libav after our AVERROR_BUG and with a modified value.
@@ -79,9 +80,11 @@ enum AVERROR_STREAM_NOT_FOUND = FFERRTAG!(0xF8,'S','T','R'); ///< Stream not fou
 enum AVERROR_BUG2             = FFERRTAG!( 'B','U','G',' ');
 enum AVERROR_UNKNOWN          = FFERRTAG!( 'U','N','K','N'); ///< Unknown error, typically from an external library
 enum AVERROR_EXPERIMENTAL     = (-0x2bb2afa8);
+enum AVERROR_INPUT_CHANGED    = (-0x636e6701);///< Input changed between calls. Reconfiguration is required. (can be OR-ed with AVERROR_OUTPUT_CHANGED)
+enum AVERROR_OUTPUT_CHANGED   = (-0x636e6702);///< Output changed between calls. Reconfiguration is required. (can be OR-ed with AVERROR_INPUT_CHANGED)
+
 enum AV_ERROR_MAX_STRING_SIZE = 64;
 
-extern(C):
 /**
  * Put a description of the AVERROR code errnum in errbuf.
  * In case of failure the global variable errno is set to indicate the
@@ -126,4 +129,4 @@ template av_err2str(int errnum) {
  * @}
  */
 
-
+//#endif /* AVUTIL_ERROR_H */

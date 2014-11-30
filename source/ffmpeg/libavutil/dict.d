@@ -45,26 +45,27 @@ extern(C):
  * entries and finally av_dict_free() to free the dictionary
  * and all its contents.
  *
- * @code
- * AVDictionary *d = NULL;                // "create" an empty dictionary
- * av_dict_set(&d, "foo", "bar", 0);      // add an entry
- *
- * char *k = av_strdup("key");            // if your strings are already allocated,
- * char *v = av_strdup("value");          // you can avoid copying them like this
- * av_dict_set(&d, k, v, AV_DICT_DONT_STRDUP_KEY | AV_DICT_DONT_STRDUP_VAL);
- *
- * AVDictionaryEntry *t = NULL;
- * while (t = av_dict_get(d, "", t, AV_DICT_IGNORE_SUFFIX)) {
- *     <....>                             // iterate over all entries in d
- * }
- *
- * av_dict_free(&d);
- * @endcode
+ @code
+   AVDictionary *d = NULL;           // "create" an empty dictionary
+   AVDictionaryEntry *t = NULL;
+
+   av_dict_set(&d, "foo", "bar", 0); // add an entry
+
+   char *k = av_strdup("key");       // if your strings are already allocated,
+   char *v = av_strdup("value");     // you can avoid copying them like this
+   av_dict_set(&d, k, v, AV_DICT_DONT_STRDUP_KEY | AV_DICT_DONT_STRDUP_VAL);
+
+   while (t = av_dict_get(d, "", t, AV_DICT_IGNORE_SUFFIX)) {
+       <....>                             // iterate over all entries in d
+   }
+   av_dict_free(&d);
+ @endcode
  *
  */
 
-enum AV_DICT_MATCH_CASE      = 1;
-enum AV_DICT_IGNORE_SUFFIX   = 2;
+enum AV_DICT_MATCH_CASE      = 1;   /**< Only get an entry with exact-case key match. Only relevant in av_dict_get(). */
+enum AV_DICT_IGNORE_SUFFIX   = 2;/**< Return first entry in a dictionary whose first part corresponds to the search key,
+                                         ignoring the suffix of the found key string. Only relevant in av_dict_get(). */
 enum AV_DICT_DONT_STRDUP_KEY = 4;   /**< Take ownership of a key that's been
                                          allocated with av_malloc() and children. */
 enum AV_DICT_DONT_STRDUP_VAL = 8;   /**< Take ownership of a value that's been
@@ -77,20 +78,25 @@ struct AVDictionaryEntry {
     char *value;
 }
 
-extern(C) {
   struct AVDictionary;
-}
 
 /**
  * Get a dictionary entry with matching key.
  *
+ * The returned entry key or value must not be changed, or it will
+ * cause undefined behavior.
+ *
+ * To iterate through all the dictionary entries, you can set the matching key
+ * to the null string "" and set the AV_DICT_IGNORE_SUFFIX flag.
+ *
  * @param prev Set to the previous matching element to find the next.
  *             If set to NULL the first matching element is returned.
- * @param flags Allows case as well as suffix-insensitive comparisons.
- * @return Found entry or NULL, changing key or value leads to undefined behavior.
+ * @param key matching key
+ * @param flags a collection of AV_DICT_* flags controlling how the entry is retrieved
+ * @return found entry or NULL in case no matching entry was found in the dictionary
  */
-AVDictionaryEntry *
-av_dict_get(AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags);
+AVDictionaryEntry *av_dict_get(AVDictionary *m, const char *key, 
+                               const AVDictionaryEntry *prev, int flags);
 
 /**
  * Get number of entries in dictionary.
@@ -103,6 +109,9 @@ int av_dict_count(const AVDictionary *m);
 /**
  * Set the given entry in *pm, overwriting an existing entry.
  *
+ * Note: If AV_DICT_DONT_STRDUP_KEY or AV_DICT_DONT_STRDUP_VAL is set,
+ * these arguments will be freed on error.
+ *
  * @param pm pointer to a pointer to a dictionary struct. If *pm is NULL
  * a dictionary struct is allocated and put in *pm.
  * @param key entry key to add to *pm (will be av_strduped depending on flags)
@@ -113,7 +122,18 @@ int av_dict_count(const AVDictionary *m);
 int av_dict_set(AVDictionary **pm, const char *key, const char *value, int flags);
 
 /**
- * Parse the key/value pairs list and add to a dictionary.
+ * Convenience wrapper for av_dict_set that converts the value to a string
+ * and stores it.
+ *
+ * Note: If AV_DICT_DONT_STRDUP_KEY is set, key will be freed on error.
+ */
+int av_dict_set_int(AVDictionary **pm, const char *key, long value, int flags);
+
+/**
+ * Parse the key/value pairs list and add the parsed entries to a dictionary.
+ *
+ * In case of failure, all the successfully set entries are stored in
+ * *pm. You may need to manually free the created dictionary.
  *
  * @param key_val_sep  a 0-terminated list of characters used to separate
  *                     key from value
@@ -148,3 +168,5 @@ void av_dict_free(AVDictionary **m);
 /**
  * @}
  */
+
+//#endif /* AVUTIL_DICT_H */

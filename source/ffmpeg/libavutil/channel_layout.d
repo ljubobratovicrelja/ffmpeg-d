@@ -18,14 +18,17 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-module ffmpeg.libavutil.channel_layout;
 
+//#ifndef AVUTIL_CHANNEL_LAYOUT_H
+//#define AVUTIL_CHANNEL_LAYOUT_H
+
+module ffmpeg.libavutil.channel_layout;
 import std.stdint;
 
 extern(C):
 /**
  * @file
- * audio conversion routines
+ * audio channel layout utility functions
  */
 
 /**
@@ -35,6 +38,14 @@ extern(C):
 
 /**
  * @defgroup channel_masks Audio channel masks
+ *
+ * A channel layout is a 64-bits integer with a bit set for every channel.
+ * The number of bits set must be equal to the number of channels.
+ * The value 0 means that the channel layout is not known.
+ * @note this data structure is not powerful enough to handle channels
+ * combinations that have the same channel multiple times, such as
+ * dual-mono.
+ *
  * @{
  */
 enum AV_CH_FRONT_LEFT           = 0x00000001;
@@ -70,7 +81,7 @@ ulong AV_CH_LAYOUT_NATIVE        = 0x8000000000000000UL;
 
 /**
  * @}
- * @defgroup channel_mask_c Audio channel convenience macros
+ * @defgroup channel_mask_c Audio channel layouts
  * @{
  * */
 enum AV_CH_LAYOUT_MONO           =  (AV_CH_FRONT_CENTER);
@@ -105,14 +116,13 @@ enum AVMatrixEncoding {
     AV_MATRIX_ENCODING_NONE,
     AV_MATRIX_ENCODING_DOLBY,
     AV_MATRIX_ENCODING_DPLII,
+    AV_MATRIX_ENCODING_DPLIIX,
+    AV_MATRIX_ENCODING_DPLIIZ,
+    AV_MATRIX_ENCODING_DOLBYEX,
+    AV_MATRIX_ENCODING_DOLBYHEADPHONE,
     AV_MATRIX_ENCODING_NB
 }
 
-/**
- * @}
- */
-
- extern(C) {
 /**
  * Return a channel layout id that matches name, or 0 if no match is found.
  *
@@ -128,7 +138,12 @@ enum AVMatrixEncoding {
  * - a channel layout mask, in hexadecimal starting with "0x" (see the
  *   AV_CH_* macros).
  *
- * Example: "stereo+FC" = "2+FC" = "2c+1c" = "0x7"
+ * @warning Starting from the next major bump the trailing character
+ * 'c' to specify a number of channels will be required, while a
+ * channel layout mask could also be specified as a decimal number
+ * (if and only if not followed by "c").
+ *
+ * Example: "stereo+FC" = "2c+FC" = "2c+1c" = "0x7"
  */
 uint64_t av_get_channel_layout(const char *name);
 
@@ -201,7 +216,10 @@ char *av_get_channel_description(uint64_t channel);
 int av_get_standard_channel_layout(uint index, uint64_t *layout,
                                    char **name);
 
-}
+
 /**
  * @}
+ * @}
  */
+
+//#endif /* AVUTIL_CHANNEL_LAYOUT_H */

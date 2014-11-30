@@ -29,6 +29,7 @@ extern (C):
 public import ffmpeg.libavutil.common;
 public import ffmpeg.libavutil.rational;
 public import ffmpeg.libavutil.samplefmt;
+public import ffmpeg.libavutil.frame;
 public import ffmpeg.libavutil.pixfmt;
 public import ffmpeg.libavutil.log;
 public import ffmpeg.libavutil.dict;
@@ -264,3 +265,49 @@ string av_ts_make_time_string(int64_t ts, AVRational tb)
     return writer.data;
   }
 }
+
+/**
+ * Return x default pointer in case p is NULL.
+ */
+//static inline void *av_x_if_null(const void *p, const void *x)
+//{
+//    return (void *)(intptr_t)(p ? p : x);
+//}
+
+/**
+ * Compute the length of an integer list.
+ *
+ * @param elsize  size in bytes of each list element (only 1, 2, 4 or 8)
+ * @param term    list terminator (usually 0 or -1)
+ * @param list    pointer to the list
+ * @return  length of the list, in elements, not counting the terminator
+ */
+//unsigned av_int_list_length_for_size(unsigned elsize,
+//                                    const void *list, uint64_t term) av_pure;
+
+/**
+ * Compute the length of an integer list.
+ *
+ * @param term  list terminator (usually 0 or -1)
+ * @param list  pointer to the list
+ * @return  length of the list, in elements, not counting the terminator
+ */
+//#define av_int_list_length(list, term) \
+//av_int_list_length_for_size(sizeof(*(list)), list, term)
+
+/**
+ * Open a file using a UTF-8 filename.
+ * The API of this function matches POSIX fopen(), errors are returned through
+ * errno.
+ */
+//FILE *av_fopen_utf8(const char *path, const char *mode);
+
+/**
+ * Return the fractional representation of the internal time base.
+ */
+//AVRational av_get_time_base_q(void);
+
+/**
+ * @}
+ * @}
+ */

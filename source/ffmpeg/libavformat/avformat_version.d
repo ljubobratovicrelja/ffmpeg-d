@@ -26,9 +26,9 @@ module ffmpeg.libavformat.avformat_version;
 
 import ffmpeg.libavutil.avutil;
 
-enum LIBAVFORMAT_VERSION_MAJOR = 54;
-enum LIBAVFORMAT_VERSION_MINOR = 63;
-enum LIBAVFORMAT_VERSION_MICRO = 104;
+enum LIBAVFORMAT_VERSION_MAJOR = 56;
+enum LIBAVFORMAT_VERSION_MINOR = 4;
+enum LIBAVFORMAT_VERSION_MICRO = 101;
 
 enum LIBAVFORMAT_VERSION_INT = AV_VERSION_INT!(LIBAVFORMAT_VERSION_MAJOR,
                                                LIBAVFORMAT_VERSION_MINOR,
@@ -41,17 +41,42 @@ enum LIBAVFORMAT_BUILD    =  LIBAVFORMAT_VERSION_INT;
 auto LIBAVFORMAT_IDENT    =  "Lavf" ~ LIBAVFORMAT_VERSION;
 
 /**
- * Those FF_API_* defines are not part of public API.
- * They may change, break or disappear at any time.
+ * FF_API_* defines may be placed below to indicate public API that will be
+ * dropped at a future version bump. The defines themselves are not part of
+ * the public API and may change, break or disappear at any time.
  */
-enum FF_API_OLD_AVIO             =  (LIBAVFORMAT_VERSION_MAJOR < 55);
-enum FF_API_PKT_DUMP             =  (LIBAVFORMAT_VERSION_MAJOR < 54);
-enum FF_API_ALLOC_OUTPUT_CONTEXT =  (LIBAVFORMAT_VERSION_MAJOR < 55);
-enum FF_API_FORMAT_PARAMETERS    =  (LIBAVFORMAT_VERSION_MAJOR < 55);
-enum FF_API_NEW_STREAM           =  (LIBAVFORMAT_VERSION_MAJOR < 55);
-enum FF_API_SET_PTS_INFO         =  (LIBAVFORMAT_VERSION_MAJOR < 55);
-enum FF_API_CLOSE_INPUT_FILE     =  (LIBAVFORMAT_VERSION_MAJOR < 55);
-enum FF_API_APPLEHTTP_PROTO      =  (LIBAVFORMAT_VERSION_MAJOR < 55);
-enum FF_API_READ_PACKET          =  (LIBAVFORMAT_VERSION_MAJOR < 55);
-enum FF_API_INTERLEAVE_PACKET    =  (LIBAVFORMAT_VERSION_MAJOR < 55);
-enum FF_API_R_FRAME_RATE         =  (LIBAVFORMAT_VERSION_MAJOR < 55);
+//#ifndef FF_API_LAVF_BITEXACT
+enum FF_API_LAVF_BITEXACT        =   (LIBAVFORMAT_VERSION_MAJOR < 57);
+//#endif
+//#ifndef FF_API_LAVF_FRAC
+enum FF_API_LAVF_FRAC            =   (LIBAVFORMAT_VERSION_MAJOR < 57);
+//#endif
+//#ifndef FF_API_LAVF_CODEC_TB
+enum FF_API_LAVF_CODEC_TB        =   (LIBAVFORMAT_VERSION_MAJOR < 57);
+//#endif
+//#ifndef FF_API_URL_FEOF
+enum FF_API_URL_FEOF             =   (LIBAVFORMAT_VERSION_MAJOR < 57);
+//#endif
+
+//#ifndef FF_API_ALLOC_OUTPUT_CONTEXT
+enum FF_API_ALLOC_OUTPUT_CONTEXT =   (LIBAVFORMAT_VERSION_MAJOR < 56);
+//#endif
+//#ifndef FF_API_FORMAT_PARAMETERS
+enum FF_API_FORMAT_PARAMETERS    =   (LIBAVFORMAT_VERSION_MAJOR < 56);
+//#endif
+//#ifndef FF_API_NEW_STREAM
+enum FF_API_NEW_STREAM           =   (LIBAVFORMAT_VERSION_MAJOR < 56);
+//#endif
+//#ifndef FF_API_SET_PTS_INFO
+enum FF_API_SET_PTS_INFO         =   (LIBAVFORMAT_VERSION_MAJOR < 56);
+//#endif
+//#ifndef FF_API_CLOSE_INPUT_FILE
+enum FF_API_CLOSE_INPUT_FILE     =   (LIBAVFORMAT_VERSION_MAJOR < 56);
+//#endif
+//#ifndef FF_API_READ_PACKET
+enum FF_API_READ_PACKET          =   (LIBAVFORMAT_VERSION_MAJOR < 56);
+//#endif
+//#ifndef FF_API_R_FRAME_RATE
+enum FF_API_R_FRAME_RATE         =   1;
+//#endif
+//#endif /* AVFORMAT_VERSION_H */
