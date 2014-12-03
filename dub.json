@@ -18,7 +18,7 @@
 		{
 			"name": "freebsd",
 			"targetType": "executable",
-			"platforms": ["freebsd"],
+			"platforms": ["freebsd", "linux"],
 			"lflags": ["-L/usr/local/lib"],
 		},
 		{
