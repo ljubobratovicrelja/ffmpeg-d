@@ -159,7 +159,7 @@ struct AVIOContext {
  *
  * @return Name of the protocol or NULL.
  */
-const char *avio_find_protocol_name(const char *url);
+char *avio_find_protocol_name(const char *url);
 
 /**
  * Return AVIO_FLAG_* access flags corresponding to the access permissions

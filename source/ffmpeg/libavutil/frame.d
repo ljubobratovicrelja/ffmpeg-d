@@ -588,7 +588,7 @@ void    av_frame_set_color_range(AVFrame *frame, AVColorRange val);
  * Get the name of a colorspace.
  * @return a static string identifying the colorspace; can be NULL.
  */
-const char *av_get_colorspace_name(AVColorSpace val);
+char *av_get_colorspace_name(AVColorSpace val);
 
 /**
  * Allocate an AVFrame and set its fields to default values.  The resulting
@@ -751,7 +751,7 @@ void av_frame_remove_side_data(AVFrame *frame, AVFrameSideDataType type);
 /**
  * @return a string identifying the side data type
  */
-const char *av_frame_side_data_name(AVFrameSideDataType type);
+char *av_frame_side_data_name(AVFrameSideDataType type);
 
 /**
  * @}

@@ -2651,11 +2651,11 @@ AVCodecTag *avformat_get_riff_audio_tags();
 /**
  * @return the table mapping MOV FourCCs for video to libavcodec AVCodecID.
  */
-const AVCodecTag *avformat_get_mov_video_tags();
+AVCodecTag *avformat_get_mov_video_tags();
 /**
  * @return the table mapping MOV FourCCs for audio to AVCodecID.
  */
-const AVCodecTag *avformat_get_mov_audio_tags();
+AVCodecTag *avformat_get_mov_audio_tags();
 
 /**
  * @}
