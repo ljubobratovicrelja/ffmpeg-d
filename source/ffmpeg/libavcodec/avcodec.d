@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavcodec.avcodec;
-import std.stdio;
+
 import std.stdint;
 import core.vararg;
 
@@ -36,6 +36,7 @@ import ffmpeg.libavutil.pixfmt; //#include "libavutil/pixfmt.h"
 import ffmpeg.libavutil.rational; //#include "libavutil/rational.h"
 
 import ffmpeg.libavcodec.avcodec_version; //#include "version.h"
+
 extern(C):
 /**
  * @defgroup libavc Encoding/Decoding Library

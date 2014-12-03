@@ -520,6 +520,3 @@ enum AVChromaLocation {
 };
 
 //#endif /* AVUTIL_PIXFMT_H */
-
-
-alias AV_PIX_FMT_XVMC AV_PIX_FMT_XVMC_MPEG2_IDCT; //pixfmt.d:87

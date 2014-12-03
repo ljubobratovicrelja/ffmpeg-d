@@ -20,7 +20,6 @@
  */
 
 module ffmpeg.libavfilter.avfilter;
-extern(C):
 
 /**
  * @file
@@ -35,7 +34,6 @@ extern(C):
 
 import std.stdint;
 import std.bitmanip;
-import std.stdio;
 import core.vararg;
 import ffmpeg.libavutil.avutil;
 import ffmpeg.libavutil.samplefmt;
@@ -44,6 +42,7 @@ import ffmpeg.libavfilter.internal;
 import ffmpeg.libavfilter.formats;
 import ffmpeg.libavfilter.avfilter_version;
 
+extern(C):
 /**
 * Return the LIBAVFILTER_VERSION_INT constant.
 */

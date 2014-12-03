@@ -16,7 +16,7 @@
 
 	"configurations": [
 		{
-			"name": "freebsd",
+			"name": "unix",
 			"targetType": "executable",
 			"platforms": ["freebsd", "linux"],
 			"lflags": ["-L/usr/local/lib"],

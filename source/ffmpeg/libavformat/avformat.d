@@ -257,14 +257,13 @@ import std.bitmanip;
 import std.stdio;
 import core.vararg;
 
-extern (C):
-
-public import ffmpeg.libavutil.avutil;
-public import ffmpeg.libavcodec.avcodec;
-public import ffmpeg.libavformat.avio;
+import ffmpeg.libavutil.avutil;
+import ffmpeg.libavcodec.avcodec;
+import ffmpeg.libavformat.avio;
 import ffmpeg.libavformat.avformat_version;
 import ffmpeg.libavdevice.avdevice;
 
+extern(C):
 /**
  * @defgroup metadata_api Public Metadata API
  * @{

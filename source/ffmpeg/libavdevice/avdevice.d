@@ -19,7 +19,7 @@
 //#ifndef AVDEVICE_AVDEVICE_H
 //#define AVDEVICE_AVDEVICE_H
 
-import ffmpeg.libavdevice.avdevice_version;
+module ffmpeg.libavdevice.avdevice;
 
 /**
  * @file
@@ -43,11 +43,14 @@ import ffmpeg.libavdevice.avdevice_version;
  * @}
  */
 import std.stdint;
+import ffmpeg.libavutil.avutil;
 import ffmpeg.libavutil.common;
 import ffmpeg.libavutil.log;
 import ffmpeg.libavutil.opt;
 import ffmpeg.libavutil.dict;
 import ffmpeg.libavformat.avformat;
+import ffmpeg.libavcodec.avcodec;
+import ffmpeg.libavdevice.avdevice_version;
 
 extern(C):
 /**

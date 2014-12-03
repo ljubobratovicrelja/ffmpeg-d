@@ -18,13 +18,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavutil.avutil;
-import std.stdio;
+
 import std.stdint;
 import std.format;
 import std.array;
 import core.vararg;
-
-extern (C):
 
 public import ffmpeg.libavutil.common;
 public import ffmpeg.libavutil.rational;
@@ -38,7 +36,7 @@ public import ffmpeg.libavutil.mathematics;
 public import ffmpeg.libavutil.channel_layout;
 public import ffmpeg.libavutil.avutil_version;
 
- 
+extern(C): 
 /*
  * @mainpage
  *
