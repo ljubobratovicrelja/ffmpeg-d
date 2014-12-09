@@ -2,6 +2,7 @@
 	"name": "ffmpeg-d",
 	"description": "FFmpeg Bindings for D",
 	"copyright": "Copyright © 2013",
+	"license": "LGPL-2.1",
 	"authors": [
 		"Sumit Raja"
 	],
