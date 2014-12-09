@@ -1,6 +1,6 @@
 {
 	"name": "ffmpeg-d",
-	"description": "FFmpeg Bindings for D",
+	"description": "FFmpeg Bindings",
 	"copyright": "Copyright © 2013",
 	"license": "LGPL-2.1",
 	"authors": [
