@@ -6,26 +6,35 @@
 	"authors": [
 		"Sumit Raja"
 	],
-	"libs": [
-		"avcodec",
-		"avformat",
-		"avutil",
-		"avfilter",
-	],
-
-	"targetType": "sourceLibrary",
 
 	"configurations": [
+        {
+            "name": "include",
+            "targetType": "sourceLibrary",
+            "platforms": ["Windows", "Posix"]
+        },
 		{
-			"name": "posix",
+			"name": "posix-test-executable",
 			"targetType": "executable",
 			"platforms": ["Posix"],
 			"lflags": ["-L/usr/local/lib"],
+            "libs": [
+                "avcodec",
+                "avformat",
+                "avutil",
+                "avfilter",
+            ]
 		},
 		{
-			"name": "windows",
+			"name": "windows-test-executable",
 			"targetType": "executable",
-            "platforms": ["Windows"]
+            "platforms": ["Windows"],
+            "libs": [
+                "avcodec",
+                "avformat",
+                "avutil",
+                "avfilter",
+            ]
 		},
 	]
 }
