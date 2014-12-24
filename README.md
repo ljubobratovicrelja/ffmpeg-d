@@ -1,6 +1,6 @@
 ﻿# FFmpeg API 
 
-This is a D port of the FFmpeg C headers. Please check [https://www.ffmpeg.org/] (FFmpeg website) for more information on the application and libraries 
+This is a D port of the FFmpeg C headers. Please check https://www.ffmpeg.org/ (FFmpeg website) for more information on the application and libraries 
 
 ### Usage
 
@@ -23,13 +23,13 @@ If your FFmpeg libav* libraries are not installed in the place usually associate
 
 E.g. here is the configuration for a Posix OS that installs to `/usr/local/lib`
     "configurations": [
-            {
-                    "name": "posix",
-                    "targetType": "executable",
-                    "platforms": ["Posix"],
-                    "lflags": ["-L$LD_LIBRARY_PATH"],
-            },
-
+        {
+                "name": "posix",
+                "targetType": "executable",
+                "platforms": ["Posix"],
+                "lflags": ["-L$LD_LIBRARY_PATH"],
+        }
+    ]
 
 The other two configurations build an executable (in Posix and Windows environments) that prints the associated library versions.
 This is useful for checking the versions expected by this binding and the actual library.
