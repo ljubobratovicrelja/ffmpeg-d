@@ -19,7 +19,8 @@ The main configuration to use this a source library is the `include` configurati
         "avfilter"
     ]
 
-If your FFmpeg libav* libraries are not installed in the place usually associated with your OS you will need additional build configuration.
+If your FFmpeg libav* libraries are not installed in the place usually used for libraries you will need additional build configuration
+to use ffmpeg-d properly.
 
 E.g. here is the configuration for a Posix OS that installs to `/usr/local/lib`
 
