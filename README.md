@@ -22,6 +22,7 @@ The main configuration to use this a source library is the `include` configurati
 If your FFmpeg libav* libraries are not installed in the place usually associated with your OS you will need additional build configuration.
 
 E.g. here is the configuration for a Posix OS that installs to `/usr/local/lib`
+
     "configurations": [
         {
                 "name": "posix",
