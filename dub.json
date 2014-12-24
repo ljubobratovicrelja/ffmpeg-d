@@ -17,14 +17,15 @@
 
 	"configurations": [
 		{
-			"name": "unix",
+			"name": "posix",
 			"targetType": "executable",
-			"platforms": ["freebsd", "linux"],
+			"platforms": ["Posix"],
 			"lflags": ["-L/usr/local/lib"],
 		},
 		{
-			"name": "others",
+			"name": "windows",
 			"targetType": "executable",
+            "platforms": ["Windows"]
 		},
 	]
 }
