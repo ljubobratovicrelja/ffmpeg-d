@@ -2,16 +2,16 @@ import std.stdio;
 import std.conv;
 import std.string;
 
-import ffmpeg.libavformat.avformat;
-import ffmpeg.libavcodec.avcodec;
-import ffmpeg.libavutil.avutil;
-import ffmpeg.libavfilter.avfilter;
-import ffmpeg.libavformat.avformat_version;
-import ffmpeg.libavcodec.avcodec_version;
-import ffmpeg.libavutil.avutil_version;
-import ffmpeg.libavfilter.avfilter_version;
+unittest {
+    import ffmpeg.libavformat.avformat;
+    import ffmpeg.libavcodec.avcodec;
+    import ffmpeg.libavutil.avutil;
+    import ffmpeg.libavfilter.avfilter;
+    import ffmpeg.libavformat.avformat_version;
+    import ffmpeg.libavcodec.avcodec_version;
+    import ffmpeg.libavutil.avutil_version;
+    import ffmpeg.libavfilter.avfilter_version;
 
-void main(string[] args) {
     av_register_all();
     avformat_network_init();
     avcodec_register_all();
@@ -28,4 +28,7 @@ void main(string[] args) {
     writeln("AVUtil version: " ~ to!string(avutil_version()));
     writeln("AVFilter binding version: " ~ to!string(LIBAVFILTER_VERSION_INT));
     writeln("AVFilter version: " ~ to!string(avfilter_version()));
+}
+
+void main() {
 }

@@ -6,15 +6,12 @@
 	"authors": [
 		"Sumit Raja"
 	],
-
+    "targetType": "sourceLibrary",
+    "platforms": ["Windows", "Posix"],
 	"configurations": [
-        {
-            "name": "include",
-            "targetType": "sourceLibrary",
-            "platforms": ["Windows", "Posix"]
-        },
 		{
 			"name": "posix-test-executable",
+            "mainSourceFile": "source/app.d",
 			"targetType": "executable",
 			"platforms": ["Posix"],
 			"lflags": ["-L$LD_LIBRARY_PATH"],
@@ -27,6 +24,7 @@
 		},
 		{
 			"name": "windows-test-executable",
+            "mainSourceFile": "source/app.d",
 			"targetType": "executable",
             "platforms": ["Windows"],
             "libs": [
