@@ -6,20 +6,17 @@
 	"authors": [
 		"Sumit Raja"
 	],
+	"targetType": "sourceLibrary",
+	"platforms": ["Windows", "Posix"],
+	"lflags": ["-L$LD_LIBRARY_PATH"],
+    "libs": [
+        "avcodec",
+        "avformat",
+        "avutil",
+        "avfilter",
+    ],
     
 	"configurations": [
-		{
-			"name": "include",
-			"targetType": "sourceLibrary",
-    		"platforms": ["Windows", "Posix"],
-			"lflags": ["-L$LD_LIBRARY_PATH"],
-            "libs": [
-                "avcodec",
-                "avformat",
-                "avutil",
-                "avfilter",
-            ]
-		},
 		{
 			"name": "posix-test-executable",
             "mainSourceFile": "source/app.d",
