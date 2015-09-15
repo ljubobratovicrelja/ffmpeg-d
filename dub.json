@@ -7,6 +7,7 @@
 		"Sumit Raja"
 	],
 	"targetType": "sourceLibrary",
+    "buildRequirements" : [ "allowWarnings"],
 	"platforms": ["Windows", "Posix"],
 	"lflags": ["-L$LD_LIBRARY_PATH"],
     "libs": [
