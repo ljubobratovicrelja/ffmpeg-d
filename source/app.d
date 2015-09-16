@@ -11,6 +11,8 @@ unittest {
     import ffmpeg.libavcodec.avcodec_version;
     import ffmpeg.libavutil.avutil_version;
     import ffmpeg.libavfilter.avfilter_version;
+    import ffmpeg.libswscale.swscale;
+    import ffmpeg.libswscale.swscale_version;
 
     av_register_all();
     avformat_network_init();
@@ -28,6 +30,9 @@ unittest {
     writeln("AVUtil version: " ~ to!string(avutil_version()));
     writeln("AVFilter binding version: " ~ to!string(LIBAVFILTER_VERSION_INT));
     writeln("AVFilter version: " ~ to!string(avfilter_version()));
+    writeln("SWScale binding version: " ~ to!string(LIBSWSCALE_VERSION_INT));
+    writeln("SWScale version: " ~ to!string(swscale_version()));
+
 }
 
 void main() {
