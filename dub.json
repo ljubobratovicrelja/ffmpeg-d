@@ -4,18 +4,14 @@
 	"copyright": "Copyright © 2013",
 	"license": "LGPL-2.1",
 	"authors": [
-		"Sumit Raja"
+		"Sumit Raja",
+		"donglei"
 	],
 	"targetType": "sourceLibrary",
     "buildRequirements" : [ "allowWarnings"],
 	"platforms": ["Windows", "Posix"],
 	"lflags": ["-L$LD_LIBRARY_PATH"],
-    "libs": [
-        "avcodec",
-        "avformat",
-        "avutil",
-        "avfilter",
-    ],
+    
     
 	"configurations": [
 		{
@@ -29,6 +25,7 @@
                 "avformat",
                 "avutil",
                 "avfilter",
+				"swscale"
             ]
 		},
 		{
@@ -41,6 +38,7 @@
                 "avformat",
                 "avutil",
                 "avfilter",
+				"swscale"
             ]
 		},
 	]
