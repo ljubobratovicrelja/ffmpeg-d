@@ -5,7 +5,8 @@
 	"license": "LGPL-2.1",
 	"authors": [
 		"Sumit Raja",
-		"donglei"
+		"donglei",
+		"Relja Ljubobratovic"
 	],
 	"targetType": "sourceLibrary",
 	"platforms": ["Windows", "Posix"],
