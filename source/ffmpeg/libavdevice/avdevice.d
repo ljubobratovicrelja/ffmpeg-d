@@ -420,7 +420,7 @@ struct AVDeviceCapabilitiesQuery {
 /**
  * AVOption table used by devices to implement device capabilities API. Should not be used by a user.
  */
-extern(C) const AVOption av_device_capabilities[];
+extern(C) const AVOption []av_device_capabilities;
 
 /**
  * Initialize capabilities probing API based on AVOption API.

@@ -929,7 +929,7 @@ struct AVPanScan {
      * - encoding: Set by user.
      * - decoding: Set by libavcodec.
      */
-    int16_t position[3][2];
+    int16_t [3][2]position;
 }
 
 static if (FF_API_QSCALE_TYPE) {
@@ -1235,7 +1235,7 @@ static if (FF_API_CODEC_NAME) {
      * @deprecated this field is not used for anything in libavcodec
      */
     //attribute_deprecated
-    char             codec_name[32];
+    char            [32] codec_name;
 }
     AVCodecID     codec_id; /* see AV_CODEC_ID_xxx */
 
@@ -1464,7 +1464,7 @@ static if (FF_API_CODEC_NAME) {
      * @param offset offset into the AVFrame.data from which the slice should be read
      */
     void function(AVCodecContext *s, 
-                            const AVFrame *src, int offset[AV_NUM_DATA_POINTERS], 
+                            const AVFrame *src, int [AV_NUM_DATA_POINTERS]offset, 
                             int y, int type, int height) draw_horiz_band;
 
     /**
@@ -2638,7 +2638,7 @@ static if (FF_API_DEBUG_MV) {
      * - encoding: Set by libavcodec if flags&CODEC_FLAG_PSNR.
      * - decoding: unused
      */
-    uint64_t error[AV_NUM_DATA_POINTERS];
+    uint64_t [AV_NUM_DATA_POINTERS]error;
 
     /**
      * DCT algorithm, see FF_DCT_* below
@@ -3349,8 +3349,8 @@ struct AVHWAccel {
  * alpha.
  */
 struct AVPicture {
-    uint8_t *data[AV_NUM_DATA_POINTERS];    ///< pointers to the image data planes
-    int linesize[AV_NUM_DATA_POINTERS];     ///< number of bytes per line
+    uint8_t *[AV_NUM_DATA_POINTERS]data;    ///< pointers to the image data planes
+    int [AV_NUM_DATA_POINTERS]linesize;     ///< number of bytes per line
 }
 
 /**
@@ -3911,7 +3911,7 @@ void avcodec_align_dimensions(AVCodecContext *s, int *width, int *height);
  * May only be used if a codec with CODEC_CAP_DR1 has been opened.
  */
 void avcodec_align_dimensions2(AVCodecContext *s, int *width, int *height,
-                               int linesize_align[AV_NUM_DATA_POINTERS]);
+                               int [AV_NUM_DATA_POINTERS]linesize_align);
 
 /**
  * Converts AVChromaLocation to swscale x/y chroma position.
@@ -4159,9 +4159,9 @@ struct AVCodecParserContext {
 
 //#define AV_PARSER_PTS_NB 4
     int cur_frame_start_index;
-    int64_t cur_frame_offset[AV_PARSER_PTS_NB];
-    int64_t cur_frame_pts[AV_PARSER_PTS_NB];
-    int64_t cur_frame_dts[AV_PARSER_PTS_NB];
+    int64_t [AV_PARSER_PTS_NB]cur_frame_offset;
+    int64_t [AV_PARSER_PTS_NB]cur_frame_pts;
+    int64_t [AV_PARSER_PTS_NB]cur_frame_dts;
 
     int flags;
 //#define PARSER_FLAG_COMPLETE_FRAMES           0x0001
@@ -4171,7 +4171,7 @@ struct AVCodecParserContext {
 //#define PARSER_FLAG_USE_CODEC_TS              0x1000
 
     int64_t offset;      ///< byte offset from starting packet start
-    int64_t cur_frame_end[AV_PARSER_PTS_NB];
+    int64_t [AV_PARSER_PTS_NB]cur_frame_end;
 
     /**
      * Set by parser to 1 for key frames and 0 for non-key frames.
@@ -4246,7 +4246,7 @@ struct AVCodecParserContext {
      *
      * Analogous to cur_frame_pts/dts
      */
-    int64_t cur_frame_pos[AV_PARSER_PTS_NB];
+    int64_t [AV_PARSER_PTS_NB]cur_frame_pos;
 
     /**
      * Byte position of currently parsed frame in stream.
@@ -4287,7 +4287,7 @@ struct AVCodecParserContext {
 }
 
 struct AVCodecParser {
-    int codec_ids[5]; /* several codec IDs are permitted */
+    int [5]codec_ids; /* several codec IDs are permitted */
     int priv_data_size;
     int function(AVCodecParserContext *s) parser_init;
     int function(AVCodecParserContext *s, 

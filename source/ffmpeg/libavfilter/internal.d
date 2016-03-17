@@ -29,7 +29,7 @@ import ffmpeg.libavfilter.avfilter_version;
 extern struct AVFilterBufferRef;
 enum POOL_SIZE=32;
 struct AVFilterPool {
-    AVFilterBufferRef *pic[POOL_SIZE];
+    AVFilterBufferRef *[POOL_SIZE]pic;
     int count;
     int refcount;
     int draining;
