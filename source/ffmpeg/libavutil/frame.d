@@ -154,7 +154,7 @@ struct AVFrame {
      * up to 16 bytes beyond the planes, if these filters are to be used,
      * then 16 extra bytes must be allocated.
      */
-    uint8_t *data[AV_NUM_DATA_POINTERS];
+    uint8_t *[AV_NUM_DATA_POINTERS]data;
     
     /**
      * For video, size in bytes of each picture line.
@@ -171,7 +171,7 @@ struct AVFrame {
      * @note The linesize may be larger than the size of usable data -- there
      * may be extra padding present for performance reasons.
      */
-    int linesize[AV_NUM_DATA_POINTERS];
+    int [AV_NUM_DATA_POINTERS]linesize;
     
     /**
      * pointers to the data planes/channels.
@@ -218,7 +218,7 @@ struct AVFrame {
     
 static if (FF_API_AVFRAME_LAVC) {
     deprecated
-        uint8_t *base[AV_NUM_DATA_POINTERS];
+        uint8_t *[AV_NUM_DATA_POINTERS]base;
 }
     
     /**
@@ -292,7 +292,7 @@ static if (FF_API_AVFRAME_LAVC) {
      * motion_val[direction][x + y*mv_stride][0->mv_x, 1->mv_y];
      * @endcode
      */
-    int16_t function() motion_val[2][2];
+    int16_t function() [2][2]motion_val;
     
     /**
      * macroblock type table
@@ -312,7 +312,7 @@ static if (FF_API_AVFRAME_LAVC) {
      * the order in which these are stored can depend on the codec.
      */
     deprecated
-        int8_t *ref_index[2];
+        int8_t *[2]ref_index;
 }
     
     /**
@@ -323,7 +323,7 @@ static if (FF_API_AVFRAME_LAVC) {
     /**
      * error
      */
-    uint64_t error[AV_NUM_DATA_POINTERS];
+    uint64_t [AV_NUM_DATA_POINTERS]error;
     
 static if (FF_API_AVFRAME_LAVC) {
     deprecated
@@ -411,7 +411,7 @@ static if (FF_API_AVFRAME_LAVC) {
      * this array. Then the extra AVBufferRef pointers are stored in the
      * extended_buf array.
      */
-    AVBufferRef *buf[AV_NUM_DATA_POINTERS];
+    AVBufferRef *[AV_NUM_DATA_POINTERS]buf;
     
     /**
      * For planar audio which requires more than AV_NUM_DATA_POINTERS

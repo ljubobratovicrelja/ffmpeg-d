@@ -23,8 +23,8 @@ import std.stdint;
 extern(C) 
 /* IEEE 80 bits extended float */
 struct AVExtFloat {
-      uint8_t exponent[2];
-      uint8_t mantissa[8];
+      uint8_t [2]exponent;
+      uint8_t [8]mantissa;
 }
   
 deprecated double av_int2dbl(int64_t v);

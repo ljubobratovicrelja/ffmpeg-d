@@ -70,7 +70,7 @@ static if (FF_API_AVFILTERBUFFER) {
  * AVFilterBufferRef structure below.
  */
 struct AVFilterBuffer {
-    uint8_t *data[8];           ///< buffer data for each plane/channel
+    uint8_t *[8]data;           ///< buffer data for each plane/channel
 
     /**
      * pointers to the data planes/channels.
@@ -87,7 +87,7 @@ struct AVFilterBuffer {
      * in order to access all channels.
      */
     uint8_t **extended_data;
-    int linesize[8];            ///< number of bytes per line
+    int [8]linesize;            ///< number of bytes per line
 
     /** private data to be used by a custom free function */
     void *priv;
@@ -154,7 +154,7 @@ struct AVFilterBufferRefVideoProps {
  */
 struct AVFilterBufferRef {
     AVFilterBuffer *buf;        ///< the buffer that this is a reference to
-    uint8_t *data[8];           ///< picture/audio data for each plane
+    uint8_t *[8]data;           ///< picture/audio data for each plane
     /**
      * pointers to the data planes/channels.
      *
@@ -170,7 +170,7 @@ struct AVFilterBufferRef {
      * in order to access all channels.
      */
     uint8_t **extended_data;
-    int linesize[8];            ///< number of bytes per line
+    int [8]linesize;            ///< number of bytes per line
 
     AVFilterBufferRefVideoProps *video; ///< video buffer specific properties
     AVFilterBufferRefAudioProps *audio; ///< audio buffer specific properties
@@ -907,7 +907,7 @@ static if (FF_API_AVFILTERBUFFER) {
  */
 deprecated
 AVFilterBufferRef *
-avfilter_get_video_buffer_ref_from_arrays(const uint8_t* data[4], const int linesize[4], int perms,
+avfilter_get_video_buffer_ref_from_arrays(const uint8_t* [4]data, const int [4]linesize, int perms,
                                           int w, int h, AVPixelFormat format);
 
 /**

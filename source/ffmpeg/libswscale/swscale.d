@@ -188,9 +188,9 @@ SwsContext *sws_getContext(int srcW, int srcH, const AVPixelFormat srcFormat,
 *                  the destination image
 * @return          the height of the output slice
 */
-int sws_scale(SwsContext *c, const uint8_t *  srcSlice[],
-              const int srcStride[], int srcSliceY, int srcSliceH,
-              const uint8_t* dst[], const int dstStride[]);
+int sws_scale(SwsContext *c, const uint8_t *  []srcSlice,
+              const int []srcStride, int srcSliceY, int srcSliceH,
+              const uint8_t* []dst, const int []dstStride);
 
 /**
 * @param dstRange flag indicating the while-black range of the output (1=jpeg / 0=mpeg)
@@ -202,8 +202,8 @@ int sws_scale(SwsContext *c, const uint8_t *  srcSlice[],
 * @param saturation 16.16 fixed point saturation correction
 * @return -1 if not supported
 */
-int sws_setColorspaceDetails( SwsContext *c, const int inv_table[4],
-                             int srcRange, const int table[4], int dstRange,
+int sws_setColorspaceDetails( SwsContext *c, const int [4]inv_table,
+                             int srcRange, const int [4]table, int dstRange,
                              int brightness, int contrast, int saturation);
 
 /**

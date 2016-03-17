@@ -923,7 +923,7 @@ static if(FF_API_LAVF_FRAC) {
         int64_t duration_gcd;
         int duration_count;
         int64_t rfps_duration_sum;
-        double function() duration_error[2][MAX_STD_TIMEBASES];
+        double function() [2][MAX_STD_TIMEBASES]duration_error;
         int64_t codec_info_duration;
         int64_t codec_info_duration_fields;
 
@@ -983,7 +983,7 @@ static if(FF_API_LAVF_FRAC) {
     AVPacketList *last_in_packet_buffer;
     AVProbeData probe_data;
 //#define MAX_REORDER_DELAY 16
-    int64_t pts_buffer[MAX_REORDER_DELAY+1];
+    int64_t [MAX_REORDER_DELAY+1]pts_buffer;
 
     AVIndexEntry *index_entries; /**< Only used if the format does not
                                     support seeking natively. */
@@ -1069,8 +1069,8 @@ static if(FF_API_LAVF_FRAC) {
     /**
      * Internal data to generate dts from pts
      */
-    int64_t pts_reorder_error[MAX_REORDER_DELAY+1];
-    uint8_t pts_reorder_error_count[MAX_REORDER_DELAY+1];
+    int64_t [MAX_REORDER_DELAY+1]pts_reorder_error;
+    uint8_t [MAX_REORDER_DELAY+1]pts_reorder_error_count;
 
     /**
      * Internal data to analyze DTS and detect faulty mpeg streams
@@ -1245,7 +1245,7 @@ struct AVFormatContext {
      * - demuxing: set by avformat_open_input()
      * - muxing: may be set by the caller before avformat_write_header()
      */
-    char filename[1024];
+    char [1024]filename;
 
     /**
      * Position of the first frame of the component, in
@@ -2603,7 +2603,7 @@ int av_filename_number_test(const char *filename);
  * @param size the size of the buffer
  * @return 0 if OK, AVERROR_xxx on error
  */
-int av_sdp_create(AVFormatContext *ac[], int n_files, char *buf, int size);
+int av_sdp_create(AVFormatContext *[]ac, int n_files, char *buf, int size);
 
 /**
  * Return a positive value if the given filename has one of the given
