@@ -8,38 +8,46 @@
 		"donglei"
 	],
 	"targetType": "sourceLibrary",
-    "buildRequirements" : [ "allowWarnings"],
 	"platforms": ["Windows", "Posix"],
 	"lflags": ["-L$LD_LIBRARY_PATH"],
-    
-    
+	"sourcePaths": ["source/ffmpeg"],
+	"importPaths": ["source/ffmpeg"],
+
+	"libs": [
+		"avcodec",
+		"avformat",
+		"avutil",
+		"avfilter",
+		"swscale"
+	],
+
 	"configurations": [
 		{
 			"name": "posix-test-executable",
-            "mainSourceFile": "source/app.d",
+			"mainSourceFile": "source/app.d",
 			"targetType": "executable",
 			"platforms": ["Posix"],
 			"lflags": ["-L$LD_LIBRARY_PATH"],
-            "libs": [
-                "avcodec",
-                "avformat",
-                "avutil",
-                "avfilter",
+			"libs": [
+				"avcodec",
+				"avformat",
+				"avutil",
+				"avfilter",
 				"swscale"
-            ]
+			]
 		},
 		{
 			"name": "windows-test-executable",
-            "mainSourceFile": "source/app.d",
+			"mainSourceFile": "source/app.d",
 			"targetType": "executable",
-            "platforms": ["Windows"],
-            "libs": [
-                "avcodec",
-                "avformat",
-                "avutil",
-                "avfilter",
+			"platforms": ["Windows"],
+			"libs": [
+				"avcodec",
+				"avformat",
+				"avutil",
+				"avfilter",
 				"swscale"
-            ]
-		},
+			]
+		}
 	]
 }
