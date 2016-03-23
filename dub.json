@@ -19,6 +19,7 @@
 		"avformat",
 		"avutil",
 		"avfilter",
+		"avdevice",
 		"swscale"
 	],
 
@@ -34,6 +35,7 @@
 				"avformat",
 				"avutil",
 				"avfilter",
+				"avdevice",
 				"swscale"
 			]
 		},
@@ -47,6 +49,7 @@
 				"avformat",
 				"avutil",
 				"avfilter",
+				"avdevice",
 				"swscale"
 			]
 		}
