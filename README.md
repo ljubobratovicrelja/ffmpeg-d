@@ -1,4 +1,5 @@
-﻿# FFmpeg API 
+# FFmpeg API 
+[![Dub package](https://img.shields.io/badge/dub-package-FF4081.svg)](http://code.dlang.org/packages/ffmpeg-d)
 
 This is a D port of the FFmpeg C headers. Please check https://www.ffmpeg.org/ (FFmpeg website) for more information on the application and libraries 
 
