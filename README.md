@@ -1,4 +1,6 @@
 # FFmpeg API 
+
+[![Join the chat at https://gitter.im/ljubobratovicrelja/ffmpeg-d](https://badges.gitter.im/ljubobratovicrelja/ffmpeg-d.svg)](https://gitter.im/ljubobratovicrelja/ffmpeg-d?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Dub package](https://img.shields.io/badge/dub-package-FF4081.svg)](http://code.dlang.org/packages/ffmpeg-d)
 
 This is a D port of the FFmpeg C headers. Please check https://www.ffmpeg.org/ (FFmpeg website) for more information on the application and libraries 
