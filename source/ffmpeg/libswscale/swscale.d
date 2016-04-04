@@ -188,9 +188,9 @@ SwsContext *sws_getContext(int srcW, int srcH, const AVPixelFormat srcFormat,
 *                  the destination image
 * @return          the height of the output slice
 */
-int sws_scale(SwsContext *c, const uint8_t *  []srcSlice,
-              const int []srcStride, int srcSliceY, int srcSliceH,
-              const uint8_t* []dst, const int []dstStride);
+int sws_scale(SwsContext *c, const uint8_t **srcSlice,
+              const int *srcStride, int srcSliceY, int srcSliceH,
+              const uint8_t **dst, const int *dstStride);
 
 /**
 * @param dstRange flag indicating the while-black range of the output (1=jpeg / 0=mpeg)
