@@ -8,9 +8,9 @@
 		"donglei",
 		"Relja Ljubobratovic"
 	],
+
 	"targetType": "sourceLibrary",
 	"platforms": ["Windows", "Posix"],
-	"lflags": ["-L$LD_LIBRARY_PATH"],
 	"sourcePaths": ["source/ffmpeg"],
 	"importPaths": ["source/ffmpeg"],
 
@@ -29,7 +29,6 @@
 			"mainSourceFile": "source/app.d",
 			"targetType": "executable",
 			"platforms": ["Posix"],
-			"lflags": ["-L$LD_LIBRARY_PATH"],
 			"libs": [
 				"avcodec",
 				"avformat",
