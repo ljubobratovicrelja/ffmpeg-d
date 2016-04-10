@@ -31,11 +31,11 @@ extern(C):
  * rational number numerator/denominator
  */
 struct AVRational {
-      int num;
-      int den;
-  double q2d() {
-    return num/cast(double) den;
-  }
+	int num;
+	int den;
+	double q2d() const {
+		return num/cast(double) den;
+	}
 } 
 
 
