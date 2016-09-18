@@ -1,0 +1,4 @@
+.dub/
+__test__source
+dub.userprefs
+libffmpeg-d.a
