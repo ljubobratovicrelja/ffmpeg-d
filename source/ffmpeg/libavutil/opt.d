@@ -29,7 +29,8 @@ import ffmpeg.libavutil.pixfmt;
 import ffmpeg.libavutil.samplefmt;
 import ffmpeg.libavutil.dict;
 
-extern(C):
+@nogc nothrow extern(C):
+
 /**
  * @defgroup avoptions AVOptions
  * @ingroup lavu_data

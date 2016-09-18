@@ -25,7 +25,7 @@
 module ffmpeg.libavutil.channel_layout;
 import std.stdint;
 
-extern(C):
+@nogc nothrow extern(C):
 /**
  * @file
  * audio channel layout utility functions

@@ -30,10 +30,11 @@ module ffmpeg.libavutil.mem;
 import std.stdint;
 import core.stdc.errno;
 import ffmpeg.libavutil.error;
-extern(C):
 /*#include "attributes.h"
 #include "error.h"
 #include "avutil.h"*/
+
+@nogc nothrow extern(C):
 
 /**
  * @addtogroup lavu_mem

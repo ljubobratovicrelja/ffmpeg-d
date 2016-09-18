@@ -52,7 +52,7 @@ import ffmpeg.libavformat.avformat;
 import ffmpeg.libavcodec.avcodec;
 import ffmpeg.libavdevice.avdevice_version;
 
-extern(C):
+@nogc nothrow extern(C):
 /**
  * Return the LIBAVDEVICE_VERSION_INT constant.
  */
@@ -420,7 +420,7 @@ struct AVDeviceCapabilitiesQuery {
 /**
  * AVOption table used by devices to implement device capabilities API. Should not be used by a user.
  */
-extern(C) const AVOption []av_device_capabilities;
+const AVOption []av_device_capabilities;
 
 /**
  * Initialize capabilities probing API based on AVOption API.

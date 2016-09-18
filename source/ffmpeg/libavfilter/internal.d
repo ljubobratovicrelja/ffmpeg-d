@@ -18,7 +18,7 @@
 
 module ffmpeg.libavfilter.internal;
 
-extern(C):
+@nogc nothrow extern(C):
 /**
  * @file
  * internal API functions

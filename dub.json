@@ -1,56 +1,40 @@
 {
-	"name": "ffmpeg-d",
-	"description": "FFmpeg Bindings",
-	"copyright": "Copyright © 2013",
-	"license": "LGPL-2.1",
-	"authors": [
-		"Sumit Raja",
-		"donglei",
-		"Relja Ljubobratovic"
-	],
+    "name": "ffmpeg-d",
+    "description": "FFmpeg Bindings",
+    "copyright": "Copyright © 2013",
+    "license": "LGPL-2.1",
+    "authors": [
+        "Sumit Raja",
+        "donglei",
+        "Relja Ljubobratovic"
+    ],
 
-	"targetType": "sourceLibrary",
-	"platforms": ["Windows", "Posix"],
-	"sourcePaths": ["source/ffmpeg"],
-	"importPaths": ["source/ffmpeg"],
+    "platforms": ["Windows", "Posix"],
 
-	"libs": [
-		"avcodec",
-		"avformat",
-		"avutil",
-		"avfilter",
-		"avdevice",
-		"swscale"
-	],
+    "libs": [
+        "avcodec",
+        "avformat",
+        "avutil",
+        "avfilter",
+        "avdevice",
+        "swscale"
+    ],
 
-	"configurations": [
-		{
-			"name": "posix-test-executable",
-			"mainSourceFile": "source/app.d",
-			"targetType": "executable",
-			"platforms": ["Posix"],
-			"libs": [
-				"avcodec",
-				"avformat",
-				"avutil",
-				"avfilter",
-				"avdevice",
-				"swscale"
-			]
-		},
-		{
-			"name": "windows-test-executable",
-			"mainSourceFile": "source/app.d",
-			"targetType": "executable",
-			"platforms": ["Windows"],
-			"libs": [
-				"avcodec",
-				"avformat",
-				"avutil",
-				"avfilter",
-				"avdevice",
-				"swscale"
-			]
-		}
-	]
+    "buildTypes": {
+        "unittest": {
+            "buildOptions": ["unittests"],
+            "sourcePaths": ["./source/ffmpeg", "./test/"]
+        }
+    },
+
+    "configurations": [
+        {
+            "name": "source",
+            "targetType": "sourceLibrary"
+        },
+        {
+            "name": "static",
+            "targetType": "staticLibrary"
+        }
+    ]
 }

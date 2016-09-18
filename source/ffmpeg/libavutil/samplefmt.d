@@ -16,9 +16,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-module ffmpeg.libavutil.samplefmt;
-import ffmpeg.libavutil.avutil_version;
-
 /**
  * Audio Sample Formats
  *
@@ -41,8 +38,11 @@ import ffmpeg.libavutil.avutil_version;
  * plane is used, and samples for each channel are interleaved. In this case,
  * linesize is the buffer size, in bytes, for the 1 plane.
  */
+module ffmpeg.libavutil.samplefmt;
 
-extern(C):
+import ffmpeg.libavutil.avutil_version;
+
+@nogc nothrow extern(C):
 
 enum AVSampleFormat {
     AV_SAMPLE_FMT_NONE = -1,

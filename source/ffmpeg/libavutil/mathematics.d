@@ -33,9 +33,9 @@ enum M_SQRT2      =  1.41421356237309504880; /* sqrt(2) */
 enum NAN          =  av_int2float(0x7fc00000);
 enum INFINITY     =  av_int2float(0x7f800000);
 
+@nogc nothrow extern(C):
 
-extern (C):
- /**
+/**
  * @addtogroup lavu_math
  * @{
  */

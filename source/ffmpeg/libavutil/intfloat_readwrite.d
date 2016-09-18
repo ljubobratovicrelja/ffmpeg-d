@@ -20,7 +20,8 @@
 module ffmpeg.libavutil.intfloat_readwrite;
 import std.stdint;
 
-extern(C) 
+@nogc nothrow extern(C): 
+
 /* IEEE 80 bits extended float */
 struct AVExtFloat {
       uint8_t [2]exponent;

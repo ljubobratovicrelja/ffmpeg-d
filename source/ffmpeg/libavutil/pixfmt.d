@@ -30,7 +30,8 @@ import ffmpeg.libavutil.common;
  *
  */
 
-extern(C):
+@nogc nothrow extern(C):
+
 enum AVPALETTE_SIZE = 1024;
 enum AVPALETTE_COUNT = 256;
 

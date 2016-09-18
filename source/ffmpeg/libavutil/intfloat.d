@@ -19,7 +19,9 @@
  */
 module ffmpeg.libavutil.intfloat;
 import std.stdint;
-import std.conv;
+import std.math : floor;
+
+@nogc nothrow extern(C):
 
 union av_intfloat32 {
     uint32_t i;
@@ -31,13 +33,12 @@ union av_intfloat64 {
     double   f;
 };
 
-extern(C):
 /**
  * Reinterpret a 32-bit integer as a float.
  */
 static float av_int2float(uint32_t i)
 {
-    return to!float(i);
+    return float(i);
 }
 
 /**
@@ -45,7 +46,7 @@ static float av_int2float(uint32_t i)
  */
 static uint32_t av_float2int(float f)
 {
-    return to!int(f);
+    return cast(uint32_t)floor(f);
 }
 
 /**
@@ -53,7 +54,7 @@ static uint32_t av_float2int(float f)
  */
 static double av_int2double(uint64_t i)
 {
-    return to!double(i);
+    return double(i);
 }
 
 /**
@@ -61,6 +62,6 @@ static double av_int2double(uint64_t i)
  */
 static uint64_t av_double2int(double f)
 {
-    return to!int(f);
+    return cast(uint64_t)floor(f);
 }
 

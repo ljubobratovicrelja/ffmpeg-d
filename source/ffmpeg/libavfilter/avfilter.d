@@ -42,7 +42,7 @@ import ffmpeg.libavfilter.internal;
 import ffmpeg.libavfilter.formats;
 import ffmpeg.libavfilter.avfilter_version;
 
-extern(C):
+@nogc nothrow extern(C):
 /**
 * Return the LIBAVFILTER_VERSION_INT constant.
 */

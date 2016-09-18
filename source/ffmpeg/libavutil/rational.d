@@ -21,7 +21,8 @@
 module ffmpeg.libavutil.rational;
 import std.stdint;
 
-extern(C):
+@nogc nothrow extern(C):
+
 /**
  * @addtogroup lavu_math
  * @{

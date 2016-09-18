@@ -2,10 +2,8 @@ module ffmpeg.libswscale.rgb2rgb;
 
 import ffmpeg.libavutil.avutil;
 import std.stdint;
-extern(C):
 
-
-
+@nogc nothrow extern(C):
 
 void rgb64tobgr48_nobswap(const uint8_t *src, uint8_t *dst, int src_size);
 void   rgb64tobgr48_bswap(const uint8_t *src, uint8_t *dst, int src_size);

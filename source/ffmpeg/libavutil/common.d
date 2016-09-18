@@ -22,6 +22,8 @@ module ffmpeg.libavutil.common;
 import std.stdint;
 import ffmpeg.libavutil.avutil_version;
 
+@nogc nothrow:
+
 template MKBETAG(int a, int b, int c, int d) {
   const int MKBETAG = ((d) | ((c) << 8) | ((b) << 16) | (cast(uint)(a) << 24));
 }

@@ -36,7 +36,32 @@ public import ffmpeg.libavutil.mathematics;
 public import ffmpeg.libavutil.channel_layout;
 public import ffmpeg.libavutil.avutil_version;
 
-extern(C): 
+  
+/**
+ * Fill the provided buffer with a string containing a timestamp time
+ * representation.
+ *
+ * @param buf a buffer with size in bytes of at least AV_TS_MAX_STRING_SIZE
+ * @param ts the timestamp to represent
+ * @param tb the timebase of the timestamp
+ * @return the buffer in input
+ */
+string av_ts_make_time_string(int64_t ts, AVRational tb)
+{
+  import std.format; 
+  import std.array;
+  if (ts == AV_NOPTS_VALUE) {
+    return "No Value";
+  } else {
+    auto toTs = av_q2d(tb) * ts;
+    auto writer = appender!string(); 
+    formattedWrite(writer, "%.6g", toTs);
+    return writer.data;
+  }
+}
+
+@nogc nothrow extern(C): 
+
 /*
  * @mainpage
  *
@@ -240,29 +265,6 @@ enum AVPictureType {
  */
 char av_get_picture_type_char(AVPictureType pict_type);
 // end avutil.h
-  
-/**
- * Fill the provided buffer with a string containing a timestamp time
- * representation.
- *
- * @param buf a buffer with size in bytes of at least AV_TS_MAX_STRING_SIZE
- * @param ts the timestamp to represent
- * @param tb the timebase of the timestamp
- * @return the buffer in input
- */
-string av_ts_make_time_string(int64_t ts, AVRational tb)
-{
-  import std.format; 
-  import std.array;
-  if (ts == AV_NOPTS_VALUE) {
-    return "No Value";
-  } else {
-    auto toTs = av_q2d(tb) * ts;
-    auto writer = appender!string(); 
-    formattedWrite(writer, "%.6g", toTs);
-    return writer.data;
-  }
-}
 
 /**
  * Return x default pointer in case p is NULL.

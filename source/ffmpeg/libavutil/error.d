@@ -26,7 +26,8 @@ import core.stdc.errno;
 import core.stdc.stddef;
 import ffmpeg.libavutil.common;
 
-extern(C):
+@nogc nothrow extern(C):
+
 /**
  * @addtogroup lavu_error
  *

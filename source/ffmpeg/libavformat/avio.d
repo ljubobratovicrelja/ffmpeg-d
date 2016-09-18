@@ -23,7 +23,7 @@ import std.stdio;
 import ffmpeg.libavutil.avutil;
 import ffmpeg.libavformat.avformat_version;
 
-extern(C):
+@nogc nothrow extern(C):
 /**
  * @file
  * @ingroup lavf_io

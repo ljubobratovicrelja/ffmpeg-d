@@ -22,7 +22,7 @@ import std.stdint;
 import core.vararg;
 import ffmpeg.libavutil.opt;
 
-extern(C):
+@nogc nothrow extern(C):
 
 enum AVClassCategory {
     AV_CLASS_CATEGORY_NA = 0,

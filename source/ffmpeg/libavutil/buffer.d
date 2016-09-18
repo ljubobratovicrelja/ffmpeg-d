@@ -20,7 +20,7 @@ module ffmpeg.libavutil.buffer;
 
 import std.stdint;
 
-extern(C):
+@nogc nothrow extern(C):
 
 /**
  * @file
