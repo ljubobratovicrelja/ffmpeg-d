@@ -17,11 +17,18 @@ argument in your project's configuration as:
 "lflags": ["-L/path/to/ffmpegLibs"],
 ```
 
-The other two configurations - ```posix-test-executable``` and ```windows-test-executable```, build an executable (in Posix and Windows environments) that prints the associated library versions.
-This is useful for checking the versions expected by this binding and the actual library.
-
 ### OS X 
 It is noted that FFmpeg compiled on OS X with clang fails linking with DMD. Workaround is to install the FFmpeg libraries using **Homebrew**. See the [issue #1](https://github.com/ljubobratovicrelja/ffmpeg-d/issues/1) for more info.
+
+
+## Testing
+
+Running D unit tests with dub:
+```
+dub test
+```
+
+... will print the associated FFmpeg library versions. This is useful for checking versions expected by this binding and the actual library.
 
 ## FFmpeg Version
 
