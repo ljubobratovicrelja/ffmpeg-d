@@ -18,6 +18,7 @@ unittest {
     avformat_network_init();
     avcodec_register_all();
     avfilter_register_all();
+
     writeln("AVCodec binding version: " ~ to!string(LIBAVCODEC_VERSION_INT));
     writeln("AVCodec version: " ~ to!string(avcodec_version()));
     writeln("AVCodec config: " ~ to!string(avcodec_configuration()));
@@ -32,8 +33,5 @@ unittest {
     writeln("AVFilter version: " ~ to!string(avfilter_version()));
     writeln("SWScale binding version: " ~ to!string(LIBSWSCALE_VERSION_INT));
     writeln("SWScale version: " ~ to!string(swscale_version()));
-
 }
 
-void main() {
-}
