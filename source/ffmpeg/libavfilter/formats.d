@@ -21,6 +21,7 @@ module ffmpeg.libavfilter.formats;
 import std.stdint;
 import ffmpeg.libavfilter.avfilter;
 
+@nogc nothrow extern(C):
 /**
  * A list of supported formats for one end of a filter link. This is used
  * during the format negotiation process to try to pick the best format to

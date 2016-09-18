@@ -37,7 +37,7 @@ import ffmpeg.libavutil.rational; //#include "libavutil/rational.h"
 
 import ffmpeg.libavcodec.avcodec_version; //#include "version.h"
 
-extern(C):
+@nogc nothrow extern(C):
 /**
  * @defgroup libavc Encoding/Decoding Library
  * @{

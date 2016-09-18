@@ -263,7 +263,7 @@ import ffmpeg.libavformat.avio;
 import ffmpeg.libavformat.avformat_version;
 import ffmpeg.libavdevice.avdevice;
 
-extern(C):
+@nogc nothrow extern(C):
 /**
  * @defgroup metadata_api Public Metadata API
  * @{

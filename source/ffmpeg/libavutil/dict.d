@@ -27,9 +27,10 @@
  *  It is recommended that new code uses our tree container from tree.c/h
  *  where applicable, which uses AVL trees to achieve O(log n) performance.
  */
-
 module ffmpeg.libavutil.dict;
-extern(C):
+
+@nogc nothrow extern(C):
+
 /**
  * @addtogroup lavu_dict AVDictionary
  * @ingroup lavu_data

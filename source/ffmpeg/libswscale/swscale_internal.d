@@ -3,7 +3,8 @@ module ffmpeg.libswscale.swscale_internal;
 import ffmpeg.libswscale.swscale_version;
 import ffmpeg.libavutil.avutil;
 
-extern(C):
+@nogc nothrow extern(C):
+
 enum YUVRGB_TABLE_HEADROOM = 256;
 
 //enum MAX_FILTER_SIZE = SWS_MAX_FILTER_SIZE;

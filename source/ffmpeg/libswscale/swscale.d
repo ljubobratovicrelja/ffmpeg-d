@@ -2,7 +2,8 @@ module ffmpeg.libswscale.swscale;
 import std.stdint;
 import ffmpeg.libavutil.avutil;
 
-extern(C):
+@nogc nothrow extern(C):
+
 /**
 * @defgroup libsws Color conversion and scaling
 * @{

@@ -37,7 +37,7 @@ import ffmpeg.libavutil.samplefmt; //#include "samplefmt.h"
 import ffmpeg.libavutil.pixfmt; //#include "pixfmt.h"
 import ffmpeg.libavutil.avutil_version; //#include "version.h"
 
-extern (C):
+@nogc nothrow extern(C):
 /**
  * @defgroup lavu_frame AVFrame
  * @ingroup lavu_data
