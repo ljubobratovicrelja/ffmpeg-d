@@ -9,10 +9,7 @@
         "Relja Ljubobratovic"
     ],
 
-    "targetType": "sourceLibrary",
     "platforms": ["Windows", "Posix"],
-    "sourcePaths": ["source/ffmpeg"],
-    "importPaths": ["source/ffmpeg"],
 
     "libs": [
         "avcodec",
@@ -23,34 +20,21 @@
         "swscale"
     ],
 
+    "buildTypes": {
+        "unittest": {
+            "buildOptions": ["unittests"],
+            "sourcePaths": ["./source/ffmpeg", "./test/"]
+        }
+    },
+
     "configurations": [
         {
-            "name": "posix-test-executable",
-            "mainSourceFile": "source/app.d",
-            "targetType": "executable",
-            "platforms": ["Posix"],
-            "libs": [
-                "avcodec",
-                "avformat",
-                "avutil",
-                "avfilter",
-                "avdevice",
-                "swscale"
-            ]
+            "name": "source",
+            "targetType": "sourceLibrary"
         },
         {
-            "name": "windows-test-executable",
-            "mainSourceFile": "source/app.d",
-            "targetType": "executable",
-            "platforms": ["Windows"],
-            "libs": [
-                "avcodec",
-                "avformat",
-                "avutil",
-                "avfilter",
-                "avdevice",
-                "swscale"
-            ]
+            "name": "static",
+            "targetType": "staticLibrary"
         }
     ]
 }
