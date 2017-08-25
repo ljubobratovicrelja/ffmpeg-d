@@ -29,6 +29,17 @@ argument in your project's configuration as:
 ```
 
 
+### Examples
+
+There are a few examples in the examples directory, these can be compiled to working executables using DUB:
+
+```
+dub build -c remux_example
+```
+
+Other examples written in C can be found on the main FFMpeg site: https://www.ffmpeg.org/doxygen/3.0/examples.html
+
+
 ### OS X
 
 It is noted that FFmpeg compiled on OS X with clang fails linking with DMD. Workaround is to install the FFmpeg libraries using **Homebrew**. See the [issue #1](https://github.com/ljubobratovicrelja/ffmpeg-d/issues/1) for more info.
