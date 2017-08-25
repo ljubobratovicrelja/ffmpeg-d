@@ -17,7 +17,8 @@
         "avutil",
         "avfilter",
         "avdevice",
-        "swscale"
+        "swscale",
+        "swresample"
     ],
 
     "buildTypes": {
@@ -35,6 +36,18 @@
         {
             "name": "static",
             "targetType": "staticLibrary"
+        },
+        {
+            "name": "remux_example",
+            "targetType": "executable",
+            "mainSourceFile": "examples/remux_example.d",
+            "targetName": "remux_example"
+        },
+        {
+            "name": "encode_example",
+            "targetType": "executable",
+            "mainSourceFile": "examples/encode_example.d",
+            "targetName": "encode_example"
         }
     ]
 }

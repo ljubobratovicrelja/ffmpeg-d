@@ -50,6 +50,22 @@ template AV_VERSION(int a, int b, int c) {
 }
 
 /**
+ * Extract version components from the full ::AV_VERSION_INT int as returned
+ * by functions like ::avformat_version() and ::avcodec_version()
+ */
+int AV_VERSION_MAJOR(int a){
+    return a >> 16;
+}
+
+int AV_VERSION_MINOR(int a){
+    return (a & 0x00FF00) >> 8;
+}
+
+int AV_VERSION_MICRO(int a){
+    return a & 0xFF;
+}
+
+/**
  * @}
  *
  * @defgroup lavu_ver Version and Build diagnostics
@@ -60,9 +76,9 @@ template AV_VERSION(int a, int b, int c) {
  * @{
  */
 
-enum LIBAVUTIL_VERSION_MAJOR = 54;
-enum LIBAVUTIL_VERSION_MINOR = 7;
-enum LIBAVUTIL_VERSION_MICRO = 100;
+enum LIBAVUTIL_VERSION_MAJOR = 55;
+enum LIBAVUTIL_VERSION_MINOR = 17;
+enum LIBAVUTIL_VERSION_MICRO = 103;
 
 enum LIBAVUTIL_VERSION_INT = AV_VERSION_INT!(LIBAVUTIL_VERSION_MAJOR, LIBAVUTIL_VERSION_MINOR, LIBAVUTIL_VERSION_MICRO);
 enum LIBAVUTIL_VERSION =     AV_VERSION!(LIBAVUTIL_VERSION_MAJOR, LIBAVUTIL_VERSION_MINOR, LIBAVUTIL_VERSION_MICRO);
@@ -81,32 +97,16 @@ auto LIBAVUTIL_IDENT =  "Lavu" ~ LIBAVUTIL_VERSION;
  * @{
  */
 
-enum FF_API_GET_BITS_PER_SAMPLE_FMT = (LIBAVUTIL_VERSION_MAJOR < 54);
-enum FF_API_FIND_OPT                = (LIBAVUTIL_VERSION_MAJOR < 54);
-enum FF_API_OLD_AVOPTIONS           = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_PIX_FMT                 = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_CONTEXT_SIZE            = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_PIX_FMT_DESC            = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_AV_REVERSE              = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_AUDIOCONVERT            = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_CPU_FLAG_MMX2           = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_SAMPLES_UTILS_RETURN_ZERO = (LIBAVUTIL_VERSION_MAJOR < 54);
-enum FF_API_LLS_PRIVATE              = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_LLS1                   = (LIBAVUTIL_VERSION_MAJOR < 54);
-enum FF_API_AVFRAME_LAVC           = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_VDPAU                  = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_GET_CHANNEL_LAYOUT_COMPAT = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_OLD_OPENCL             = (LIBAVUTIL_VERSION_MAJOR < 54);
-enum FF_API_XVMC                   = (LIBAVUTIL_VERSION_MAJOR < 55);
-enum FF_API_INTFLOAT               = (LIBAVUTIL_VERSION_MAJOR < 54);
-enum FF_API_OPT_TYPE_METADATA      = (LIBAVUTIL_VERSION_MAJOR < 55);
+enum FF_API_VDPAU                   = (LIBAVUTIL_VERSION_MAJOR < 56);
+enum FF_API_XVMC                    = (LIBAVUTIL_VERSION_MAJOR < 56);
+enum FF_API_OPT_TYPE_METADATA       = (LIBAVUTIL_VERSION_MAJOR < 56);
+enum FF_API_DLOG                    = (LIBAVUTIL_VERSION_MAJOR < 56);
+enum FF_API_VAAPI                   = (LIBAVUTIL_VERSION_MAJOR < 56);
+enum FF_API_FRAME_QP                = (LIBAVUTIL_VERSION_MAJOR < 56);
+enum FF_API_PLUS1_MINUS1            = (LIBAVUTIL_VERSION_MAJOR < 56);
+enum FF_API_ERROR_FRAME             = (LIBAVUTIL_VERSION_MAJOR < 56);
+enum FF_API_CRC_BIG_TABLE           = (LIBAVUTIL_VERSION_MAJOR < 56);
 
-
-
-static if (LIBAVUTIL_VERSION_MAJOR >= 53)
-    enum FF_CONST_AVUTIL53 = 0;
-else
-    enum FF_CONST_AVUTIL53 = 0;
 /**
  * @}
  */

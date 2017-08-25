@@ -53,6 +53,7 @@ import ffmpeg.libavcodec.avcodec;
 import ffmpeg.libavdevice.avdevice_version;
 
 @nogc nothrow extern(C):
+
 /**
  * Return the LIBAVDEVICE_VERSION_INT constant.
  */
@@ -193,8 +194,8 @@ enum AVAppToDevMessageType {
      * data: NULL.
      */
     AV_APP_TO_DEV_GET_VOLUME = MKBETAG!('G', 'V', 'O', 'L'),
-    AV_APP_TO_DEV_GET_MUTE   = MKBETAG!('G', 'M', 'U', 'T'),
-};
+    AV_APP_TO_DEV_GET_MUTE   = MKBETAG!('G', 'M', 'U', 'T')
+}
 
 /**
  * Message types used by avdevice_dev_to_app_control_message().
@@ -294,8 +295,8 @@ enum AVDevToAppMessageType {
      *
      * data: double: new volume with range of 0.0 - 1.0.
      */
-    AV_DEV_TO_APP_VOLUME_LEVEL_CHANGED = MKBETAG!('C','V','O','L'),
-};
+    AV_DEV_TO_APP_VOLUME_LEVEL_CHANGED = MKBETAG!('C','V','O','L')
+}
 
 /**
  * Send control message from application to device.
@@ -488,5 +489,28 @@ int avdevice_list_devices(AVFormatContext *s, AVDeviceInfoList **device_list);
  * @param devices device list to be freed.
  */
 void avdevice_free_list_devices(AVDeviceInfoList **device_list);
+
+
+/**
+ * List devices.
+ *
+ * Returns available device names and their parameters.
+ * These are convinient wrappers for avdevice_list_devices().
+ * Device context is allocated and deallocated internally.
+ *
+ * @param device           device format. May be NULL if device name is set.
+ * @param device_name      device name. May be NULL if device format is set.
+ * @param device_options   An AVDictionary filled with device-private options. May be NULL.
+ *                         The same options must be passed later to avformat_write_header() for output
+ *                         devices or avformat_open_input() for input devices, or at any other place
+ *                         that affects device-private options.
+ * @param[out] device_list list of autodetected devices
+ * @return count of autodetected devices, negative on error.
+ * @note device argument takes precedence over device_name when both are set.
+ */
+int avdevice_list_input_sources(AVInputFormat *device, const char *device_name,
+                                AVDictionary *device_options, AVDeviceInfoList **device_list);
+int avdevice_list_output_sinks(AVOutputFormat *device, const char *device_name,
+                               AVDictionary *device_options, AVDeviceInfoList **device_list);
 
 //#endif /* AVDEVICE_AVDEVICE_H */

@@ -20,8 +20,8 @@
 module ffmpeg.libavutil.avutil;
 
 import std.stdint;
-import std.format;
-import std.array;
+//import std.format;
+//import std.array;
 import core.vararg;
 
 public import ffmpeg.libavutil.common;
@@ -35,30 +35,6 @@ public import ffmpeg.libavutil.error;
 public import ffmpeg.libavutil.mathematics;
 public import ffmpeg.libavutil.channel_layout;
 public import ffmpeg.libavutil.avutil_version;
-
-  
-/**
- * Fill the provided buffer with a string containing a timestamp time
- * representation.
- *
- * @param buf a buffer with size in bytes of at least AV_TS_MAX_STRING_SIZE
- * @param ts the timestamp to represent
- * @param tb the timebase of the timestamp
- * @return the buffer in input
- */
-string av_ts_make_time_string(int64_t ts, AVRational tb)
-{
-  import std.format; 
-  import std.array;
-  if (ts == AV_NOPTS_VALUE) {
-    return "No Value";
-  } else {
-    auto toTs = av_q2d(tb) * ts;
-    auto writer = appender!string(); 
-    formattedWrite(writer, "%.6g", toTs);
-    return writer.data;
-  }
-}
 
 @nogc nothrow extern(C): 
 
@@ -154,6 +130,13 @@ string av_ts_make_time_string(int64_t ts, AVRational tb)
 uint avutil_version();
 
 /**
+ * Return an informative version string. This usually is the actual release
+ * version number or a git commit description. This string has no fixed format
+ * and can change any time. It should never be parsed by code.
+ */
+char *av_version_info();
+
+/**
  * Return the libavutil build-time configuration.
  */
 char *avutil_configuration();
@@ -228,7 +211,7 @@ enum AV_NOPTS_VALUE = 0x8000000000000000;
  * Internal time base represented as integer
  */
 
-enum AV_TIME_BASE = 1000000;
+enum AV_TIME_BASE = 1000_000;
 
 /**
  * Internal time base represented as fractional value
@@ -264,6 +247,7 @@ enum AVPictureType {
  * representing the picture type, '?' if pict_type is unknown
  */
 char av_get_picture_type_char(AVPictureType pict_type);
+
 // end avutil.h
 
 /**

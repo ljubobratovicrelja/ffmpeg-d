@@ -3,11 +3,22 @@
 [![Join the chat at https://gitter.im/ljubobratovicrelja/ffmpeg-d](https://badges.gitter.im/ljubobratovicrelja/ffmpeg-d.svg)](https://gitter.im/ljubobratovicrelja/ffmpeg-d?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Dub package](https://img.shields.io/badge/dub-package-FF4081.svg)](http://code.dlang.org/packages/ffmpeg-d)
 
-
 This is a D port of the FFmpeg C headers. Please check [FFmpeg website](https://www.ffmpeg.org/) for more information on the application and libraries 
 
 
 ## Usage
+
+_NOTE: This branch is compatible with ffmpeg 3.0.x, for other versions please see the other branches for usage information._
+
+### Adding to DUB
+
+To include `ffmpeg-d` in your dub project add the following dependency to your dub.json file.
+
+```
+"ffmpeg-d": "~>3.0.0"
+```
+
+---
 
 The main configuration of the project is set up as a source library. Linking to FFmpeg libraries is defined
 in the dub.json. If FFmpeg libraries are not visible in your build system, provide the library directory with ```ldflags``` 
@@ -17,7 +28,9 @@ argument in your project's configuration as:
 "lflags": ["-L/path/to/ffmpegLibs"],
 ```
 
-### OS X 
+
+### OS X
+
 It is noted that FFmpeg compiled on OS X with clang fails linking with DMD. Workaround is to install the FFmpeg libraries using **Homebrew**. See the [issue #1](https://github.com/ljubobratovicrelja/ffmpeg-d/issues/1) for more info.
 
 
@@ -30,10 +43,14 @@ dub test
 
 ... will print the associated FFmpeg library versions. This is useful for checking versions expected by this binding and the actual library.
 
+
 ## FFmpeg Version
 
-Currently the library is tested with FFmpeg 2.7.6 and 2.8.0 libraries. Newer versions should be tested in future. If you've
-already tested this library with newer FFmpeg, please let us know in the gitter chat room!
+Currently the library has been tested with FFmpeg 2.7.6, 2.8.0, 3.0.9 libraries.
+
+Please use the branch of this repo that corresponds to the same major.minor version of FFmpeg. For example use `release/3.0` with FFmpeg 3.0.9.
+
+Newer versions should be tested in future. If you've already tested this library with newer FFmpeg, please let us know in the gitter chat room!
 
 
 ## Contributing

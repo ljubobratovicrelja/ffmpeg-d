@@ -34,11 +34,18 @@ import std.stdint;
 struct AVRational {
 	int num;
 	int den;
-	double q2d() const {
-		return num/cast(double) den;
-	}
 } 
 
+/**
+ * Create a rational.
+ * Useful for compilers that do not support compound literals.
+ * @note  The return value is not reduced.
+ */
+static AVRational av_make_q(int num, int den)
+{
+    AVRational r = { num, den };
+    return r;
+}
 
 /**
  * Compare two rationals.
@@ -110,6 +117,17 @@ AVRational av_add_q(AVRational b, AVRational c);
 AVRational av_sub_q(AVRational b, AVRational c);
 
 /**
+ * Invert a rational.
+ * @param q value
+ * @return 1 / q
+ */
+static AVRational av_inv_q(AVRational q)
+{
+    AVRational r = { q.den, q.num };
+    return r;
+}
+
+/**
  * Convert a double precision floating point number to a rational.
  * inf is expressed as {1,0} or {-1,0} depending on the sign.
  *
@@ -131,3 +149,10 @@ int av_nearer_q(AVRational q, AVRational q1, AVRational q2);
  * @return the index of the nearest value found in the array
  */
 int av_find_nearest_q_idx(AVRational q, const AVRational* q_list);
+
+/**
+ * Converts a AVRational to a IEEE 32bit float.
+ *
+ * The float is returned in a uint32_t and its value is platform indepenant.
+ */
+uint32_t av_q2intfloat(AVRational q);

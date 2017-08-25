@@ -24,7 +24,6 @@ void rgb15tobgr15(const uint8_t *src, uint8_t *dst, int src_size);
 void rgb12tobgr12(const uint8_t *src, uint8_t *dst, int src_size);
 void    rgb12to15(const uint8_t *src, uint8_t *dst, int src_size);
 
-void shuffle_bytes_0321(const uint8_t *src, uint8_t *dst, int src_size);
 void shuffle_bytes_1230(const uint8_t *src, uint8_t *dst, int src_size);
 void shuffle_bytes_3012(const uint8_t *src, uint8_t *dst, int src_size);
 void shuffle_bytes_3210(const uint8_t *src, uint8_t *dst, int src_size);

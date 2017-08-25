@@ -19,6 +19,7 @@
  */
 
 module ffmpeg.libavfilter.avfilter_version;
+
 /**
  * @file
  * @ingroup lavfi
@@ -27,8 +28,8 @@ module ffmpeg.libavfilter.avfilter_version;
 
 import ffmpeg.libavutil.avutil;
 
-enum LIBAVFILTER_VERSION_MAJOR = 5;
-enum LIBAVFILTER_VERSION_MINOR = 1;
+enum LIBAVFILTER_VERSION_MAJOR = 6;
+enum LIBAVFILTER_VERSION_MINOR = 31;
 enum LIBAVFILTER_VERSION_MICRO = 100;
 
 enum LIBAVFILTER_VERSION_INT = AV_VERSION_INT!(LIBAVFILTER_VERSION_MAJOR, 
@@ -47,44 +48,9 @@ enum LIBAVFILTER_IDENT  = "Lavfi" ~ LIBAVFILTER_VERSION;
  * the public API and may change, break or disappear at any time.
  */
 
-//#ifndef FF_API_AVFILTERPAD_PUBLIC
-enum FF_API_AVFILTERPAD_PUBLIC           = (LIBAVFILTER_VERSION_MAJOR < 6);
-//#endif
-//#ifndef FF_API_FOO_COUNT
-enum FF_API_FOO_COUNT                    = (LIBAVFILTER_VERSION_MAJOR < 6);
-//#endif
-//#ifndef FF_API_FILL_FRAME
-enum FF_API_FILL_FRAME                   = (LIBAVFILTER_VERSION_MAJOR < 5);
-//#endif
-//#ifndef FF_API_BUFFERSRC_BUFFER
-enum FF_API_BUFFERSRC_BUFFER             = (LIBAVFILTER_VERSION_MAJOR < 5);
-//#endif
-//#ifndef FF_API_AVFILTERBUFFER
-enum FF_API_AVFILTERBUFFER               = (LIBAVFILTER_VERSION_MAJOR < 6);
-//#endif
-//#ifndef FF_API_OLD_FILTER_OPTS
-enum FF_API_OLD_FILTER_OPTS              = (LIBAVFILTER_VERSION_MAJOR < 6);
-//#endif
-//#ifndef FF_API_ACONVERT_FILTER
-enum FF_API_ACONVERT_FILTER              = (LIBAVFILTER_VERSION_MAJOR < 5);
-//#endif
-//#ifndef FF_API_AVFILTER_OPEN
-enum FF_API_AVFILTER_OPEN                = (LIBAVFILTER_VERSION_MAJOR < 6);
-//#endif
-//#ifndef FF_API_AVFILTER_INIT_FILTER
-enum FF_API_AVFILTER_INIT_FILTER         = (LIBAVFILTER_VERSION_MAJOR < 6);
-//#endif
-//#ifndef FF_API_OLD_FILTER_REGISTER
-enum FF_API_OLD_FILTER_REGISTER          = (LIBAVFILTER_VERSION_MAJOR < 6);
-//#endif
-//#ifndef FF_API_OLD_GRAPH_PARSE
-enum FF_API_OLD_GRAPH_PARSE              = (LIBAVFILTER_VERSION_MAJOR < 5);
-//#endif
-//#ifndef FF_API_DRAWTEXT_OLD_TIMELINE
-enum FF_API_DRAWTEXT_OLD_TIMELINE        = (LIBAVFILTER_VERSION_MAJOR < 5);
-//#endif
-//#ifndef FF_API_NOCONST_GET_NAME
-enum FF_API_NOCONST_GET_NAME             = (LIBAVFILTER_VERSION_MAJOR < 6);
-//#endif
-
-//#endif /* AVFILTER_VERSION_H */
+enum FF_API_OLD_FILTER_OPTS              = (LIBAVFILTER_VERSION_MAJOR < 7);
+enum FF_API_OLD_FILTER_OPTS_ERROR        = (LIBAVFILTER_VERSION_MAJOR < 7);
+enum FF_API_AVFILTER_OPEN                = (LIBAVFILTER_VERSION_MAJOR < 7);
+enum FF_API_AVFILTER_INIT_FILTER         = (LIBAVFILTER_VERSION_MAJOR < 7);
+enum FF_API_OLD_FILTER_REGISTER          = (LIBAVFILTER_VERSION_MAJOR < 7);
+enum FF_API_NOCONST_GET_NAME             = (LIBAVFILTER_VERSION_MAJOR < 7);

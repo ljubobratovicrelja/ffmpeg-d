@@ -3,9 +3,9 @@ import ffmpeg.libavutil.avutil_version;
 
 //#include "libavutil/version.h"
 
-enum LIBSWSCALE_VERSION_MAJOR = 3;
-enum LIBSWSCALE_VERSION_MINOR = 1;
-enum LIBSWSCALE_VERSION_MICRO = 101;
+enum LIBSWSCALE_VERSION_MAJOR = 4;
+enum LIBSWSCALE_VERSION_MINOR = 0;
+enum LIBSWSCALE_VERSION_MICRO = 100;
 
 enum LIBSWSCALE_VERSION_INT = AV_VERSION_INT!(LIBSWSCALE_VERSION_MAJOR, 
 											  LIBSWSCALE_VERSION_MINOR,  
@@ -24,12 +24,9 @@ enum LIBSWSCALE_IDENT = "SwS" ~ LIBSWSCALE_VERSION;
 * the public API and may change, break or disappear at any time.
 */
 
-//#ifndef FF_API_SWS_CPU_CAPS
-enum FF_API_SWS_CPU_CAPS =  (LIBSWSCALE_VERSION_MAJOR < 4);
-//#endif
-//#ifndef FF_API_ARCH_BFIN
-enum FF_API_ARCH_BFIN  =     (LIBSWSCALE_VERSION_MAJOR < 4);
-//#endif
 
-enum ARCH_X86_64 = 1;
-//#endif /* SWSCALE_VERSION_H */
+version(X86_64){
+    enum ARCH_X86_64 = 1;
+}else{
+    enum ARCH_X86_64 = 0;
+}

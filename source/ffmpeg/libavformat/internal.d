@@ -1,6 +1,4 @@
 /*
- * copyright (c) 2005 Michael Niedermayer <michaelni@gmx.at>
- *
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -17,21 +15,20 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-module ffmpeg.libavutil.intfloat_readwrite;
+
+module ffmpeg.libavformat.internal;
+
 import std.stdint;
 
-@nogc nothrow extern(C): 
+@nogc nothrow extern(C):
 
-/* IEEE 80 bits extended float */
-struct AVExtFloat {
-      uint8_t [2]exponent;
-      uint8_t [8]mantissa;
+/*************************************************/
+/* fractional numbers for exact pts handling */
+
+/**
+ * The exact value of the fractional number is: 'val + num / den'.
+ * num is assumed to be 0 <= num < den.
+ */
+struct FFFrac {
+    int64_t val, num, den;
 }
-  
-deprecated double av_int2dbl(int64_t v);
-deprecated float av_int2flt(int32_t v);
-deprecated double av_ext2dbl(const AVExtFloat ext);
-deprecated int64_t av_dbl2int(double d);
-deprecated int32_t av_flt2int(float d);
-deprecated AVExtFloat av_dbl2ext(double d);
-

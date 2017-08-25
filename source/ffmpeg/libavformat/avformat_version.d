@@ -26,9 +26,9 @@ module ffmpeg.libavformat.avformat_version;
 
 import ffmpeg.libavutil.avutil;
 
-enum LIBAVFORMAT_VERSION_MAJOR = 56;
-enum LIBAVFORMAT_VERSION_MINOR = 4;
-enum LIBAVFORMAT_VERSION_MICRO = 101;
+enum LIBAVFORMAT_VERSION_MAJOR = 57;
+enum LIBAVFORMAT_VERSION_MINOR = 25;
+enum LIBAVFORMAT_VERSION_MICRO = 100;
 
 enum LIBAVFORMAT_VERSION_INT = AV_VERSION_INT!(LIBAVFORMAT_VERSION_MAJOR,
                                                LIBAVFORMAT_VERSION_MINOR,
@@ -44,39 +44,21 @@ auto LIBAVFORMAT_IDENT    =  "Lavf" ~ LIBAVFORMAT_VERSION;
  * FF_API_* defines may be placed below to indicate public API that will be
  * dropped at a future version bump. The defines themselves are not part of
  * the public API and may change, break or disappear at any time.
+ *
+ * @note, when bumping the major version it is recommended to manually
+ * disable each FF_API_* in its own commit instead of disabling them all
+ * at once through the bump. This improves the git bisect-ability of the change.
+ *
  */
-//#ifndef FF_API_LAVF_BITEXACT
-enum FF_API_LAVF_BITEXACT        =   (LIBAVFORMAT_VERSION_MAJOR < 57);
-//#endif
-//#ifndef FF_API_LAVF_FRAC
-enum FF_API_LAVF_FRAC            =   (LIBAVFORMAT_VERSION_MAJOR < 57);
-//#endif
-//#ifndef FF_API_LAVF_CODEC_TB
-enum FF_API_LAVF_CODEC_TB        =   (LIBAVFORMAT_VERSION_MAJOR < 57);
-//#endif
-//#ifndef FF_API_URL_FEOF
-enum FF_API_URL_FEOF             =   (LIBAVFORMAT_VERSION_MAJOR < 57);
-//#endif
+enum FF_API_LAVF_BITEXACT        =   (LIBAVFORMAT_VERSION_MAJOR < 58);
+enum FF_API_LAVF_FRAC            =   (LIBAVFORMAT_VERSION_MAJOR < 58);
+enum FF_API_LAVF_CODEC_TB        =   (LIBAVFORMAT_VERSION_MAJOR < 58);
+enum FF_API_URL_FEOF             =   (LIBAVFORMAT_VERSION_MAJOR < 58);
 
-//#ifndef FF_API_ALLOC_OUTPUT_CONTEXT
-enum FF_API_ALLOC_OUTPUT_CONTEXT =   (LIBAVFORMAT_VERSION_MAJOR < 56);
-//#endif
-//#ifndef FF_API_FORMAT_PARAMETERS
-enum FF_API_FORMAT_PARAMETERS    =   (LIBAVFORMAT_VERSION_MAJOR < 56);
-//#endif
-//#ifndef FF_API_NEW_STREAM
-enum FF_API_NEW_STREAM           =   (LIBAVFORMAT_VERSION_MAJOR < 56);
-//#endif
-//#ifndef FF_API_SET_PTS_INFO
-enum FF_API_SET_PTS_INFO         =   (LIBAVFORMAT_VERSION_MAJOR < 56);
-//#endif
-//#ifndef FF_API_CLOSE_INPUT_FILE
-enum FF_API_CLOSE_INPUT_FILE     =   (LIBAVFORMAT_VERSION_MAJOR < 56);
-//#endif
-//#ifndef FF_API_READ_PACKET
-enum FF_API_READ_PACKET          =   (LIBAVFORMAT_VERSION_MAJOR < 56);
-//#endif
-//#ifndef FF_API_R_FRAME_RATE
+enum FF_API_LAVF_FMT_RAWPICTURE  =   (LIBAVFORMAT_VERSION_MAJOR < 58);
+enum FF_API_COMPUTE_PKT_FIELDS2  =   (LIBAVFORMAT_VERSION_MAJOR < 58);
+enum FF_API_OLD_OPEN_CALLBACKS   =   (LIBAVFORMAT_VERSION_MAJOR < 58);
+
 enum FF_API_R_FRAME_RATE         =   1;
-//#endif
+
 //#endif /* AVFORMAT_VERSION_H */
