@@ -27,19 +27,19 @@
 module ffmpeg.libavdevice.avdevice_version;
 import ffmpeg.libavutil.avutil_version;
 
-enum LIBAVDEVICE_VERSION_MAJOR=56;
-enum LIBAVDEVICE_VERSION_MINOR= 0;
-enum LIBAVDEVICE_VERSION_MICRO=100;
+enum LIBAVDEVICE_VERSION_MAJOR  = 57;
+enum LIBAVDEVICE_VERSION_MINOR  = 0;
+enum LIBAVDEVICE_VERSION_MICRO  = 101;
 
-enum LIBAVDEVICE_VERSION_INT=AV_VERSION_INT!(LIBAVDEVICE_VERSION_MAJOR, 
-                                               LIBAVDEVICE_VERSION_MINOR, 
-                                               LIBAVDEVICE_VERSION_MICRO);
-enum LIBAVDEVICE_VERSION  =  AV_VERSION!(LIBAVDEVICE_VERSION_MAJOR, 
-                                           LIBAVDEVICE_VERSION_MINOR, 
-                                           LIBAVDEVICE_VERSION_MICRO);
-enum LIBAVDEVICE_BUILD    =  LIBAVDEVICE_VERSION_INT;
+enum LIBAVDEVICE_VERSION_INT    = AV_VERSION_INT!(LIBAVDEVICE_VERSION_MAJOR,
+                                                  LIBAVDEVICE_VERSION_MINOR,
+                                                  LIBAVDEVICE_VERSION_MICRO);
+enum LIBAVDEVICE_VERSION        = AV_VERSION!(LIBAVDEVICE_VERSION_MAJOR,
+                                              LIBAVDEVICE_VERSION_MINOR,
+                                              LIBAVDEVICE_VERSION_MICRO);
+enum LIBAVDEVICE_BUILD          = LIBAVDEVICE_VERSION_INT;
 
-enum LIBAVDEVICE_IDENT    =  "Lavd"~LIBAVDEVICE_VERSION;
+enum LIBAVDEVICE_IDENT          = "Lavd"~LIBAVDEVICE_VERSION;
 
 /**
  * FF_API_* defines may be placed below to indicate public API that will be

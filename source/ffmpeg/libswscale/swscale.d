@@ -38,7 +38,7 @@ enum SWS_SPLINE     =   0x400;
 enum SWS_SRC_V_CHR_DROP_MASK  =   0x30000;
 enum SWS_SRC_V_CHR_DROP_SHIFT  =  16;
 
-enum SWS_PARAM_DEFAULT     =      123456;
+enum SWS_PARAM_DEFAULT     =      123_456;
 
 enum SWS_PRINT_INFO         =     0x1000;
 
@@ -51,22 +51,6 @@ enum SWS_DIRECT_BGR      =  0x8000;
 enum SWS_ACCURATE_RND   =   0x40000;
 enum SWS_BITEXACT        =  0x80000;
 enum SWS_ERROR_DIFFUSION = 0x800000;
-
-//#if FF_API_SWS_CPU_CAPS
-/**
-* CPU caps are autodetected now, those flags
-* are only provided for API compatibility.
-*/
-enum SWS_CPU_CAPS_MMX  =    0x80000000;
-enum SWS_CPU_CAPS_MMXEXT =  0x20000000;
-enum SWS_CPU_CAPS_MMX2   =  0x20000000;
-enum SWS_CPU_CAPS_3DNOW  =  0x40000000;
-enum SWS_CPU_CAPS_ALTIVEC = 0x10000000;
-//#if FF_API_ARCH_BFIN
-enum SWS_CPU_CAPS_BFIN  =   0x01000000;
-//#endif
-enum SWS_CPU_CAPS_SSE2  =   0x02000000;
-//#endif
 
 enum SWS_MAX_REDUCE_CUTOFF = 0.002;
 

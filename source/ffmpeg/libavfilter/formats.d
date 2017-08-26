@@ -140,6 +140,8 @@ AVFilterChannelLayouts *ff_all_channel_counts();
 
 AVFilterChannelLayouts *avfilter_make_format64_list(const int64_t *fmts);
 
+AVFilterChannelLayouts *ff_make_formatu64_list(const uint64_t *fmts);
+
 
 /**
  * A helper for query_formats() which sets all links to the same list of channel

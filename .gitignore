@@ -1,4 +1,7 @@
 .dub/
+.idea/
+ffmpeg-d.iml
+ffmpeg-d
 __test__source
 dub.userprefs
 libffmpeg-d.a

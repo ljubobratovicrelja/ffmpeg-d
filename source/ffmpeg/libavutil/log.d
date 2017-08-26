@@ -36,8 +36,17 @@ enum AVClassCategory {
     AV_CLASS_CATEGORY_BITSTREAM_FILTER,
     AV_CLASS_CATEGORY_SWSCALER,
     AV_CLASS_CATEGORY_SWRESAMPLER,
-    AV_CLASS_CATEGORY_NB, ///< not part of ABI/API
+    AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT = 40,
+    AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT,
+    AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT,
+    AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
+    AV_CLASS_CATEGORY_DEVICE_OUTPUT,
+    AV_CLASS_CATEGORY_DEVICE_INPUT,
+    AV_CLASS_CATEGORY_NB ///< not part of ABI/API
 }
+
+struct AVOptionRanges;
+
 /**
  * Describe the class of an AVClass context structure. That is an
  * arbitrary struct of which the first field is a pointer to an
@@ -99,6 +108,25 @@ struct AVClass {
      * child_class_next iterates over _all possible_ children.
      */
     const AVClass* function(const AVClass *prev) child_class_next;
+
+    /**
+     * Category used for visualization (like color)
+     * This is only set if the category is equal for all objects using this class.
+     * available since version (51 << 16 | 56 << 8 | 100)
+     */
+    AVClassCategory category;
+
+    /**
+     * Callback to return the category.
+     * available since version (51 << 16 | 59 << 8 | 100)
+     */
+    AVClassCategory function(void* ctx) get_category;
+
+    /**
+     * Callback to return the supported/allowed ranges.
+     * available since version (52.12)
+     */
+    int function(AVOptionRanges **, void *obj, const char *key, int flags) query_ranges;
 }
 
 /* av_log API */
@@ -137,29 +165,100 @@ enum AV_LOG_VERBOSE =40;
  */
 enum AV_LOG_DEBUG   =48;
 
-enum AV_LOG_MAX_OFFSET = (AV_LOG_DEBUG - AV_LOG_QUIET);
+/**
+ * Extremely verbose debugging, useful for libav* development.
+ */
+enum AV_LOG_TRACE   =56;
+
+enum AV_LOG_MAX_OFFSET = (AV_LOG_TRACE - AV_LOG_QUIET);
 
 /**
  * Send the specified message to the log if the level is less than or equal
  * to the current av_log_level. By default, all logging messages are sent to
- * stderr. This behavior can be altered by setting a different av_vlog callback
+ * stderr. This behavior can be altered by setting a different logging callback
  * function.
+ * @see av_log_set_callback
  *
  * @param avcl A pointer to an arbitrary struct of which the first field is a
- * pointer to an AVClass struct.
- * @param level The importance level of the message, lower values signifying
- * higher importance.
+ *        pointer to an AVClass struct or NULL if general log.
+ * @param level The importance level of the message expressed using a @ref
+ *        lavu_log_constants "Logging Constant".
  * @param fmt The format string (printf-compatible) that specifies how
- * subsequent arguments are converted to output.
- * @see av_vlog
+ *        subsequent arguments are converted to output.
  */
 void av_log(void *avcl, int level, const char *fmt, ...);
-void av_vlog(void *avcl, int level, const char *fmt, va_list);
+
+/**
+ * Send the specified message to the log if the level is less than or equal
+ * to the current av_log_level. By default, all logging messages are sent to
+ * stderr. This behavior can be altered by setting a different logging callback
+ * function.
+ * @see av_log_set_callback
+ *
+ * @param avcl A pointer to an arbitrary struct of which the first field is a
+ *        pointer to an AVClass struct.
+ * @param level The importance level of the message expressed using a @ref
+ *        lavu_log_constants "Logging Constant".
+ * @param fmt The format string (printf-compatible) that specifies how
+ *        subsequent arguments are converted to output.
+ * @param vl The arguments referenced by the format string.
+ */
+void av_vlog(void *avcl, int level, const char *fmt, va_list vl);
+
+/**
+ * Get the current log level
+ *
+ * @see lavu_log_constants
+ *
+ * @return Current log level
+ */
 int av_log_get_level();
+
+/**
+ * Set the log level
+ *
+ * @see lavu_log_constants
+ *
+ * @param level Logging level
+ */
 void av_log_set_level(int);
+
+/**
+ * Set the logging callback
+ *
+ * @note The callback must be thread safe, even if the application does not use
+ *       threads itself as some codecs are multithreaded.
+ *
+ * @see av_log_default_callback
+ *
+ * @param callback A logging function with a compatible signature.
+ */
 void av_log_set_callback(void* function(void*, int, const char*, va_list) log_callback);
+
+/**
+ * Default logging callback
+ *
+ * It prints the message to stderr, optionally colorizing it.
+ *
+ * @param avcl A pointer to an arbitrary struct of which the first field is a
+ *        pointer to an AVClass struct.
+ * @param level The importance level of the message expressed using a @ref
+ *        lavu_log_constants "Logging Constant".
+ * @param fmt The format string (printf-compatible) that specifies how
+ *        subsequent arguments are converted to output.
+ * @param vl The arguments referenced by the format string.
+ */
 void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl);
+
+/**
+ * Return the context name
+ *
+ * @param  ctx The AVClass context
+ *
+ * @return The AVClass class_name
+ */
 char* av_default_item_name(void* ctx);
+AVClassCategory av_default_get_category(void *ptr);
 
 /**
  * Format a line of log the same way as the default callback.
@@ -169,6 +268,23 @@ char* av_default_item_name(void* ctx);
  *                      must point to a persistent integer initially set to 1
  */
 void av_log_format_line(void *ptr, int level, const char *fmt, va_list vl,
+                        char *line, int line_size, int *print_prefix);
+
+/**
+ * Format a line of log the same way as the default callback.
+ * @param line          buffer to receive the formatted line;
+ *                      may be NULL if line_size is 0
+ * @param line_size     size of the buffer; at most line_size-1 characters will
+ *                      be written to the buffer, plus one null terminator
+ * @param print_prefix  used to store whether the prefix must be printed;
+ *                      must point to a persistent integer initially set to 1
+ * @return Returns a negative value if an error occurred, otherwise returns
+ *         the number of characters that would have been written for a
+ *         sufficiently large buffer, not including the terminating null
+ *         character. If the return value is not less than line_size, it means
+ *         that the log message was truncated to fit the buffer.
+ */
+int av_log_format_line2(void *ptr, int level, const char *fmt, va_list vl,
                         char *line, int line_size, int *print_prefix);
 
 /**
@@ -193,5 +309,14 @@ void av_log_format_line(void *ptr, int level, const char *fmt, va_list vl,
  * call av_log(NULL, AV_LOG_QUIET, "%s", ""); at the end
  */
 enum AV_LOG_SKIP_REPEATED = 1;
-void av_log_set_flags(int arg);
 
+/**
+ * Include the log severity in messages originating from codecs.
+ *
+ * Results in messages such as:
+ * [rawvideo @ 0xDEADBEEF] [error] encode did not produce valid pts
+ */
+enum AV_LOG_PRINT_LEVEL = 2;
+
+void av_log_set_flags(int arg);
+int av_log_get_flags();
