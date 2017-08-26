@@ -1,7 +1,7 @@
 module ffmpeg.libswresample.audioconvert;
 import std.stdint;
 import ffmpeg.libavutil.avutil;
-import ffmpeg.libavresample.audio_data;
+import ffmpeg.libswresample.swresample_internal;
 import ffmpeg.libswresample.swresample_version;
 
 @nogc nothrow extern(C):

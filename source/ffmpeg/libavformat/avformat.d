@@ -814,7 +814,7 @@ struct AVStream {
      * decoding: set by libavformat
      * encoding: set by the user, replaced by libavformat if left unset
      */
-    int avstream_id;
+    int id;
     /**
      * Codec context associated with this stream. Allocated and freed by
      * libavformat.
@@ -1862,7 +1862,7 @@ struct AVPacketList {
 /**
  * Return the LIBAVFORMAT_VERSION_INT constant.
  */
-ubyte avformat_version();
+uint avformat_version();
 
 /**
  * Return the libavformat build-time configuration.
