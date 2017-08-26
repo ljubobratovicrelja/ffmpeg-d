@@ -18,26 +18,21 @@
 
 module ffmpeg.libavfilter.internal;
 
+/**
+ * @file
+ * internal API functions
+ */
+
+
+
+
+
 import ffmpeg.libavfilter.avfilter_version;
 import ffmpeg.libavfilter.avfilter;
 import ffmpeg.libavutil.avutil;
 import ffmpeg.libavutil.frame;
 
 @nogc nothrow extern(C):
-
-/**
- * @file
- * internal API functions
- */
-
-//extern struct AVFilterBufferRef;
-//enum POOL_SIZE=32;
-//struct AVFilterPool {
-//    AVFilterBufferRef *[POOL_SIZE]pic;
-//    int count;
-//    int refcount;
-//    int draining;
-//}
 
 struct AVFilterCommand {
     double time;                ///< time expressed in seconds
@@ -157,6 +152,7 @@ struct AVFilterGraphInternal {
 struct AVFilterInternal {
     ffmpeg.libavfilter.avfilter.avfilter_execute_func *execute;
 }
+
 ///**
 // * Tell if an integer is contained in the provided -1-terminated list of integers.
 // * This is useful for determining (for instance) if an AVPixelFormat is in an
@@ -250,6 +246,7 @@ struct AVFilterInternal {
 ///* misc trace functions */
 //
 ///* #define FF_AVFILTER_TRACE */
+//
 //#ifdef FF_AVFILTER_TRACE
 //#    define ff_tlog(pctx, ...) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__)
 //#else
@@ -394,35 +391,15 @@ struct AVFilterInternal {
 // * FIXME the H264 qscale is a log based scale, mpeg1/2 is not, the code below
 // *       cannot be optimal
 // */
-//int ff_filter_frame(AVFilterLink *link, AVFrame *frame);
-//
-///**
-// * Flags for AVFilterLink.flags.
-// */
-//enum {
-//
-//    /**
-//     * Frame requests may need to loop in order to be fulfilled.
-//     * A filter must set this flags on an output link if it may return 0 in
-//     * request_frame() without filtering a frame.
-//     */
-//    FF_LINK_FLAG_REQUEST_LOOP = 1,
-//
-//};
-//
-///**
-// * Allocate a new filter context and return it.
-// *
-// * @param filter what filter to create an instance of
-// * @param inst_name name to give to the new filter context
-// *
-// * @return newly created filter context or NULL on failure
-// */
-//AVFilterContext *ff_filter_alloc(const AVFilter *filter, const char *inst_name);
-//
-///**
-// * Remove a filter from a graph;
-// */
-//void ff_filter_graph_remove_filter(AVFilterGraph *graph, AVFilterContext *filter);
+//static inline int ff_norm_qscale(int qscale, int type)
+//{
+//    switch (type) {
+//    case FF_QSCALE_TYPE_MPEG1: return qscale;
+//    case FF_QSCALE_TYPE_MPEG2: return qscale >> 1;
+//    case FF_QSCALE_TYPE_H264:  return qscale >> 2;
+//    case FF_QSCALE_TYPE_VP56:  return (63 - qscale + 2) >> 2;
+//    }
+//    return qscale;
+//}
 //
 //#endif /* AVFILTER_INTERNAL_H */

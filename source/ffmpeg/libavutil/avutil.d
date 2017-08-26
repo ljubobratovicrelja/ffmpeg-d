@@ -17,42 +17,63 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
 module ffmpeg.libavutil.avutil;
 
-import std.stdint;
-//import std.format;
-//import std.array;
-import core.vararg;
+/**
+ * @file
+ * external API header
+ */
 
-public import ffmpeg.libavutil.common;
-public import ffmpeg.libavutil.rational;
-public import ffmpeg.libavutil.samplefmt;
-public import ffmpeg.libavutil.frame;
-public import ffmpeg.libavutil.pixfmt;
-public import ffmpeg.libavutil.log;
-public import ffmpeg.libavutil.dict;
-public import ffmpeg.libavutil.error;
-public import ffmpeg.libavutil.mathematics;
-public import ffmpeg.libavutil.channel_layout;
-public import ffmpeg.libavutil.avutil_version;
-
-@nogc nothrow extern(C): 
-
-/*
+/**
  * @mainpage
  *
- * @section libav_intro Introduction
+ * @section ffmpeg_intro Introduction
  *
  * This document describes the usage of the different libraries
  * provided by FFmpeg.
  *
  * @li @ref libavc "libavcodec" encoding/decoding library
- * @li @subpage libavfilter graph based frame editing library
+ * @li @ref lavfi "libavfilter" graph-based frame editing library
  * @li @ref libavf "libavformat" I/O and muxing/demuxing library
  * @li @ref lavd "libavdevice" special devices muxing/demuxing library
  * @li @ref lavu "libavutil" common utility library
- * @li @subpage libpostproc post processing library
- * @li @subpage libswscale  color conversion and scaling library
+ * @li @ref lswr "libswresample" audio resampling, format conversion and mixing
+ * @li @ref lpp  "libpostproc" post processing library
+ * @li @ref libsws "libswscale" color conversion and scaling library
+ *
+ * @section ffmpeg_versioning Versioning and compatibility
+ *
+ * Each of the FFmpeg libraries contains a version.h header, which defines a
+ * major, minor and micro version number with the
+ * <em>LIBRARYNAME_VERSION_{MAJOR,MINOR,MICRO}</em> macros. The major version
+ * number is incremented with backward incompatible changes - e.g. removing
+ * parts of the public API, reordering public struct members, etc. The minor
+ * version number is incremented for backward compatible API changes or major
+ * new features - e.g. adding a new public function or a new decoder. The micro
+ * version number is incremented for smaller changes that a calling program
+ * might still want to check for - e.g. changing behavior in a previously
+ * unspecified situation.
+ *
+ * FFmpeg guarantees backward API and ABI compatibility for each library as long
+ * as its major version number is unchanged. This means that no public symbols
+ * will be removed or renamed. Types and names of the public struct members and
+ * values of public macros and enums will remain the same (unless they were
+ * explicitly declared as not part of the public API). Documented behavior will
+ * not change.
+ *
+ * In other words, any correct program that works with a given FFmpeg snapshot
+ * should work just as well without any changes with any later snapshot with the
+ * same major versions. This applies to both rebuilding the program against new
+ * FFmpeg versions or to replacing the dynamic FFmpeg libraries that a program
+ * links against.
+ *
+ * However, new public symbols may be added and new members may be appended to
+ * public structs whose size is not part of public ABI (most public structs in
+ * FFmpeg). New macros and enum values may be added. Behavior in undocumented
+ * situations may change slightly (and be documented). All those are accompanied
+ * by an entry in doc/APIchanges and incrementing either the minor or micro
+ * version number.
  */
 
 /**
@@ -106,18 +127,47 @@ public import ffmpeg.libavutil.avutil_version;
  *
  * @}
  *
+ * @defgroup lavu_log Logging Facility
+ *
+ * @{
+ *
+ * @}
+ *
  * @defgroup lavu_misc Other
  *
  * @{
  *
- * @defgroup lavu_internal Internal
+ * @defgroup preproc_misc Preprocessor String Macros
  *
- * Not exported functions, for internal usage only
+ * @{
+ *
+ * @}
+ *
+ * @defgroup version_utils Library Version Macros
  *
  * @{
  *
  * @}
  */
+
+import std.stdint;
+//import std.format;
+//import std.array;
+import core.vararg;
+
+public import ffmpeg.libavutil.common;
+public import ffmpeg.libavutil.rational;
+//public import ffmpeg.libavutil.samplefmt;
+//public import ffmpeg.libavutil.frame;
+public import ffmpeg.libavutil.pixfmt;
+public import ffmpeg.libavutil.log;
+//public import ffmpeg.libavutil.dict;
+public import ffmpeg.libavutil.error;
+public import ffmpeg.libavutil.mathematics;
+//public import ffmpeg.libavutil.channel_layout;
+public import ffmpeg.libavutil.avutil_version;
+
+@nogc nothrow extern(C):
 
 /**
  * @addtogroup lavu_ver
@@ -248,7 +298,9 @@ enum AVPictureType {
  */
 char av_get_picture_type_char(AVPictureType pict_type);
 
-// end avutil.h
+/**
+ * @}
+ */
 
 /**
  * Return x default pointer in case p is NULL.
@@ -289,9 +341,11 @@ char av_get_picture_type_char(AVPictureType pict_type);
 /**
  * Return the fractional representation of the internal time base.
  */
-//AVRational av_get_time_base_q(void);
+AVRational av_get_time_base_q();
 
 /**
  * @}
  * @}
  */
+
+//#endif /* AVUTIL_AVUTIL_H */

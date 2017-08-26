@@ -28,8 +28,8 @@ import ffmpeg.libavutil.avutil;
 
 
 enum LIBAVCODEC_VERSION_MAJOR = 57;
-enum LIBAVCODEC_VERSION_MINOR = 24;
-enum LIBAVCODEC_VERSION_MICRO = 102;
+enum LIBAVCODEC_VERSION_MINOR = 48;
+enum LIBAVCODEC_VERSION_MICRO = 101;
 
 enum LIBAVCODEC_VERSION_INT = AV_VERSION_INT!(LIBAVCODEC_VERSION_MAJOR, 
                                                LIBAVCODEC_VERSION_MINOR,
@@ -45,6 +45,10 @@ enum LIBAVCODEC_IDENT    =   "Lavc" ~ LIBAVCODEC_VERSION;
  * FF_API_* defines may be placed below to indicate public API that will be
  * dropped at a future version bump. The defines themselves are not part of
  * the public API and may change, break or disappear at any time.
+ *
+ * @note, when bumping the major version it is recommended to manually
+ * disable each FF_API_* in its own commit instead of disabling them all
+ * at once through the bump. This improves the git bisect-ability of the change.
  */
 
 enum FF_API_VIMA_DECODER     = (LIBAVCODEC_VERSION_MAJOR < 58);
@@ -102,3 +106,8 @@ enum FF_API_VBV_DELAY        = (LIBAVCODEC_VERSION_MAJOR < 59);
 enum FF_API_CODER_TYPE       = (LIBAVCODEC_VERSION_MAJOR < 59);
 enum FF_API_STAT_BITS        = (LIBAVCODEC_VERSION_MAJOR < 59);
 enum FF_API_PRIVATE_OPT      = (LIBAVCODEC_VERSION_MAJOR < 59);
+enum FF_API_ASS_TIMING       = (LIBAVCODEC_VERSION_MAJOR < 59);
+enum FF_API_OLD_BSF          = (LIBAVCODEC_VERSION_MAJOR < 59);
+enum FF_API_COPY_CONTEXT     = (LIBAVCODEC_VERSION_MAJOR < 59);
+enum FF_API_GET_CONTEXT_DEFAULTS = (LIBAVCODEC_VERSION_MAJOR < 59);
+enum FF_API_NVENC_OLD_NAME   = (LIBAVCODEC_VERSION_MAJOR < 59);

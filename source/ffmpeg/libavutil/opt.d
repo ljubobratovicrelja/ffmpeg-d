@@ -18,6 +18,7 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
 module ffmpeg.libavutil.opt;
 
 import std.stdint;
@@ -226,6 +227,7 @@ enum AVOptionType {
     AV_OPT_TYPE_STRING,
     AV_OPT_TYPE_RATIONAL,
     AV_OPT_TYPE_BINARY,  ///< offset must point to a pointer immediately followed by an int for the length
+    AV_OPT_TYPE_DICT,
     AV_OPT_TYPE_CONST = 128,
     AV_OPT_TYPE_IMAGE_SIZE = MKBETAG!('S','I','Z','E'), ///< offset must point to two consecutive integers
     AV_OPT_TYPE_PIXEL_FMT  = MKBETAG!('P','F','M','T'),
@@ -237,23 +239,9 @@ enum AVOptionType {
     AV_OPT_TYPE_BOOL           = MKBETAG!('B','O','O','L')
 }
 
-const uint AV_OPT_FLAG_ENCODING_PARAM = 1;   ///< a generic parameter which can be set by the user for muxing or encoding
-const uint AV_OPT_FLAG_DECODING_PARAM = 2;   ///< a generic parameter which can be set by the user for demuxing or decoding
-const uint AV_OPT_FLAG_METADATA = 4;   ///< some data extracted or inserted into the file like title, comment, ...
-const uint AV_OPT_FLAG_AUDIO_PARAM = 8;
-const uint AV_OPT_FLAG_VIDEO_PARAM = 16;
-const uint AV_OPT_FLAG_SUBTITLE_PARAM = 32;
 /**
- * The option is inteded for exporting values to the caller.
+ * AVOption
  */
-const uint AV_OPT_FLAG_EXPORT = 64;
-/**
- * The option may not be set through the AVOptions API, only read.
- * This flag only makes sense when AV_OPT_FLAG_EXPORT is also set.
- */
-const uint AV_OPT_FLAG_READONLY = 128;
-const uint AV_OPT_FLAG_FILTERING_PARA = (1<<16); ///< a generic parameter which can be set by the user for filtering
-
 struct AVOption {
       const char *name;
   
@@ -284,38 +272,99 @@ struct AVOption {
       double max;                 ///< maximum valid value for the option
   
       int flags;
-  
+//#define AV_OPT_FLAG_ENCODING_PARAM  1   ///< a generic parameter which can be set by the user for muxing or encoding
+//#define AV_OPT_FLAG_DECODING_PARAM  2   ///< a generic parameter which can be set by the user for demuxing or decoding
+//#if FF_API_OPT_TYPE_METADATA
+//#define AV_OPT_FLAG_METADATA        4   ///< some data extracted or inserted into the file like title, comment, ...
+//#endif
+//#define AV_OPT_FLAG_AUDIO_PARAM     8
+//#define AV_OPT_FLAG_VIDEO_PARAM     16
+//#define AV_OPT_FLAG_SUBTITLE_PARAM  32
+///**
+// * The option is intended for exporting values to the caller.
+// */
+//#define AV_OPT_FLAG_EXPORT          64
+///**
+// * The option may not be set through the AVOptions API, only read.
+// * This flag only makes sense when AV_OPT_FLAG_EXPORT is also set.
+// */
+//#define AV_OPT_FLAG_READONLY        128
+//#define AV_OPT_FLAG_FILTERING_PARAM (1<<16) ///< a generic parameter which can be set by the user for filtering
+////FIXME think about enc-audio, ... style flags
   
     /**
        * The logical unit to which the option belongs. Non-constant
        * options and corresponding named constants share the same
        * unit. May be NULL.
        */
-      const char *unit;
+    const char *unit;
 }
-
 
 /**
  * A single allowed range of values, or a single allowed value.
  */
 struct AVOptionRange {
     const char *str;
-    double value_min, value_max;             ///< For string ranges this represents the min/max length, for dimensions this represents the min/max pixel count
-    double component_min, component_max;     ///< For string this represents the unicode range for chars, 0-127 limits to ASCII
-    int is_range;                            ///< if set to 1 the struct encodes a range, if set to 0 a single value
-} 
+    /**
+     * Value range.
+     * For string ranges this represents the min/max length.
+     * For dimensions this represents the min/max pixel count or width/height in multi-component case.
+     */
+    double value_min, value_max;
+    /**
+     * Value's component range.
+     * For string this represents the unicode range for chars, 0-127 limits to ASCII.
+     */
+    double component_min, component_max;
+    /**
+     * Range flag.
+     * If set to 1 the struct encodes a range, if set to 0 a single value.
+     */
+    int is_range;
+}
+
 /**
  * List of AVOptionRange structs
  */
 struct AVOptionRanges {
+    /**
+     * Array of option ranges.
+     *
+     * Most of option types use just one component.
+     * Following describes multi-component option types:
+     *
+     * AV_OPT_TYPE_IMAGE_SIZE:
+     * component index 0: range of pixel count (width * height).
+     * component index 1: range of width.
+     * component index 2: range of height.
+     *
+     * @note To obtain multi-component version of this structure, user must
+     *       provide AV_OPT_MULTI_COMPONENT_RANGE to av_opt_query_ranges or
+     *       av_opt_query_ranges_default function.
+     *
+     * Multi-component range can be read as in following example:
+     *
+     * @code
+     * int range_index, component_index;
+     * AVOptionRanges *ranges;
+     * AVOptionRange *range[3]; //may require more than 3 in the future.
+     * av_opt_query_ranges(&ranges, obj, key, AV_OPT_MULTI_COMPONENT_RANGE);
+     * for (range_index = 0; range_index < ranges->nb_ranges; range_index++) {
+     *     for (component_index = 0; component_index < ranges->nb_components; component_index++)
+     *         range[component_index] = ranges->range[ranges->nb_ranges * component_index + range_index];
+     *     //do something with range here.
+     * }
+     * av_opt_freep_ranges(&ranges);
+     * @endcode
+     */
     AVOptionRange **range;
-/**
- * Number of ranges per component.
- */
+    /**
+     * Number of ranges per component.
+     */
     int nb_ranges;
-/**
- * Number of componentes.
- */
+    /**
+     * Number of componentes.
+     */
     int nb_components;
 }
 
@@ -429,6 +478,7 @@ int av_opt_flag_is_set(void *obj, const char *field_name, const char *flag_name)
  */
 int av_opt_set_dict(void *obj, AVDictionary **options);
 
+
 /**
  * Set all the options from a given dictionary on an object.
  *
@@ -470,11 +520,14 @@ int av_opt_get_key_value(const char **ropts,
                          uint flags,
                          char **rkey, char **rval);
 
-/**
- * Accept to parse a value without a key; the key will then be returned
- * as NULL.
- */                         
-enum AV_OPT_FLAG_IMPLICIT_KEY = 1;
+enum {
+
+    /**
+     * Accept to parse a value without a key; the key will then be returned
+     * as NULL.
+     */
+    AV_OPT_FLAG_IMPLICIT_KEY = 1,
+}
 
 /**
  * @defgroup opt_eval_funcs Evaluating option strings
@@ -640,6 +693,23 @@ int av_opt_set_channel_layout(void *obj, const char *name, int64_t ch_layout, in
  * caller still owns val is and responsible for freeing it.
  */
 int av_opt_set_dict_val(void *obj, const char *name, const AVDictionary *val, int search_flags);
+
+/**
+ * Set a binary option to an integer list.
+ *
+ * @param obj    AVClass object to set options on
+ * @param name   name of the binary option
+ * @param val    pointer to an integer list (must have the correct type with
+ *               regard to the contents of the list)
+ * @param term   list terminator (usually 0 or -1)
+ * @param flags  search flags
+ */
+//#define av_opt_set_int_list(obj, name, val, term, flags) \
+//    (av_int_list_length(val, term) > INT_MAX / sizeof(*(val)) ? \
+//     AVERROR(EINVAL) : \
+//     av_opt_set_bin(obj, name, (const uint8_t *)(val), \
+//                    av_int_list_length(val, term) * sizeof(*(val)), flags))
+
 /**
  * @}
  */
@@ -702,10 +772,11 @@ void av_opt_freep_ranges(AVOptionRanges **ranges);
  *
  * @param flags is a bitmask of flags, undefined flags should not be set and should be ignored
  *              AV_OPT_SEARCH_FAKE_OBJ indicates that the obj is a double pointer to a AVClass instead of a full instance
+ *              AV_OPT_MULTI_COMPONENT_RANGE indicates that function may return more than one component, @see AVOptionRanges
  *
  * The result must be freed with av_opt_freep_ranges.
  *
- * @return >= 0 on success, a negative errro code otherwise
+ * @return number of compontents returned on success, a negative errro code otherwise
  */
 int av_opt_query_ranges(AVOptionRanges **, void *obj, const char *key, int flags);
 
@@ -729,13 +800,13 @@ int av_opt_copy(void *dest, const void *src);
  *
  * @param flags is a bitmask of flags, undefined flags should not be set and should be ignored
  *              AV_OPT_SEARCH_FAKE_OBJ indicates that the obj is a double pointer to a AVClass instead of a full instance
+ *              AV_OPT_MULTI_COMPONENT_RANGE indicates that function may return more than one component, @see AVOptionRanges
  *
  * The result must be freed with av_opt_free_ranges.
  *
- * @return >= 0 on success, a negative errro code otherwise
+ * @return number of compontents returned on success, a negative errro code otherwise
  */
 int av_opt_query_ranges_default(AVOptionRanges **, void *obj, const char *key, int flags);
-
 
 /**
  * Check if given option is set to its default value.
@@ -790,4 +861,23 @@ int av_opt_serialize(void *obj, int opt_flags, int flags, char **buffer,
  * @}
  */
 
+//#endif /* AVUTIL_OPT_H */
 
+enum AV_OPT_FLAG_ENCODING_PARAM = 1;   ///< a generic parameter which can be set by the user for muxing or encoding
+enum AV_OPT_FLAG_DECODING_PARAM = 2;   ///< a generic parameter which can be set by the user for demuxing or decoding
+static if(FF_API_OPT_TYPE_METADATA){
+    enum AV_OPT_FLAG_METADATA = 4;   ///< some data extracted or inserted into the file like title, comment, ...
+}
+enum AV_OPT_FLAG_AUDIO_PARAM = 8;
+enum AV_OPT_FLAG_VIDEO_PARAM = 16;
+enum AV_OPT_FLAG_SUBTITLE_PARAM = 32;
+/**
+ * The option is inteded for exporting values to the caller.
+ */
+enum AV_OPT_FLAG_EXPORT = 64;
+/**
+ * The option may not be set through the AVOptions API, only read.
+ * This flag only makes sense when AV_OPT_FLAG_EXPORT is also set.
+ */
+enum AV_OPT_FLAG_READONLY = 128;
+enum AV_OPT_FLAG_FILTERING_PARA = (1<<16); ///< a generic parameter which can be set by the user for filtering

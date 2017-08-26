@@ -17,8 +17,8 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-module ffmpeg.libavutil.pixfmt;
 
+module ffmpeg.libavutil.pixfmt;
 
 import std.stdint;
 import ffmpeg.libavutil.avutil_version;
@@ -27,14 +27,11 @@ import ffmpeg.libavutil.common;
 /**
  * @file
  * pixel format definitions
- *
  */
-
 @nogc nothrow extern(C):
 
 enum AVPALETTE_SIZE = 1024;
 enum AVPALETTE_COUNT = 256;
-
 /**
  * Pixel format.
  *
@@ -46,24 +43,19 @@ enum AVPALETTE_COUNT = 256;
  * big-endian CPUs.
  *
  * @par
- * When the pixel format is palettized RGB (AV_PIX_FMT_PAL8), the palettized
+ * When the pixel format is palettized RGB32 (AV_PIX_FMT_PAL8), the palettized
  * image data is stored in AVFrame.data[0]. The palette is transported in
  * AVFrame.data[1], is 1024 bytes long (256 4-byte entries) and is
  * formatted the same as in AV_PIX_FMT_RGB32 described above (i.e., it is
- * also endian-specific). Note also that the individual RGB palette
+ * also endian-specific). Note also that the individual RGB32 palette
  * components stored in AVFrame.data[1] should be in the range 0..255.
  * This is important as many custom PAL8 video codecs that were designed
  * to run on the IBM VGA graphics adapter use 6-bit palette components.
  *
  * @par
- * For all the 8bit per pixel formats, an RGB32 palette is in data[1] like
+ * For all the 8 bits per pixel formats, an RGB32 palette is in data[1] like
  * for pal8. This palette is filled in automatically by the function
  * allocating the picture.
- *
- * @note
- * Make sure that all newly added big-endian formats have (pix_fmt & 1) == 1
- * and that all newly added little-endian formats have (pix_fmt & 1) == 0.
- * This allows simpler detection of big vs little-endian.
  */
 enum AVPixelFormat {
     AV_PIX_FMT_NONE = -1,
@@ -128,7 +120,7 @@ enum AVPixelFormat {
     AV_PIX_FMT_BGR555BE,  ///< packed BGR 5:5:5, 16bpp, (msb)1A 5B 5G 5R(lsb), big-endian, most significant bit to 1
     AV_PIX_FMT_BGR555LE,  ///< packed BGR 5:5:5, 16bpp, (msb)1A 5B 5G 5R(lsb), little-endian, most significant bit to 1
 
-//#if FF_API_VAAPI
+//static if(FF_API_VAAPI){
     /** @name Deprecated pixel formats */
     /**@{*/
     AV_PIX_FMT_VAAPI_MOCO, ///< HW acceleration through VA API at motion compensation entry-point, Picture.data[3] contains a vaapi_render_state struct which contains macroblocks as well as various fields extracted from headers
@@ -136,13 +128,13 @@ enum AVPixelFormat {
     AV_PIX_FMT_VAAPI_VLD,  ///< HW decoding through VA API, Picture.data[3] contains a vaapi_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
     /**@}*/
     AV_PIX_FMT_VAAPI = AV_PIX_FMT_VAAPI_VLD,
-//#else
+//} else {
     /**
      *  Hardware acceleration through VA-API, data[3] contains a
      *  VASurfaceID.
      */
-    // AV_PIX_FMT_VAAPI, // TODO check this once we target 3.1 (56)
-//endif
+//     AV_PIX_FMT_VAAPI, // Asume FF_API_VAAPI is true
+//}
 
     AV_PIX_FMT_YUV420P16LE,  ///< planar YUV 4:2:0, 24bpp, (1 Cr & Cb sample per 2x2 Y samples), little-endian
     AV_PIX_FMT_YUV420P16BE,  ///< planar YUV 4:2:0, 24bpp, (1 Cr & Cb sample per 2x2 Y samples), big-endian
@@ -249,6 +241,12 @@ enum AVPixelFormat {
 
     AV_PIX_FMT_D3D11VA_VLD,  ///< HW decoding through Direct3D11, Picture.data[3] contains a ID3D11VideoDecoderOutputView pointer
 
+    /**
+     * HW acceleration through CUDA. data[i] contain CUdeviceptr pointers
+     * exactly as for system memory frames.
+     */
+    AV_PIX_FMT_CUDA,
+
     AV_PIX_FMT_0RGB=0x123+4,      ///< packed RGB 8:8:8, 32bpp, 0RGB0RGB...
     AV_PIX_FMT_RGB0,      ///< packed RGB 8:8:8, 32bpp, RGB0RGB0...
     AV_PIX_FMT_0BGR,      ///< packed BGR 8:8:8, 32bpp, 0BGR0BGR...
@@ -299,6 +297,12 @@ enum AVPixelFormat {
     AV_PIX_FMT_P010LE, ///< like NV12, with 10bpp per component, data in the high bits, zeros in the low bits, little-endian
     AV_PIX_FMT_P010BE, ///< like NV12, with 10bpp per component, data in the high bits, zeros in the low bits, big-endian
 
+    AV_PIX_FMT_GBRAP12BE,  ///< planar GBR 4:4:4:4 48bpp, big-endian
+    AV_PIX_FMT_GBRAP12LE,  ///< planar GBR 4:4:4:4 48bpp, little-endian
+
+    AV_PIX_FMT_GBRAP10BE,  ///< planar GBR 4:4:4:4 40bpp, big-endian
+    AV_PIX_FMT_GBRAP10LE,  ///< planar GBR 4:4:4:4 40bpp, little-endian
+
     AV_PIX_FMT_NB         ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
 }
 
@@ -306,11 +310,9 @@ alias AVPixelFormat.AV_PIX_FMT_GRAY8A AV_PIX_FMT_Y400A; // not needed but ffmpeg
 alias AVPixelFormat.AV_PIX_FMT_GBRP AV_PIX_FMT_GBR24P;
 
 template AV_PIX_FMT_NE(string be, string le) {
-  static if (AV_HAVE_BIGENDIAN) {
-    const char[] AV_PIX_FMT_NE = "AVPixelFormat.AV_PIX_FMT_" ~ be;
+  static if (AV_HAVE_BIGENDIAN) { const char[] AV_PIX_FMT_NE = "AVPixelFormat.AV_PIX_FMT_" ~ be;
   } else {
-    const char[] AV_PIX_FMT_NE = "AVPixelFormat.AV_PIX_FMT_" ~ le;
-  }
+    const char[] AV_PIX_FMT_NE = "AVPixelFormat.AV_PIX_FMT_" ~ le; }
 }
 
 const uint AV_PIX_FMT_RGB32 = mixin(AV_PIX_FMT_NE!("ARGB", "BGRA"));
@@ -356,6 +358,8 @@ const uint AV_PIX_FMT_GBRP10    = mixin(AV_PIX_FMT_NE!("GBRP10BE", "GBRP10LE"));
 const uint AV_PIX_FMT_GBRP12    = mixin(AV_PIX_FMT_NE!("GBRP12BE",    "GBRP12LE"));
 const uint AV_PIX_FMT_GBRP14    = mixin(AV_PIX_FMT_NE!("GBRP14BE",    "GBRP14LE"));
 const uint AV_PIX_FMT_GBRP16    = mixin(AV_PIX_FMT_NE!("GBRP16BE", "GBRP16LE"));
+const uint AV_PIX_FMT_GBRAP10   = mixin(AV_PIX_FMT_NE!("GBRAP10BE",  "GBRAP10LE"));
+const uint AV_PIX_FMT_GBRAP12   = mixin(AV_PIX_FMT_NE!("GBRAP12BE",  "GBRAP12LE"));
 const uint AV_PIX_FMT_GBRAP16   = mixin(AV_PIX_FMT_NE!("GBRAP16BE",  "GBRAP16LE"));
 
 const uint AV_PIX_FMT_BAYER_BGGR16 = mixin(AV_PIX_FMT_NE!("BAYER_BGGR16BE",  "BAYER_BGGR16LE"));
@@ -420,6 +424,7 @@ enum AVColorTransferCharacteristic {
     AVCOL_TRC_BT2020_12    = 15, ///< ITU-R BT2020 for 12 bit system
     AVCOL_TRC_SMPTEST2084  = 16, ///< SMPTE ST 2084 for 10, 12, 14 and 16 bit systems
     AVCOL_TRC_SMPTEST428_1 = 17, ///< SMPTE ST 428-1
+    AVCOL_TRC_ARIB_STD_B67 = 18, ///< ARIB STD-B67, known as "Hybrid log-gamma"
     AVCOL_TRC_NB                 ///< Not part of ABI
 }
 

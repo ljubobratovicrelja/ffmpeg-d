@@ -1,5 +1,27 @@
+/*
+ * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
+ *
+ * This file is part of FFmpeg.
+ *
+ * FFmpeg is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * FFmpeg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
 module ffmpeg.libavresample.audio_data;
+
 import std.stdint;
+
 import ffmpeg.libavutil.avutil;
 import ffmpeg.libavutil.samplefmt;
 
@@ -152,3 +174,5 @@ void ff_audio_data_drain(AudioData *a, int nb_samples);
  *                    negative AVERROR code on error
  */
 //int ff_audio_data_read_from_fifo(AVAudioFifo *af, AudioData *a, int nb_samples);
+
+//#endif /* AVRESAMPLE_AUDIO_DATA_H */

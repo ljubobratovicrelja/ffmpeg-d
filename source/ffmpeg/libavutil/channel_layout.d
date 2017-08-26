@@ -19,17 +19,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-//#ifndef AVUTIL_CHANNEL_LAYOUT_H
-//#define AVUTIL_CHANNEL_LAYOUT_H
-
 module ffmpeg.libavutil.channel_layout;
 import std.stdint;
 
-@nogc nothrow extern(C):
 /**
  * @file
  * audio channel layout utility functions
  */
+
+@nogc nothrow extern(C):
 
 /**
  * @addtogroup lavu_audio
@@ -216,7 +214,6 @@ char *av_get_channel_description(uint64_t channel);
  */
 int av_get_standard_channel_layout(uint index, uint64_t *layout,
                                    char **name);
-
 
 /**
  * @}

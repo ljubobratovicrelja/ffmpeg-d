@@ -25,11 +25,14 @@ module ffmpeg.libavutil.timestamp;
 
 import std.stdint;
 
+public import ffmpeg.libavutil.avutil;
 public import ffmpeg.libavutil.common;
 public import ffmpeg.libavutil.rational;
 public import ffmpeg.libavutil.avutil_version;
 
 extern(C):
+
+enum AV_TS_MAX_STRING_SIZE = 32;
 
 /**
  * Fill the provided buffer with a string containing a timestamp time
@@ -43,12 +46,18 @@ extern(C):
 string av_ts_make_string(int64_t ts)
 {
     import std.format : format;
-  if (ts == 0x8000000000000000) {
+  if (ts == AV_NOPTS_VALUE) {
     return "NOPTS";
   } else {
     return format!"%d"(ts);
   }
 }
+
+/**
+ * Convenience macro, the return value should be used only directly in
+ * function arguments but never stand-alone.
+ */
+//#define av_ts2str(ts) av_ts_make_string((char[AV_TS_MAX_STRING_SIZE]){0}, ts)
 
 /**
  * Fill the provided buffer with a string containing a timestamp time
@@ -68,5 +77,11 @@ string av_ts_make_time_string(int64_t ts, AVRational tb)
     return format!"%.6g"(av_q2d(tb) * ts);
   }
 }
+
+/**
+ * Convenience macro, the return value should be used only directly in
+ * function arguments but never stand-alone.
+ */
+//#define av_ts2timestr(ts, tb) av_ts_make_time_string((char[AV_TS_MAX_STRING_SIZE]){0}, ts, tb)
 
 // end avutil.h

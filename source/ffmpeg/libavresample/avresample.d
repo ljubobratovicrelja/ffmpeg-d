@@ -1,37 +1,109 @@
+/*
+ * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
+ *
+ * This file is part of FFmpeg.
+ *
+ * FFmpeg is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * FFmpeg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
 module ffmpeg.libavresample.avresample;
+
+/**
+ * @file
+ * @ingroup lavr
+ * external API header
+ */
+
+/**
+ * @defgroup lavr Libavresample
+ * @{
+ *
+ * Libavresample (lavr) is a library that handles audio resampling, sample
+ * format conversion and mixing.
+ *
+ * Interaction with lavr is done through AVAudioResampleContext, which is
+ * allocated with avresample_alloc_context(). It is opaque, so all parameters
+ * must be set with the @ref avoptions API.
+ *
+ * For example the following code will setup conversion from planar float sample
+ * format to interleaved signed 16-bit integer, downsampling from 48kHz to
+ * 44.1kHz and downmixing from 5.1 channels to stereo (using the default mixing
+ * matrix):
+ * @code
+ * AVAudioResampleContext *avr = avresample_alloc_context();
+ * av_opt_set_int(avr, "in_channel_layout",  AV_CH_LAYOUT_5POINT1, 0);
+ * av_opt_set_int(avr, "out_channel_layout", AV_CH_LAYOUT_STEREO,  0);
+ * av_opt_set_int(avr, "in_sample_rate",     48000,                0);
+ * av_opt_set_int(avr, "out_sample_rate",    44100,                0);
+ * av_opt_set_int(avr, "in_sample_fmt",      AV_SAMPLE_FMT_FLTP,   0);
+ * av_opt_set_int(avr, "out_sample_fmt",     AV_SAMPLE_FMT_S16,    0);
+ * @endcode
+ *
+ * Once the context is initialized, it must be opened with avresample_open(). If
+ * you need to change the conversion parameters, you must close the context with
+ * avresample_close(), change the parameters as described above, then reopen it
+ * again.
+ *
+ * The conversion itself is done by repeatedly calling avresample_convert().
+ * Note that the samples may get buffered in two places in lavr. The first one
+ * is the output FIFO, where the samples end up if the output buffer is not
+ * large enough. The data stored in there may be retrieved at any time with
+ * avresample_read(). The second place is the resampling delay buffer,
+ * applicable only when resampling is done. The samples in it require more input
+ * before they can be processed. Their current amount is returned by
+ * avresample_get_delay(). At the end of conversion the resampling buffer can be
+ * flushed by calling avresample_convert() with NULL input.
+ *
+ * The following code demonstrates the conversion loop assuming the parameters
+ * from above and caller-defined functions get_input() and handle_output():
+ * @code
+ * uint8_t **input;
+ * int in_linesize, in_samples;
+ *
+ * while (get_input(&input, &in_linesize, &in_samples)) {
+ *     uint8_t *output
+ *     int out_linesize;
+ *     int out_samples = avresample_get_out_samples(avr, in_samples);
+ *
+ *     av_samples_alloc(&output, &out_linesize, 2, out_samples,
+ *                      AV_SAMPLE_FMT_S16, 0);
+ *     out_samples = avresample_convert(avr, &output, out_linesize, out_samples,
+ *                                      input, in_linesize, in_samples);
+ *     handle_output(output, out_linesize, out_samples);
+ *     av_freep(&output);
+ *  }
+ *  @endcode
+ *
+ *  When the conversion is finished and the FIFOs are flushed if required, the
+ *  conversion context and everything associated with it must be freed with
+ *  avresample_free().
+ */
 
 import std.stdint;
 
 import ffmpeg.libavutil.avutil;
 import ffmpeg.libavutil.frame;
+import ffmpeg.libavutil.channel_layout;
 
 import ffmpeg.libavresample.avresample_version;
 
 @nogc nothrow extern(C):
 
-/**
-* @defgroup libavresample Color conversion and scaling
-* @{
-*
-* Return the LIBSWRESAMPLE_VERSION_INT constant.
-*/
-uint avresample_version();
-
-/**
-* Return the libavresample build-time configuration.
-* @return  configure string
-*/
-char* avresample_configuration();
-
-/**
-* Return the libavresample license.
-*/
-char* avresample_license();
-
+enum AVRESAMPLE_MAX_CHANNELS =   32;
 
 struct AVAudioResampleContext;
-
-enum AVRESAMPLE_MAX_CHANNELS =   32;
 
 /** Mixing Coefficient Types */
 enum AVMixCoeffType {
@@ -56,6 +128,22 @@ enum AVResampleDitherMethod {
     AV_RESAMPLE_DITHER_TRIANGULAR_NS,   /**< Triangular Dither with Noise Shaping */
     AV_RESAMPLE_DITHER_NB,              /**< Number of dither types. Not part of ABI. */
 }
+
+/**
+ * Return the LIBAVRESAMPLE_VERSION_INT constant.
+ */
+uint avresample_version();
+
+/**
+ * Return the libavresample build-time configuration.
+ * @return  configure string
+ */
+char* avresample_configuration();
+
+/**
+ * Return the libavresample license.
+ */
+char* avresample_license();
 
 /**
  * Get the AVClass for AVAudioResampleContext.
@@ -407,3 +495,9 @@ int avresample_convert_frame(AVAudioResampleContext *avr,
  * @return                0 on success, AVERROR on failure.
  */
 int avresample_config(AVAudioResampleContext *avr, AVFrame *output, AVFrame *input);
+
+/**
+ * @}
+ */
+
+//#endif /* AVRESAMPLE_AVRESAMPLE_H */

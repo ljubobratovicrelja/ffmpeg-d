@@ -16,6 +16,7 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
 module ffmpeg.libavutil.frame;
 
 /**
@@ -23,9 +24,6 @@ module ffmpeg.libavutil.frame;
  * @ingroup lavu_frame
  * reference-counted frame API
  */
-
-//#ifndef AVUTIL_FRAME_H
-//#define AVUTIL_FRAME_H
 
 import std.stdint;
 
@@ -178,6 +176,10 @@ struct AVFrameSideData {
  * Similarly fields that are marked as to be only accessed by
  * av_opt_ptr() can be reordered. This allows 2 forks to add fields
  * without breaking compatibility with each other.
+ *
+ * Fields can be accessed through AVOptions, the name string used, matches the
+ * C structure field name for fields accessable through AVOptions. The AVClass
+ * for AVFrame can be obtained from avcodec_get_frame_class()
  */
 struct AVFrame {
 //#define AV_NUM_DATA_POINTERS 8
@@ -189,6 +191,9 @@ struct AVFrame {
      * see avcodec_align_dimensions2(). Some filters and swscale can read
      * up to 16 bytes beyond the planes, if these filters are to be used,
      * then 16 extra bytes must be allocated.
+     *
+     * NOTE: Except for hwaccel formats, pointers not needed by the format
+     * MUST be set to NULL.
      */
     uint8_t *[AV_NUM_DATA_POINTERS]data;
     
@@ -345,7 +350,9 @@ static if(FF_API_ERROR_FRAME){
     
     /**
      * AVBuffer references backing the data for this frame. If all elements of
-     * this array are NULL, then this frame is not reference counted.
+     * this array are NULL, then this frame is not reference counted. This array
+     * must be filled contiguously -- if buf[i] is non-NULL then buf[j] must
+     * also be non-NULL for all j < i.
      *
      * There may be at most one AVBuffer per data plane, so for video this array
      * always contains all the references. For planar audio with more than
@@ -489,28 +496,33 @@ static if(FF_API_ERROR_FRAME){
      */
     int pkt_size;
 
-    static if(FF_API_FRAME_QP){
-        /**
-         * QP table
-         * Not to be accessed directly from outside libavutil
-         */
-        deprecated
-            int8_t *qscale_table;
-        /**
-         * QP store stride
-         * Not to be accessed directly from outside libavutil
-         */
-        deprecated
-            int qstride;
+static if(FF_API_FRAME_QP){
+    /**
+     * QP table
+     * Not to be accessed directly from outside libavutil
+     */
+    deprecated
+        int8_t *qscale_table;
+    /**
+     * QP store stride
+     * Not to be accessed directly from outside libavutil
+     */
+    deprecated
+        int qstride;
 
-        deprecated
-            int qscale_type;
+    deprecated
+        int qscale_type;
 
-        /**
-         * Not to be accessed directly from outside libavutil
-         */
-        AVBufferRef *qp_table_buf;
-    }
+    /**
+     * Not to be accessed directly from outside libavutil
+     */
+    AVBufferRef *qp_table_buf;
+}
+    /**
+     * For hwaccel-format frames, this should be a reference to the
+     * AVHWFramesContext describing the frame.
+     */
+    AVBufferRef *hw_frames_ctx;
 }
 
 /**
@@ -582,6 +594,10 @@ void av_frame_free(AVFrame **frame);
  * If src is not reference counted, new buffers are allocated and the data is
  * copied.
  *
+ * @warning: dst MUST have been either unreferenced with av_frame_unref(dst),
+ *           or newly allocated with av_frame_alloc() before calling this
+ *           function, or undefined behavior will occur.
+ *
  * @return 0 on success, a negative AVERROR on error
  */
 int av_frame_ref(AVFrame *dst, const AVFrame *src);
@@ -601,7 +617,11 @@ AVFrame *av_frame_clone(const AVFrame *src);
 void av_frame_unref(AVFrame *frame);
 
 /**
- * Move everythnig contained in src to dst and reset src.
+ * Move everything contained in src to dst and reset src.
+ *
+ * @warning: dst is not unreferenced, but directly overwritten without reading
+ *           or deallocating its contents. Call av_frame_unref(dst) manually
+ *           before calling this function to ensure that no memory is leaked.
  */
 void av_frame_move_ref(AVFrame *dst, AVFrame *src);
 
@@ -616,6 +636,10 @@ void av_frame_move_ref(AVFrame *dst, AVFrame *src);
  * This function will fill AVFrame.data and AVFrame.buf arrays and, if
  * necessary, allocate and fill AVFrame.extended_data and AVFrame.extended_buf.
  * For planar formats, one buffer will be allocated for each plane.
+ *
+ * @warning: if frame already has been allocated, calling this function will
+ *           leak memory. In addition, undefined behavior can occur in certain
+ *           cases.
  *
  * @param frame frame in which to store the new buffers.
  * @param align required buffer size alignment

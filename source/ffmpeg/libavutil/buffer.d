@@ -18,21 +18,15 @@
 
 module ffmpeg.libavutil.buffer;
 
-import std.stdint;
-
-@nogc nothrow extern(C):
-
 /**
  * @file
  * @ingroup lavu_buffer
  * refcounted data buffer API
  */
 
-//#ifndef AVUTIL_BUFFER_H
-//#define AVUTIL_BUFFER_H
+import std.stdint;
 
-//#include <stdint.h>
-
+@nogc nothrow extern(C):
 /**
  * @defgroup lavu_buffer AVBuffer
  * @ingroup lavu_data
@@ -76,7 +70,7 @@ import std.stdint;
  * A reference counted buffer type. It is opaque and is meant to be used through
  * references (AVBufferRef).
  */
-struct AVBuffer; 
+struct AVBuffer;
 
 /**
  * A reference to a data buffer.
@@ -255,13 +249,29 @@ struct AVBufferPool;
 AVBufferPool *av_buffer_pool_init(int size, AVBufferRef* function(int size)alloc);
 
 /**
+ * Allocate and initialize a buffer pool with a more complex allocator.
+ *
+ * @param size size of each buffer in this pool
+ * @param opaque arbitrary user data used by the allocator
+ * @param alloc a function that will be used to allocate new buffers when the
+ *              pool is empty.
+ * @param pool_free a function that will be called immediately before the pool
+ *                  is freed. I.e. after av_buffer_pool_can_uninit() is called
+ *                  by the pool and all the frames are returned to the pool and
+ *                  freed. It is intended to uninitialize the user opaque data.
+ * @return newly created buffer pool on success, NULL on error.
+ */
+AVBufferPool *av_buffer_pool_init2(int size, void *opaque,
+                                   AVBufferRef* function(void *opaque, int size) alloc,
+                                   void function(void *opaque) pool_free);
+
+/**
  * Mark the pool as being available for freeing. It will actually be freed only
  * once all the allocated buffers associated with the pool are released. Thus it
  * is safe to call this function while some of the allocated buffers are still
  * in use.
  *
  * @param pool pointer to the pool to be freed. It will be set to NULL.
- * @see av_buffer_pool_can_uninit()
  */
 void av_buffer_pool_uninit(AVBufferPool **pool);
 

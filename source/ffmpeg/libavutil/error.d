@@ -34,28 +34,17 @@ import ffmpeg.libavutil.common;
  * @{
  */
 
-
 /* error handling */
 static if (EDOM > 0) {
-    template AVERROR(int e) {   ///< Returns a negative error code from a POSIX error code, to return from library functions.
-      const int AVERROR = (-(e));
-    }
-    template AVUNERROR(int e) { ///< Returns a POSIX error code from a library function error return value.
-      const int AVUNERROR = (-(e));
-   }
+    template AVERROR(int e) { const int AVERROR = (-(e)); }     ///< Returns a negative error code from a POSIX error code, to return from library functions.
+    template AVUNERROR(int e) { const int AVUNERROR = (-(e)); } ///< Returns a POSIX error code from a library function error return value.
 } else {
 /* Some platforms have E* and errno already negated. */
-    template AVERROR(int e) {   
-      const int AVERROR = e;
-    }
-    template AVUNERROR(int e) { 
-      const int AVUNERROR = e;
-   }
+    template AVERROR(int e) { const int AVERROR = e; }
+    template AVUNERROR(int e) { const int AVUNERROR = e; }
 }
 
-template FFERRTAG(int a, int b, int c, int d) {
-  const int FFERRTAG = -(MKTAG!(a, b, c, d));
-}
+template FFERRTAG(int a, int b, int c, int d) { const int FFERRTAG = -(MKTAG!(a, b, c, d)); }
 
 enum AVERROR_BSF_NOT_FOUND    = FFERRTAG!(0xF8,'B','S','F'); ///< Bitstream filter not found
 enum AVERROR_BUG              = FFERRTAG!( 'B','U','G','!'); ///< Internal bug, also see AVERROR_BUG2
@@ -131,7 +120,6 @@ template av_err2str(int errnum) {
     auto buffer = new char[AV_ERROR_MAX_STRING_SIZE];
     const char* av_err2str = av_make_error_string(buffer, AV_ERROR_MAX_STRING_SIZE, errnum);
 }
-
 
 /**
  * @}
