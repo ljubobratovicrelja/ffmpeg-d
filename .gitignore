@@ -2,6 +2,10 @@
 .idea/
 ffmpeg-d.iml
 ffmpeg-d
+ffmpeg-d-*
+ffmpeg-d.*
 __test__source
 dub.userprefs
 libffmpeg-d.a
+*.mkv
+*_example

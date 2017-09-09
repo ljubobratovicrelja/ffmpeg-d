@@ -872,7 +872,6 @@ struct AVStream {
      * encoding: set by the user, replaced by libavformat if left unset
      */
     int id;
-
 static if(FF_API_LAVF_AVCTX){
     /**
      * @deprecated use the codecpar struct instead

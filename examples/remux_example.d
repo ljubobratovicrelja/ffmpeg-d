@@ -16,6 +16,7 @@ import ffmpeg.libavformat.avformat;
 import ffmpeg.libavformat.avio;
 import ffmpeg.libavcodec.avcodec;
 import ffmpeg.libavutil.avutil;
+import ffmpeg.libavutil.frame;
 import ffmpeg.libavutil.mathematics;
 
 void main(string[] args) {
@@ -74,25 +75,25 @@ void main(string[] args) {
 
         // only audio and video
         if(
-                in_stream.codec.codec_type != AVMediaType.AVMEDIA_TYPE_VIDEO
+                in_stream.codecpar.codec_type != AVMediaType.AVMEDIA_TYPE_VIDEO
             &&
-                in_stream.codec.codec_type != AVMediaType.AVMEDIA_TYPE_AUDIO
+                in_stream.codecpar.codec_type != AVMediaType.AVMEDIA_TYPE_AUDIO
         ) continue;
 
         // Create a new output stream based on the input stream
-
-        AVStream* out_stream = avformat_new_stream(output_fmt_ctx, in_stream.codec.codec);
+        AVCodec* output_codec = avcodec_find_encoder(in_stream.codecpar.codec_id);
+        AVStream* out_stream = avformat_new_stream(output_fmt_ctx, output_codec);
         if (!out_stream)
             throw new Exception("Failed allocating output stream");
 
-        // Copy input stream codec contect to the output stream
-        if(avcodec_copy_context(out_stream.codec, in_stream.codec) < 0)
-            throw new Exception("Failed to copy context from input to output stream codec context");
+        // Copy input stream codec parameters to the output stream
+        if(avcodec_parameters_copy(out_stream.codecpar, in_stream.codecpar) < 0)
+            throw new Exception("Failed to copy parameters from input to output stream codec parameters");
 
         // Setup a few properties that are needed by some codec/container combos.
-        out_stream.codec.codec_tag = 0;
-        if (output_fmt_ctx.oformat.flags & AVFMT_GLOBALHEADER) // 0x0040
-            out_stream.codec.flags |= AV_CODEC_FLAG_GLOBAL_HEADER; // (1 << 22)
+//        out_stream.codec.codec_tag = 0;
+//        if (output_fmt_ctx.oformat.flags & AVFMT_GLOBALHEADER) // 0x0040
+//            out_stream.codec.flags |= AV_CODEC_FLAG_GLOBAL_HEADER; // (1 << 22)
 
     }
 
@@ -127,9 +128,9 @@ void main(string[] args) {
 
         // only audio and video
         if(
-                in_stream.codec.codec_type != AVMediaType.AVMEDIA_TYPE_VIDEO
+                in_stream.codecpar.codec_type != AVMediaType.AVMEDIA_TYPE_VIDEO
             &&
-                in_stream.codec.codec_type != AVMediaType.AVMEDIA_TYPE_AUDIO
+                in_stream.codecpar.codec_type != AVMediaType.AVMEDIA_TYPE_AUDIO
         ) continue;
 
         // Rescale timecode to match the output container

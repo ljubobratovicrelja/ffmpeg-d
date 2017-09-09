@@ -181,8 +181,8 @@ struct AVFrameSideData {
  * C structure field name for fields accessable through AVOptions. The AVClass
  * for AVFrame can be obtained from avcodec_get_frame_class()
  */
+enum AV_NUM_DATA_POINTERS = 8;
 struct AVFrame {
-//#define AV_NUM_DATA_POINTERS 8
     /**
      * pointer to the picture/channel planes.
      * This might be different from the first allocated byte
@@ -747,5 +747,4 @@ char *av_frame_side_data_name(AVFrameSideDataType type);
 
 enum FF_DECODE_ERROR_INVALID_BITSTREAM = 1;
 enum FF_DECODE_ERROR_MISSING_REFERENCE = 2;
-enum AV_NUM_DATA_POINTERS = 8;
 enum AV_FRAME_FLAG_CORRUPT   =   (1 << 0);
