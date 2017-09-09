@@ -8,14 +8,14 @@ This is a D port of the FFmpeg C headers. Please check [FFmpeg website](https://
 
 ## Usage
 
-_NOTE: This branch is compatible with ffmpeg 3.1.x, for other versions please see the other branches for usage information._
+_NOTE: This branch is compatible with ffmpeg 3.2.x, for other versions please see the other branches for usage information._
 
 ### Adding to DUB
 
 To include `ffmpeg-d` in your dub project add the following dependency to your dub.json file.
 
 ```
-"ffmpeg-d": "~>3.1.0"
+"ffmpeg-d": "~>3.2.0"
 ```
 
 ---
@@ -37,7 +37,7 @@ There are a few examples in the examples directory, these can be compiled to wor
 dub build -c remux_example
 ```
 
-Other examples written in C can be found on the main FFMpeg site: https://www.ffmpeg.org/doxygen/3.1/examples.html
+Other examples written in C can be found on the main FFMpeg site: [https://www.ffmpeg.org/doxygen/3.2/examples.html](https://www.ffmpeg.org/doxygen/3.2/examples.html)
 
 
 ### OS X
@@ -57,9 +57,9 @@ dub test
 
 ## FFmpeg Version
 
-Currently the library has been tested with FFmpeg 2.7.6, 2.8.0, 3.0.9, 3.1.10 libraries.
+Currently the library has been tested with FFmpeg 2.7.6, 2.8.0, 3.0.9, 3.1.10, 3.2.7 libraries.
 
-Please use the branch of this repo that corresponds to the same major.minor version of FFmpeg. For example use `release/3.1` with FFmpeg 3.1.10.
+Please use the branch of this repo that corresponds to the same major.minor version of FFmpeg. For example use `release/3.2` with FFmpeg 3.2.7.
 
 Newer versions should be tested in future. If you've already tested this library with newer FFmpeg, please let us know in the gitter chat room!
 

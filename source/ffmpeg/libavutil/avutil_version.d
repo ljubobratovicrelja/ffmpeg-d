@@ -17,7 +17,7 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
- 
+
 module ffmpeg.libavutil.avutil_version;
  
 import std.stdio;
@@ -26,11 +26,26 @@ import std.format;
 import std.array;
 import core.vararg;
 
- /**
- * @defgroup version_utils Library Version Macros
+/**
+ * @addtogroup version_utils
  *
  * Useful to check and match library version in order to maintain
  * backward compatibility.
+ *
+ * The FFmpeg libraries follow a versioning sheme very similar to
+ * Semantic Versioning (http://semver.org/)
+ * The difference is that the component called PATCH is called MICRO in FFmpeg
+ * and its value is reset to 100 instead of 0 to keep it above or equal to 100.
+ * Also we do not increase MICRO for every bugfix or change in git master.
+ *
+ * Prior to FFmpeg 3.2 point releases did not change any lib version number to
+ * avoid aliassing different git master checkouts.
+ * Starting with FFmpeg 3.2, the released library versions will occupy
+ * a separate MAJOR.MINOR that is not used on the master development branch.
+ * That is if we branch a release of master 55.10.123 we will bump to 55.11.100
+ * for the release and master will continue at 55.12.100 after it. Each new
+ * point release will then bump the MICRO improving the usefulness of the lib
+ * versions.
  *
  * @{
  */
@@ -77,8 +92,8 @@ int AV_VERSION_MICRO(int a){
  */
 
 enum LIBAVUTIL_VERSION_MAJOR = 55;
-enum LIBAVUTIL_VERSION_MINOR = 28;
-enum LIBAVUTIL_VERSION_MICRO = 100;
+enum LIBAVUTIL_VERSION_MINOR = 34;
+enum LIBAVUTIL_VERSION_MICRO = 101;
 
 enum LIBAVUTIL_VERSION_INT = AV_VERSION_INT!(LIBAVUTIL_VERSION_MAJOR, LIBAVUTIL_VERSION_MINOR, LIBAVUTIL_VERSION_MICRO);
 enum LIBAVUTIL_VERSION =     AV_VERSION!(LIBAVUTIL_VERSION_MAJOR, LIBAVUTIL_VERSION_MINOR, LIBAVUTIL_VERSION_MICRO);
@@ -106,6 +121,7 @@ enum FF_API_FRAME_QP                = (LIBAVUTIL_VERSION_MAJOR < 56);
 enum FF_API_PLUS1_MINUS1            = (LIBAVUTIL_VERSION_MAJOR < 56);
 enum FF_API_ERROR_FRAME             = (LIBAVUTIL_VERSION_MAJOR < 56);
 enum FF_API_CRC_BIG_TABLE           = (LIBAVUTIL_VERSION_MAJOR < 56);
+enum FF_API_PKT_PTS                 = (LIBAVUTIL_VERSION_MAJOR < 56);
 
 /**
  * @}

@@ -27,6 +27,7 @@ module ffmpeg.libswscale.swscale;
  */
 
 import std.stdint;
+
 import ffmpeg.libavutil.avutil;
 
 import ffmpeg.libswscale.swscale_version;
@@ -34,11 +35,13 @@ import ffmpeg.libswscale.swscale_version;
 @nogc nothrow extern(C):
 
 /**
-* @defgroup libsws Color conversion and scaling
-* @{
-*
-* Return the LIBSWSCALE_VERSION_INT constant.
-*/
+ * @defgroup libsws libswscale
+ * Color conversion and scaling library.
+ *
+ * @{
+ *
+ * Return the LIBSWSCALE_VERSION_INT constant.
+ */
 uint swscale_version();
 
 /**
@@ -277,53 +280,53 @@ SwsFilter *sws_getDefaultFilter(float lumaGBlur, float chromaGBlur,
 void sws_freeFilter(SwsFilter *filter);
 
 /**
-* Check if context can be reused, otherwise reallocate a new one.
-*
-* If context is NULL, just calls sws_getContext() to get a new
-* context. Otherwise, checks if the parameters are the ones already
-* saved in context. If that is the case, returns the current
-* context. Otherwise, frees context and gets a new context with
-* the new parameters.
-*
-* Be warned that srcFilter and dstFilter are not checked, they
-* are assumed to remain the same.
-*/
- SwsContext *sws_getCachedContext( SwsContext *context,
+ * Check if context can be reused, otherwise reallocate a new one.
+ *
+ * If context is NULL, just calls sws_getContext() to get a new
+ * context. Otherwise, checks if the parameters are the ones already
+ * saved in context. If that is the case, returns the current
+ * context. Otherwise, frees context and gets a new context with
+ * the new parameters.
+ *
+ * Be warned that srcFilter and dstFilter are not checked, they
+ * are assumed to remain the same.
+ */
+SwsContext *sws_getCachedContext( SwsContext *context,
                                         int srcW, int srcH, const AVPixelFormat srcFormat,
                                         int dstW, int dstH, const AVPixelFormat dstFormat,
                                         int flags, SwsFilter *srcFilter,
                                         SwsFilter *dstFilter, const double *param);
 
 /**
-* Convert an 8-bit paletted frame into a frame with a color depth of 32 bits.
-*
-* The output frame will have the same packed format as the palette.
-*
-* @param src        source frame buffer
-* @param dst        destination frame buffer
-* @param num_pixels number of pixels to convert
-* @param palette    array with [256] entries, which must match color arrangement (RGB or BGR) of src
-*/
+ * Convert an 8-bit paletted frame into a frame with a color depth of 32 bits.
+ *
+ * The output frame will have the same packed format as the palette.
+ *
+ * @param src        source frame buffer
+ * @param dst        destination frame buffer
+ * @param num_pixels number of pixels to convert
+ * @param palette    array with [256] entries, which must match color arrangement (RGB or BGR) of src
+ */
 void sws_convertPalette8ToPacked32(const uint8_t *src, uint8_t *dst, int num_pixels, const uint8_t *palette);
 
 /**
-* Convert an 8-bit paletted frame into a frame with a color depth of 24 bits.
-*
-* With the palette format "ABCD", the destination frame ends up with the format "ABC".
-*
-* @param src        source frame buffer
-* @param dst        destination frame buffer
-* @param num_pixels number of pixels to convert
-* @param palette    array with [256] entries, which must match color arrangement (RGB or BGR) of src
-*/
+ * Convert an 8-bit paletted frame into a frame with a color depth of 24 bits.
+ *
+ * With the palette format "ABCD", the destination frame ends up with the format "ABC".
+ *
+ * @param src        source frame buffer
+ * @param dst        destination frame buffer
+ * @param num_pixels number of pixels to convert
+ * @param palette    array with [256] entries, which must match color arrangement (RGB or BGR) of src
+ */
 void sws_convertPalette8ToPacked24(const uint8_t *src, uint8_t *dst, int num_pixels, const uint8_t *palette);
 
 /**
-* Get the AVClass for swsContext. It can be used in combination with
-* AV_OPT_SEARCH_FAKE_OBJ for examining options.
-*
-* @see av_opt_find().
-*/
+ * Get the AVClass for swsContext. It can be used in combination with
+ * AV_OPT_SEARCH_FAKE_OBJ for examining options.
+ *
+ * @see av_opt_find().
+ */
 AVClass *sws_get_class();
 
 /**

@@ -29,7 +29,7 @@ module ffmpeg.libswresample.swresample_version;
 import ffmpeg.libavutil.avutil_version;
 
 enum LIBSWRESAMPLE_VERSION_MAJOR = 2;
-enum LIBSWRESAMPLE_VERSION_MINOR = 1;
+enum LIBSWRESAMPLE_VERSION_MINOR = 3;
 enum LIBSWRESAMPLE_VERSION_MICRO = 100;
 
 enum LIBSWRESAMPLE_VERSION_INT = AV_VERSION_INT!(LIBSWRESAMPLE_VERSION_MAJOR, 

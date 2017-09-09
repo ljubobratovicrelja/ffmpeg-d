@@ -57,12 +57,12 @@ struct AVFilterPad {
      * pad has no need to ever be referenced by name.
      */
     const char *name;
-    
+
     /**
      * AVFilterPad type.
      */
     AVMediaType type;
-    
+
     /**
      * Callback function to get a video buffer. If NULL, the filter system will
      * use ff_default_get_video_buffer().
@@ -70,7 +70,7 @@ struct AVFilterPad {
      * Input video pads only.
      */
     AVFrame* function(AVFilterLink *link, int w, int h) get_video_buffer;
-    
+
     /**
      * Callback function to get an audio buffer. If NULL, the filter system will
      * use ff_default_get_audio_buffer().
@@ -78,7 +78,7 @@ struct AVFilterPad {
      * Input audio pads only.
      */
     AVFrame* function(AVFilterLink *link, int nb_samples) get_audio_buffer;
-    
+
     /**
      * Filtering callback. This is where a filter receives a frame with
      * audio/video data and should do its processing.
@@ -90,7 +90,7 @@ struct AVFilterPad {
      * hasn't been passed on to another filter.
      */
     int function(AVFilterLink *link, AVFrame *frame) filter_frame;
-    
+
     /**
      * Frame poll callback. This returns the number of immediately available
      * samples. It should return a positive value if the next request_frame()
@@ -101,7 +101,7 @@ struct AVFilterPad {
      * Output pads only.
      */
     int function(AVFilterLink *link) poll_frame;
-    
+
     /**
      * Frame request callback. A call to this should result in at least one
      * frame being output over the given link. This should return zero on
@@ -110,7 +110,7 @@ struct AVFilterPad {
      * Output pads only.
      */
     int function(AVFilterLink *link) request_frame;
-    
+
     /**
      * Link configuration callback.
      *
@@ -126,7 +126,7 @@ struct AVFilterPad {
      * and another value on error.
      */
     int function(AVFilterLink *link) config_props;
-    
+
     /**
      * The filter expects a fifo to be inserted on its input link,
      * typically because it has a delay.
@@ -134,7 +134,7 @@ struct AVFilterPad {
      * input pads only.
      */
     int needs_fifo;
-    
+
     /**
      * The filter expects writable frames from its input link,
      * duplicating data buffers if needed.

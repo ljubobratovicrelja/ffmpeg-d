@@ -74,3 +74,5 @@ void swri_audio_convert_free(AudioConvert **ctx);
  * @param len length of audio frame size (measured in samples)
  */
 int swri_audio_convert(AudioConvert *ctx, AudioData *out_a_b, AudioData *in_a_b, int len);
+
+//#endif /* SWRESAMPLE_AUDIOCONVERT_H */

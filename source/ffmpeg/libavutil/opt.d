@@ -834,6 +834,7 @@ int av_opt_is_set_to_default(void *obj, const AVOption *o);
  */
 int av_opt_is_set_to_default_by_name(void *obj, const char *name, int search_flags);
 
+
 enum AV_OPT_SERIALIZE_SKIP_DEFAULTS   = 0x0001;
 enum AV_OPT_SERIALIZE_OPT_FLAGS_EXACT   = 0x0002;
 

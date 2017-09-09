@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavutil.intfloat;
+
 import std.stdint;
 import std.math : floor;
 
@@ -41,6 +42,8 @@ static float av_int2float(uint32_t i)
     return float(i);
 }
 
+
+
 /**
  * Reinterpret a float as a 32-bit integer.
  */
@@ -48,6 +51,8 @@ static uint32_t av_float2int(float f)
 {
     return cast(uint32_t)floor(f);
 }
+
+
 
 /**
  * Reinterpret a 64-bit integer as a double.
@@ -57,6 +62,8 @@ static double av_int2double(uint64_t i)
     return double(i);
 }
 
+
+
 /**
  * Reinterpret a double as a 64-bit integer.
  */
@@ -65,3 +72,6 @@ static uint64_t av_double2int(double f)
     return cast(uint64_t)floor(f);
 }
 
+
+
+//#endif /* AVUTIL_INTFLOAT_H */

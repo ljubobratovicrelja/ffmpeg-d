@@ -28,8 +28,8 @@ module ffmpeg.libavdevice.avdevice_version;
 import ffmpeg.libavutil.avutil_version;
 
 enum LIBAVDEVICE_VERSION_MAJOR  = 57;
-enum LIBAVDEVICE_VERSION_MINOR  = 0;
-enum LIBAVDEVICE_VERSION_MICRO  = 101;
+enum LIBAVDEVICE_VERSION_MINOR  = 1;
+enum LIBAVDEVICE_VERSION_MICRO  = 100;
 
 enum LIBAVDEVICE_VERSION_INT    = AV_VERSION_INT!(LIBAVDEVICE_VERSION_MAJOR,
                                                   LIBAVDEVICE_VERSION_MINOR,

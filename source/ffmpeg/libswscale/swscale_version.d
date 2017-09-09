@@ -20,10 +20,14 @@ module ffmpeg.libswscale.swscale_version;
 
 import ffmpeg.libavutil.avutil_version;
 
+/**
+ * @file
+ * swscale version macros
+ */
 //#include "libavutil/version.h"
 
 enum LIBSWSCALE_VERSION_MAJOR = 4;
-enum LIBSWSCALE_VERSION_MINOR = 1;
+enum LIBSWSCALE_VERSION_MINOR = 2;
 enum LIBSWSCALE_VERSION_MICRO = 100;
 
 enum LIBSWSCALE_VERSION_INT = AV_VERSION_INT!(LIBSWSCALE_VERSION_MAJOR, 

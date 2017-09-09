@@ -20,6 +20,7 @@
 
 module ffmpeg.libavresample.avresample;
 
+
 /**
  * @file
  * @ingroup lavr
@@ -27,7 +28,7 @@ module ffmpeg.libavresample.avresample;
  */
 
 /**
- * @defgroup lavr Libavresample
+ * @defgroup lavr libavresample
  * @{
  *
  * Libavresample (lavr) is a library that handles audio resampling, sample
@@ -96,7 +97,6 @@ import std.stdint;
 import ffmpeg.libavutil.avutil;
 import ffmpeg.libavutil.frame;
 import ffmpeg.libavutil.channel_layout;
-
 import ffmpeg.libavresample.avresample_version;
 
 @nogc nothrow extern(C):

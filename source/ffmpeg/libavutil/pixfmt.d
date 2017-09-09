@@ -178,6 +178,7 @@ enum AVPixelFormat {
     AV_PIX_FMT_YUV422P9LE, ///< planar YUV 4:2:2, 18bpp, (1 Cr & Cb sample per 2x1 Y samples), little-endian
     AV_PIX_FMT_VDA_VLD,    ///< hardware decoding through VDA
     AV_PIX_FMT_GBRP,      ///< planar GBR 4:4:4 24bpp
+    AV_PIX_FMT_GBR24P = AV_PIX_FMT_GBRP, // alias for #AV_PIX_FMT_GBRP
     AV_PIX_FMT_GBRP9BE,   ///< planar GBR 4:4:4 27bpp, big-endian
     AV_PIX_FMT_GBRP9LE,   ///< planar GBR 4:4:4 27bpp, little-endian
     AV_PIX_FMT_GBRP10BE,  ///< planar GBR 4:4:4 30bpp, big-endian
@@ -303,11 +304,10 @@ enum AVPixelFormat {
     AV_PIX_FMT_GBRAP10BE,  ///< planar GBR 4:4:4:4 40bpp, big-endian
     AV_PIX_FMT_GBRAP10LE,  ///< planar GBR 4:4:4:4 40bpp, little-endian
 
+    AV_PIX_FMT_MEDIACODEC, ///< hardware decoding through MediaCodec
+
     AV_PIX_FMT_NB         ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
 }
-
-alias AVPixelFormat.AV_PIX_FMT_GRAY8A AV_PIX_FMT_Y400A; // not needed but ffmpeg has them so keeping it here.
-alias AVPixelFormat.AV_PIX_FMT_GBRP AV_PIX_FMT_GBR24P;
 
 template AV_PIX_FMT_NE(string be, string le) {
   static if (AV_HAVE_BIGENDIAN) { const char[] AV_PIX_FMT_NE = "AVPixelFormat.AV_PIX_FMT_" ~ be;
@@ -399,6 +399,8 @@ enum AVColorPrimaries {
     AVCOL_PRI_FILM        = 8,
     AVCOL_PRI_BT2020      = 9, ///< ITU-R BT2020
     AVCOL_PRI_SMPTEST428_1= 10, ///< SMPTE ST 428-1 (CIE 1931 XYZ)
+    AVCOL_PRI_SMPTE431    = 11, ///< SMPTE ST 431-2 (2011)
+    AVCOL_PRI_SMPTE432    = 12, ///< SMPTE ST 432-1 D65 (2010)
     AVCOL_PRI_NB              ///< Not part of ABI
 }
 
@@ -443,6 +445,7 @@ enum AVColorSpace {
     AVCOL_SPC_YCOCG       = 8,  ///< Used by Dirac / VC-2 and H.264 FRext, see ITU-T SG16
     AVCOL_SPC_BT2020_NCL  = 9,  ///< ITU-R BT2020 non-constant luminance system
     AVCOL_SPC_BT2020_CL   = 10, ///< ITU-R BT2020 constant luminance system
+    AVCOL_SPC_SMPTE2085   = 11, ///< SMPTE 2085, Y'D'zD'x
     AVCOL_SPC_NB                ///< Not part of ABI
 }
 enum AVCOL_SPC_YCGCO = AVColorSpace.AVCOL_SPC_YCOCG;

@@ -24,7 +24,6 @@ import core.vararg;
 import ffmpeg.libavutil.opt;
 import ffmpeg.libavutil.dict;
 import ffmpeg.libavutil.avutil_version;
-
 @nogc nothrow extern(C):
 
 enum AVClassCategory {
