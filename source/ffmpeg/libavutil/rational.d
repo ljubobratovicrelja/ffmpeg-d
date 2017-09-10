@@ -18,8 +18,17 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
 module ffmpeg.libavutil.rational;
+
+/**
+ * @file
+ * rational numbers
+ * @author Michael Niedermayer <michaelni@gmx.at>
+ */
+
 import std.stdint;
+
 
 @nogc nothrow extern(C):
 
@@ -156,3 +165,9 @@ int av_find_nearest_q_idx(AVRational q, const AVRational* q_list);
  * The float is returned in a uint32_t and its value is platform indepenant.
  */
 uint32_t av_q2intfloat(AVRational q);
+
+/**
+ * @}
+ */
+
+//#endif /* AVUTIL_RATIONAL_H */

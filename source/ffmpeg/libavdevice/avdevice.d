@@ -16,16 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-//#ifndef AVDEVICE_AVDEVICE_H
-//#define AVDEVICE_AVDEVICE_H
-
 module ffmpeg.libavdevice.avdevice;
 
-/**
- * @file
- * @ingroup lavd
- * Main libavdevice API header
- */
 
 /**
  * @defgroup lavd Special devices muxing/demuxing library
@@ -43,13 +35,15 @@ module ffmpeg.libavdevice.avdevice;
  * @}
  */
 import std.stdint;
+
 import ffmpeg.libavutil.avutil;
-import ffmpeg.libavutil.common;
 import ffmpeg.libavutil.log;
 import ffmpeg.libavutil.opt;
 import ffmpeg.libavutil.dict;
+import ffmpeg.libavutil.samplefmt;
 import ffmpeg.libavformat.avformat;
 import ffmpeg.libavcodec.avcodec;
+
 import ffmpeg.libavdevice.avdevice_version;
 
 @nogc nothrow extern(C):
@@ -489,7 +483,6 @@ int avdevice_list_devices(AVFormatContext *s, AVDeviceInfoList **device_list);
  * @param devices device list to be freed.
  */
 void avdevice_free_list_devices(AVDeviceInfoList **device_list);
-
 
 /**
  * List devices.

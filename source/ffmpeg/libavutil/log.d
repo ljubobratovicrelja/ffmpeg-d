@@ -18,9 +18,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavutil.log;
+
 import std.stdint;
 import core.vararg;
 import ffmpeg.libavutil.opt;
+import ffmpeg.libavutil.dict;
+import ffmpeg.libavutil.avutil_version;
 
 @nogc nothrow extern(C):
 
@@ -44,6 +47,16 @@ enum AVClassCategory {
     AV_CLASS_CATEGORY_DEVICE_INPUT,
     AV_CLASS_CATEGORY_NB ///< not part of ABI/API
 }
+
+//#define AV_IS_INPUT_DEVICE(category) \
+//    (((category) == AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT) || \
+//     ((category) == AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT) || \
+//     ((category) == AV_CLASS_CATEGORY_DEVICE_INPUT))
+//
+//#define AV_IS_OUTPUT_DEVICE(category) \
+//    (((category) == AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT) || \
+//     ((category) == AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT) || \
+//     ((category) == AV_CLASS_CATEGORY_DEVICE_OUTPUT))
 
 struct AVOptionRanges;
 
@@ -87,10 +100,11 @@ struct AVClass {
     int log_level_offset_offset;
 
     /**
-     * Offset in the structure where a pointer to the parent context for loging is stored.
-     * for example a decoder that uses eval.c could pass its AVCodecContext to eval as such
-     * parent context. And a av_log() implementation could then display the parent context
-     * can be NULL of course
+     * Offset in the structure where a pointer to the parent context for
+     * logging is stored. For example a decoder could pass its AVCodecContext
+     * to eval as such a parent context, which an av_log() implementation
+     * could then leverage to display the parent context.
+     * The offset can be NULL.
      */
     int parent_log_context_offset;
 
@@ -129,8 +143,19 @@ struct AVClass {
     int function(AVOptionRanges **, void *obj, const char *key, int flags) query_ranges;
 }
 
-/* av_log API */
+/**
+ * @addtogroup lavu_log
+ *
+ * @{
+ *
+ * @defgroup lavu_log_constants Logging Constants
+ *
+ * @{
+ */
 
+/**
+ * Print no output.
+ */
 enum AV_LOG_QUIET  = -8;
 
 /**
@@ -157,7 +182,14 @@ enum AV_LOG_ERROR   =16;
  */
 enum AV_LOG_WARNING =24;
 
+/**
+ * Standard information.
+ */
 enum AV_LOG_INFO    =32;
+
+/**
+ * Detailed information.
+ */
 enum AV_LOG_VERBOSE =40;
 
 /**
@@ -171,6 +203,20 @@ enum AV_LOG_DEBUG   =48;
 enum AV_LOG_TRACE   =56;
 
 enum AV_LOG_MAX_OFFSET = (AV_LOG_TRACE - AV_LOG_QUIET);
+
+/**
+ * @}
+ */
+
+/**
+ * Sets additional colors for extended debugging sessions.
+ * @code
+   av_log(ctx, AV_LOG_DEBUG|AV_LOG_C(134), "Message in purple\n");
+   @endcode
+ * Requires 256color terminal support. Uses outside debugging is not
+ * recommended.
+ */
+//#define AV_LOG_C(x) ((x) << 8)
 
 /**
  * Send the specified message to the log if the level is less than or equal
@@ -187,6 +233,7 @@ enum AV_LOG_MAX_OFFSET = (AV_LOG_TRACE - AV_LOG_QUIET);
  *        subsequent arguments are converted to output.
  */
 void av_log(void *avcl, int level, const char *fmt, ...);
+
 
 /**
  * Send the specified message to the log if the level is less than or equal
@@ -248,7 +295,8 @@ void av_log_set_callback(void* function(void*, int, const char*, va_list) log_ca
  *        subsequent arguments are converted to output.
  * @param vl The arguments referenced by the format string.
  */
-void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl);
+void av_log_default_callback(void* ptr, int level, const char* fmt,
+                             va_list vl);
 
 /**
  * Return the context name
@@ -287,18 +335,19 @@ void av_log_format_line(void *ptr, int level, const char *fmt, va_list vl,
 int av_log_format_line2(void *ptr, int level, const char *fmt, va_list vl,
                         char *line, int line_size, int *print_prefix);
 
+static if(FF_API_DLOG){
 /**
  * av_dlog macros
+ * @deprecated unused
  * Useful to print debug messages that shouldn't get compiled in normally.
  */
 
-/**
-#ifdef DEBUG
-#    define av_dlog(pctx, ...) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__)
-#else
-#    define av_dlog(pctx, ...) do { if (0) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__); } while (0)
-#endif
-*/
+//#ifdef DEBUG
+//#    define av_dlog(pctx, ...) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__)
+//#else
+//#    define av_dlog(pctx, ...) do { if (0) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__); } while (0)
+//#endif
+}
 
 /**
  * Skip repeated messages, this requires the user app to use av_log() instead of
@@ -320,3 +369,9 @@ enum AV_LOG_PRINT_LEVEL = 2;
 
 void av_log_set_flags(int arg);
 int av_log_get_flags();
+
+/**
+ * @}
+ */
+
+//#endif /* AVUTIL_LOG_H */

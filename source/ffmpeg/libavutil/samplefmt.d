@@ -21,31 +21,40 @@ module ffmpeg.libavutil.samplefmt;
 import ffmpeg.libavutil.avutil_version;
 import std.stdint;
 
+
 @nogc nothrow extern(C):
 
 /**
- * Audio Sample Formats
+ * @addtogroup lavu_audio
+ * @{
+ *
+ * @defgroup lavu_sampfmts Audio sample formats
+ *
+ * Audio sample format enumeration and related convenience functions.
+ * @{
+ */
+
+/**
+ * Audio sample formats
+ *
+ * - The data described by the sample format is always in native-endian order.
+ *   Sample values can be expressed by native C types, hence the lack of a signed
+ *   24-bit sample format even though it is a common raw audio data format.
+ *
+ * - The floating-point formats are based on full volume being in the range
+ *   [-1.0, 1.0]. Any values outside this range are beyond full volume level.
+ *
+ * - The data layout as used in av_samples_fill_arrays() and elsewhere in FFmpeg
+ *   (such as AVFrame in libavcodec) is as follows:
  *
  * @par
- * The data described by the sample format is always in native-endian order.
- * Sample values can be expressed by native C types, hence the lack of a signed
- * 24-bit sample format even though it is a common raw audio data format.
- *
- * @par
- * The floating-point formats are based on full volume being in the range
- * [-1.0, 1.0]. Any values outside this range are beyond full volume level.
- *
- * @par
- * The data layout as used in av_samples_fill_arrays() and elsewhere in Libav
- * (such as AVFrame in libavcodec) is as follows:
- *
  * For planar sample formats, each audio channel is in a separate data plane,
  * and linesize is the buffer size, in bytes, for a single plane. All data
  * planes must be the same size. For packed sample formats, only the first data
  * plane is used, and samples for each channel are interleaved. In this case,
  * linesize is the buffer size, in bytes, for the 1 plane.
+ *
  */
-
 enum AVSampleFormat {
     AV_SAMPLE_FMT_NONE = -1,
     AV_SAMPLE_FMT_U8,          ///< unsigned 8 bits

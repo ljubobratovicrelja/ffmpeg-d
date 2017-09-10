@@ -17,7 +17,10 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
 module ffmpeg.libavformat.avformat_version;
+
+
 /**
  * @file
  * @ingroup libavf
@@ -26,8 +29,10 @@ module ffmpeg.libavformat.avformat_version;
 
 import ffmpeg.libavutil.avutil;
 
+// Major bumping may affect Ticket5467, 5421, 5451(compatibility with Chromium)
+// Also please add any ticket numbers that you belive might be affected here
 enum LIBAVFORMAT_VERSION_MAJOR = 57;
-enum LIBAVFORMAT_VERSION_MINOR = 25;
+enum LIBAVFORMAT_VERSION_MINOR = 41;
 enum LIBAVFORMAT_VERSION_MICRO = 100;
 
 enum LIBAVFORMAT_VERSION_INT = AV_VERSION_INT!(LIBAVFORMAT_VERSION_MAJOR,
@@ -54,10 +59,10 @@ enum FF_API_LAVF_BITEXACT        =   (LIBAVFORMAT_VERSION_MAJOR < 58);
 enum FF_API_LAVF_FRAC            =   (LIBAVFORMAT_VERSION_MAJOR < 58);
 enum FF_API_LAVF_CODEC_TB        =   (LIBAVFORMAT_VERSION_MAJOR < 58);
 enum FF_API_URL_FEOF             =   (LIBAVFORMAT_VERSION_MAJOR < 58);
-
 enum FF_API_LAVF_FMT_RAWPICTURE  =   (LIBAVFORMAT_VERSION_MAJOR < 58);
 enum FF_API_COMPUTE_PKT_FIELDS2  =   (LIBAVFORMAT_VERSION_MAJOR < 58);
 enum FF_API_OLD_OPEN_CALLBACKS   =   (LIBAVFORMAT_VERSION_MAJOR < 58);
+enum FF_API_LAVF_AVCTX           =   (LIBAVFORMAT_VERSION_MAJOR < 58);
 
 enum FF_API_R_FRAME_RATE         =   1;
 

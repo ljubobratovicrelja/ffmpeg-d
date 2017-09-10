@@ -17,22 +17,20 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
 module ffmpeg.libavutil.mem;
+
 /**
  * @file
  * memory handling functions
  */
 
-/*#ifndef AVUTIL_MEM_H
-#define AVUTIL_MEM_H
-
-#include <limits.h>*/
+//#include <limits.h>
 import std.stdint;
+
 import core.stdc.errno;
 import ffmpeg.libavutil.error;
-/*#include "attributes.h"
-#include "error.h"
-#include "avutil.h"*/
+//#include "attributes.h"
 
 @nogc nothrow extern(C):
 
@@ -40,7 +38,6 @@ import ffmpeg.libavutil.error;
  * @addtogroup lavu_mem
  * @{
  */
-
 
 /*#if defined(__INTEL_COMPILER) && __INTEL_COMPILER < 1110 || defined(__SUNPRO_C)
     #define DECLARE_ALIGNED(n,t,v)      t __attribute__ ((aligned (n))) v
@@ -86,8 +83,7 @@ import ffmpeg.libavutil.error;
 void *av_malloc(size_t size);
 
 /**
- * Helper function to allocate a block of size * nmemb bytes with
- * using av_malloc()
+ * Allocate a block of size * nmemb bytes with av_malloc().
  * @param nmemb Number of elements
  * @param size Size of the single element
  * @return Pointer to the allocated block, NULL if the block cannot
@@ -106,11 +102,17 @@ static void *av_malloc_array(size_t nmemb, size_t size)
  * If ptr is NULL and size > 0, allocate a new block. If
  * size is zero, free the memory block pointed to by ptr.
  * @param ptr Pointer to a memory block already allocated with
- * av_malloc(z)() or av_realloc() or NULL.
- * @param size Size in bytes for the memory block to be allocated or
+ * av_realloc() or NULL.
+ * @param size Size in bytes of the memory block to be allocated or
  * reallocated.
- * @return Pointer to a newly reallocated block or NULL if the block
+ * @return Pointer to a newly-reallocated block or NULL if the block
  * cannot be reallocated or the function is used to free the memory block.
+ * @warning Pointers originating from the av_malloc() family of functions must
+ *          not be passed to av_realloc(). The former can be implemented using
+ *          memalign() (or other functions), and there is no guarantee that
+ *          pointers from such functions can be passed to realloc() at all.
+ *          The situation is undefined according to POSIX and may crash with
+ *          some libc implementations.
  * @see av_fast_realloc()
  */
 void *av_realloc(void *ptr, size_t size);

@@ -20,7 +20,6 @@
  */
 
 module ffmpeg.libavfilter.avfilter;
-
 /**
  * @file
  * @ingroup lavfi
@@ -35,7 +34,11 @@ module ffmpeg.libavfilter.avfilter;
 import std.stdint;
 import std.bitmanip;
 import core.vararg;
+
 import ffmpeg.libavutil.avutil;
+import ffmpeg.libavutil.dict;
+import ffmpeg.libavutil.frame;
+import ffmpeg.libavutil.buffer;
 import ffmpeg.libavutil.samplefmt;
 import ffmpeg.libavcodec.avcodec;
 import ffmpeg.libavfilter.internal;
@@ -43,6 +46,7 @@ import ffmpeg.libavfilter.formats;
 import ffmpeg.libavfilter.avfilter_version;
 
 @nogc nothrow extern(C):
+
 /**
 * Return the LIBAVFILTER_VERSION_INT constant.
 */
@@ -296,6 +300,7 @@ struct AVFilter {
 enum AVFILTER_THREAD_SLICE=(1 << 0);
 
 struct AVFilterInternal;
+
 /** An instance of a filter */
 struct AVFilterContext {
     const AVClass *av_class;        ///< needed for av_log() and filters common options
@@ -345,6 +350,15 @@ struct AVFilterContext {
     void *enable;                   ///< parsed expression (AVExpr*)
     double *var_values;             ///< variable values for the enable expression
     int is_disabled;                ///< the enabled state from the last expression evaluation
+
+    /**
+     * For filters which will create hardware frames, sets the device the
+     * filter should create them in.  All other filters will ignore this field:
+     * in particular, a filter which consumes or processes hardware frames will
+     * instead use the hw_frames_ctx field in AVFilterLink to carry the
+     * hardware context information.
+     */
+    AVBufferRef *hw_device_ctx;
 }
 
 /**
@@ -447,11 +461,12 @@ struct AVFilterLink {
     int age_index;
 
     /**
-     * Frame rate of the stream on the link, or 1/0 if unknown;
-     * if left to 0/0, will be automatically be copied from the first input
+     * Frame rate of the stream on the link, or 1/0 if unknown or variable;
+     * if left to 0/0, will be automatically copied from the first input
      * of the source filter if it exists.
      *
      * Sources should set it to the best estimation of the real frame rate.
+     * If the source frame rate is unknown or variable, set this to 1/0.
      * Filters should update it if necessary depending on their function.
      * Sinks can use it to set a default output frame rate.
      * It is similar to the r_frame_rate field in AVStream.
@@ -529,6 +544,12 @@ struct AVFilterLink {
      * cleared when a frame is filtered.
      */
     int frame_wanted_out;
+
+    /**
+     * For hwaccel pixel formats, this should be a reference to the
+     * AVHWFramesContext describing the frames.
+     */
+    AVBufferRef *hw_frames_ctx;
 }
 
 /**
@@ -569,8 +590,8 @@ deprecated
  */
 int avfilter_config_links(AVFilterContext *filter);
 
-const uint AVFILTER_CMD_FLAG_ONE  = 1; ///< Stop once a filter understood the command (for target=all for example), fast filters are favored automatically
-const uint AVFILTER_CMD_FLAG_FAST = 2; ///< Only execute command when its fast (like a video out that supports contrast adjustment in hw)
+enum AVFILTER_CMD_FLAG_ONE  = 1; ///< Stop once a filter understood the command (for target=all for example), fast filters are favored automatically
+enum AVFILTER_CMD_FLAG_FAST = 2; ///< Only execute command when its fast (like a video out that supports contrast adjustment in hw)
 
 /**
  * Make the filter instance process a command.
@@ -582,9 +603,9 @@ int avfilter_process_command(AVFilterContext *filter, const char *cmd, const cha
 void avfilter_register_all();
 
 static if (FF_API_OLD_FILTER_REGISTER) {
-/** Uninitialize the filter system. Unregister all filters. */
-deprecated
-void avfilter_uninit();
+    /** Uninitialize the filter system. Unregister all filters. */
+    deprecated
+        void avfilter_uninit();
 }
 
 /**
@@ -619,46 +640,46 @@ AVFilter *avfilter_get_by_name(const char *name);
 AVFilter *avfilter_next(const AVFilter *prev);
 
 static if (FF_API_OLD_FILTER_REGISTER) {
-/**
- * If filter is NULL, returns a pointer to the first registered filter pointer,
- * if filter is non-NULL, returns the next pointer after filter.
- * If the returned pointer points to NULL, the last registered filter
- * was already reached.
- * @deprecated use avfilter_next()
- */
-deprecated
-AVFilter **av_filter_next(AVFilter **filter);
+    /**
+     * If filter is NULL, returns a pointer to the first registered filter pointer,
+     * if filter is non-NULL, returns the next pointer after filter.
+     * If the returned pointer points to NULL, the last registered filter
+     * was already reached.
+     * @deprecated use avfilter_next()
+     */
+    deprecated
+        AVFilter **av_filter_next(AVFilter **filter);
 }
 
 static if (FF_API_AVFILTER_OPEN) {
-/**
- * Create a filter instance.
- *
- * @param filter_ctx put here a pointer to the created filter context
- * on success, NULL on failure
- * @param filter    the filter to create an instance of
- * @param inst_name Name to give to the new instance. Can be NULL for none.
- * @return >= 0 in case of success, a negative error code otherwise
- * @deprecated use avfilter_graph_alloc_filter() instead
- */
-deprecated
-int avfilter_open(AVFilterContext **filter_ctx, AVFilter *filter, const char *inst_name);
+    /**
+     * Create a filter instance.
+     *
+     * @param filter_ctx put here a pointer to the created filter context
+     * on success, NULL on failure
+     * @param filter    the filter to create an instance of
+     * @param inst_name Name to give to the new instance. Can be NULL for none.
+     * @return >= 0 in case of success, a negative error code otherwise
+     * @deprecated use avfilter_graph_alloc_filter() instead
+     */
+    deprecated
+        int avfilter_open(AVFilterContext **filter_ctx, AVFilter *filter, const char *inst_name);
 }
 
 
 static if (FF_API_AVFILTER_INIT_FILTER) {
-/**
- * Initialize a filter.
- *
- * @param filter the filter to initialize
- * @param args   A string of parameters to use when initializing the filter.
- *               The format and meaning of this string varies by filter.
- * @param opaque Any extra non-string data needed by the filter. The meaning
- *               of this parameter varies by filter.
- * @return       zero on success
- */
-deprecated
-int avfilter_init_filter(AVFilterContext *filter, const char *args, void *opaque);
+    /**
+     * Initialize a filter.
+     *
+     * @param filter the filter to initialize
+     * @param args   A string of parameters to use when initializing the filter.
+     *               The format and meaning of this string varies by filter.
+     * @param opaque Any extra non-string data needed by the filter. The meaning
+     *               of this parameter varies by filter.
+     * @return       zero on success
+     */
+    deprecated
+        int avfilter_init_filter(AVFilterContext *filter, const char *args, void *opaque);
 }
 
 /**
@@ -825,6 +846,8 @@ struct AVFilterGraph {
 
 /**
  * Allocate a filter graph.
+ *
+ * @return the allocated filter graph on success or NULL.
  */
 AVFilterGraph *avfilter_graph_alloc();
 
@@ -857,17 +880,17 @@ AVFilterContext *avfilter_graph_alloc_filter(AVFilterGraph *graph,
 AVFilterContext *avfilter_graph_get_filter(AVFilterGraph *graph, const char *name);
 
 static if (FF_API_AVFILTER_OPEN) {
-/**
- * Add an existing filter instance to a filter graph.
- *
- * @param graphctx  the filter graph
- * @param filter the filter to be added
- *
- * @deprecated use avfilter_graph_alloc_filter() to allocate a filter in a
- * filter graph
- */
-deprecated
-int avfilter_graph_add_filter(AVFilterGraph *graphctx, AVFilterContext *filter);
+    /**
+     * Add an existing filter instance to a filter graph.
+     *
+     * @param graphctx  the filter graph
+     * @param filter the filter to be added
+     *
+     * @deprecated use avfilter_graph_alloc_filter() to allocate a filter in a
+     * filter graph
+     */
+    deprecated
+        int avfilter_graph_add_filter(AVFilterGraph *graphctx, AVFilterContext *filter);
 }
 
 /**
@@ -977,6 +1000,10 @@ int avfilter_graph_parse(AVFilterGraph *graph, const char *filters,
 
 /**
  * Add a graph described by a string to a graph.
+ *
+ * In the graph filters description, if the input label of the first
+ * filter is not specified, "in" is assumed; if the output label of
+ * the last filter is not specified, "out" is assumed.
  *
  * @param graph   the filter graph where to link the parsed graph context
  * @param filters string to be parsed

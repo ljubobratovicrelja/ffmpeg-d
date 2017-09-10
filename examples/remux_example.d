@@ -1,7 +1,9 @@
 /*
  * copyright (c) 2017 David Bennett <davidbennett@bravevision.com>
  *
- * This is a working remuxer used to check everything is linked correcty.
+ * This is a working remuxer and is used to check everything is linked correcty.
+ *
+ * It copys vidio and audio streams from any input to an output container based on the file extension.
  *
  * To try it out just compile it using:
  *   dub build --config=remux_example
@@ -10,13 +12,16 @@
  *   ./remux_example in.mkv out.mkv
  */
 
-import std.string : toStringz;
+import ffmpeg.libavcodec.avcodec;
 
 import ffmpeg.libavformat.avformat;
 import ffmpeg.libavformat.avio;
-import ffmpeg.libavcodec.avcodec;
+
 import ffmpeg.libavutil.avutil;
+import ffmpeg.libavutil.frame;
 import ffmpeg.libavutil.mathematics;
+
+import std.string : toStringz;
 
 void main(string[] args) {
 
@@ -35,12 +40,6 @@ void main(string[] args) {
     // ##########################
 
     AVFormatContext* input_fmt_ctx = null;
-
-    AVFrame* input_video_frame;
-    AVFrame* input_audio_frame;
-
-    size_t input_video_stream_index;
-    size_t input_audio_stream_index;
 
     // Open the file and init the AVFormatContext
     if(avformat_open_input(&input_fmt_ctx, input_filename.toStringz, null, null) < 0)
@@ -67,38 +66,31 @@ void main(string[] args) {
         throw new Exception("Failed to create output context");
 
     // Copy some information from the input AVFormatContext
-    for(size_t i=0; i<input_fmt_ctx.nb_streams; i++)
-    {
+    for(size_t i=0; i<input_fmt_ctx.nb_streams; i++) {
 
         AVStream* in_stream = input_fmt_ctx.streams[i];
 
         // only audio and video
         if(
-                in_stream.codec.codec_type != AVMediaType.AVMEDIA_TYPE_VIDEO
+                in_stream.codecpar.codec_type != AVMediaType.AVMEDIA_TYPE_VIDEO
             &&
-                in_stream.codec.codec_type != AVMediaType.AVMEDIA_TYPE_AUDIO
+                in_stream.codecpar.codec_type != AVMediaType.AVMEDIA_TYPE_AUDIO
         ) continue;
 
         // Create a new output stream based on the input stream
-
-        AVStream* out_stream = avformat_new_stream(output_fmt_ctx, in_stream.codec.codec);
-        if (!out_stream)
+        AVCodec* output_codec = avcodec_find_encoder(in_stream.codecpar.codec_id);
+        AVStream* out_stream = avformat_new_stream(output_fmt_ctx, output_codec);
+        if(!out_stream)
             throw new Exception("Failed allocating output stream");
 
-        // Copy input stream codec contect to the output stream
-        if(avcodec_copy_context(out_stream.codec, in_stream.codec) < 0)
-            throw new Exception("Failed to copy context from input to output stream codec context");
-
-        // Setup a few properties that are needed by some codec/container combos.
-        out_stream.codec.codec_tag = 0;
-        if (output_fmt_ctx.oformat.flags & AVFMT_GLOBALHEADER) // 0x0040
-            out_stream.codec.flags |= AV_CODEC_FLAG_GLOBAL_HEADER; // (1 << 22)
+        // Copy input stream codec parameters to the output stream
+        if(avcodec_parameters_copy(out_stream.codecpar, in_stream.codecpar) < 0)
+            throw new Exception("Failed to copy parameters from input to output stream codec parameters");
 
     }
 
     // Writes ffmpeg like output format information to console. Good for debuging.
     av_dump_format(output_fmt_ctx, 0, output_filename.toStringz, 1);
-
 
     // Open the output file
     if(!(output_fmt_ctx.oformat.flags & AVFMT_NOFILE)) // 0x0001
@@ -111,7 +103,6 @@ void main(string[] args) {
 
 
 
-
     // ##########################
     //   PART 3:
     //     READ PACKETS FROM DEMUXER and WRITE TO MUXER
@@ -120,16 +111,16 @@ void main(string[] args) {
     AVPacket pkt;
 
     // Loop over all the packets in the input container
-    while (av_read_frame(input_fmt_ctx, &pkt) >= 0) {
+    while(av_read_frame(input_fmt_ctx, &pkt) >= 0) {
 
         AVStream* in_stream  = input_fmt_ctx.streams[pkt.stream_index];
         AVStream* out_stream = output_fmt_ctx.streams[pkt.stream_index];
 
         // only audio and video
         if(
-                in_stream.codec.codec_type != AVMediaType.AVMEDIA_TYPE_VIDEO
+                in_stream.codecpar.codec_type != AVMediaType.AVMEDIA_TYPE_VIDEO
             &&
-                in_stream.codec.codec_type != AVMediaType.AVMEDIA_TYPE_AUDIO
+                in_stream.codecpar.codec_type != AVMediaType.AVMEDIA_TYPE_AUDIO
         ) continue;
 
         // Rescale timecode to match the output container
@@ -162,9 +153,11 @@ void main(string[] args) {
     avformat_close_input(&input_fmt_ctx);
     avformat_free_context(input_fmt_ctx);
 
-    // close the output file if exists and free context
-    if (output_fmt_ctx && !(output_fmt_ctx.oformat.flags & AVFMT_NOFILE))
+    // close the output file if needed
+    if(output_fmt_ctx && !(output_fmt_ctx.oformat.flags & AVFMT_NOFILE))
         avio_closep(&output_fmt_ctx.pb);
+
+    // free output format context
     avformat_free_context(output_fmt_ctx);
 
 }

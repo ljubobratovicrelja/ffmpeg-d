@@ -29,7 +29,7 @@ module ffmpeg.libavfilter.avfilter_version;
 import ffmpeg.libavutil.avutil;
 
 enum LIBAVFILTER_VERSION_MAJOR = 6;
-enum LIBAVFILTER_VERSION_MINOR = 31;
+enum LIBAVFILTER_VERSION_MINOR = 47;
 enum LIBAVFILTER_VERSION_MICRO = 100;
 
 enum LIBAVFILTER_VERSION_INT = AV_VERSION_INT!(LIBAVFILTER_VERSION_MAJOR, 

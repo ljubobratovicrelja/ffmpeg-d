@@ -17,8 +17,11 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
 module ffmpeg.libavutil.mathematics;
+
 import std.stdint;
+
 import ffmpeg.libavutil.rational;
 import ffmpeg.libavutil.intfloat;
 
@@ -36,10 +39,34 @@ enum INFINITY     =  av_int2float(0x7f800000);
 
 @nogc nothrow extern(C):
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * @addtogroup lavu_math
  * @{
  */
+
+
 enum AVRounding {
     AV_ROUND_ZERO     = 0, ///< Round toward zero.
     AV_ROUND_INF      = 1, ///< Round away from zero.
@@ -117,7 +144,6 @@ int64_t av_compare_mod(uint64_t a, uint64_t b, uint64_t mod);
  */
 int64_t av_rescale_delta(AVRational in_tb, int64_t in_ts,  AVRational fs_tb, int duration, int64_t *last, AVRational out_tb);
 
-
 /**
  * Add a value to a timestamp.
  *
@@ -131,6 +157,9 @@ int64_t av_rescale_delta(AVRational in_tb, int64_t in_ts,  AVRational fs_tb, int
  */
 int64_t av_add_stable(AVRational ts_tb, int64_t ts, AVRational inc_tb, int64_t inc);
 
+
 /**
  * @}
  */
+
+//#endif /* AVUTIL_MATHEMATICS_H */

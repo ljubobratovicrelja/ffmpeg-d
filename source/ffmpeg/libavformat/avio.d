@@ -17,19 +17,22 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-module ffmpeg.libavformat.avio;
-import std.stdint;
-import std.stdio;
-import ffmpeg.libavutil.avutil;
-import ffmpeg.libavformat.avformat_version;
-import ffmpeg.libavformat.url;
 
-@nogc nothrow extern(C):
+module ffmpeg.libavformat.avio;
+
 /**
  * @file
  * @ingroup lavf_io
  * Buffered I/O operations
  */
+import std.stdint;
+import std.stdio;
+import ffmpeg.libavutil.avutil;
+import ffmpeg.libavformat.avformat_version;
+import ffmpeg.libavformat.url;
+import ffmpeg.libavutil.dict;
+
+@nogc nothrow extern(C):
 
 const int AVIO_SEEKABLE_NORMAL = 0x0001; /**< Seeking works like for a local file */
 
@@ -91,6 +94,42 @@ struct AVIODirEntry {
 
 struct AVIODirContext {
     URLContext *url_context;
+}
+
+/**
+ * Different data types that can be returned via the AVIO
+ * write_data_type callback.
+ */
+enum AVIODataMarkerType {
+    /**
+     * Header data; this needs to be present for the stream to be decodeable.
+     */
+    AVIO_DATA_MARKER_HEADER,
+    /**
+     * A point in the output bytestream where a decoder can start decoding
+     * (i.e. a keyframe). A demuxer/decoder given the data flagged with
+     * AVIO_DATA_MARKER_HEADER, followed by any AVIO_DATA_MARKER_SYNC_POINT,
+     * should give decodeable results.
+     */
+    AVIO_DATA_MARKER_SYNC_POINT,
+    /**
+     * A point in the output bytestream where a demuxer can start parsing
+     * (for non self synchronizing bytestream formats). That is, any
+     * non-keyframe packet start point.
+     */
+    AVIO_DATA_MARKER_BOUNDARY_POINT,
+    /**
+     * This is any, unlabelled data. It can either be a muxer not marking
+     * any positions at all, it can be an actual boundary/sync point
+     * that the muxer chooses not to mark, or a later part of a packet/fragment
+     * that is cut into multiple write callbacks due to limited IO buffer size.
+     */
+    AVIO_DATA_MARKER_UNKNOWN,
+    /**
+     * Trailer data, which doesn't contain actual content, but only for
+     * finalizing the output file.
+     */
+    AVIO_DATA_MARKER_TRAILER
 }
 
 /**
@@ -251,9 +290,30 @@ struct AVIOContext {
      * ',' separated list of allowed protocols.
      */
     const char *protocol_whitelist;
-}
 
-/* unbuffered I/O */
+    /**
+     * ',' separated list of disallowed protocols.
+     */
+    const char *protocol_blacklist;
+
+    /**
+     * A callback that is used instead of write_packet.
+     */
+    int function(void *opaque, uint8_t *buf, int buf_size,
+                           AVIODataMarkerType type, int64_t time) write_data_type;
+    /**
+     * If set, don't call write_data_type separately for AVIO_DATA_MARKER_BOUNDARY_POINT,
+     * but ignore them and treat them as AVIO_DATA_MARKER_UNKNOWN (to avoid needlessly
+     * small chunks of data returned from the callback).
+     */
+    int ignore_boundary_point;
+
+    /**
+     * Internal, not meant to be used from outside of AVIOContext.
+     */
+    AVIODataMarkerType current_type;
+    int64_t last_time;
+}
 
 /**
  * Return the name of the protocol that will handle the passed URL.
@@ -389,6 +449,9 @@ int avio_put_str(AVIOContext *s, const char *str);
 
 /**
  * Convert an UTF-8 string to UTF-16LE and write it.
+ * @param s the AVIOContext
+ * @param str NULL-terminated UTF-8 string
+ *
  * @return number of bytes written.
  */
 int avio_put_str16le(AVIOContext *s, const char *str);
@@ -401,6 +464,18 @@ int avio_put_str16le(AVIOContext *s, const char *str);
  * @return number of bytes written.
  */
 int avio_put_str16be(AVIOContext *s, const char *str);
+
+/**
+ * Mark the written bytestream as a specific type.
+ *
+ * Zero-length ranges are omitted from the output.
+ *
+ * @param time the stream time the current bytestream pos corresponds to
+ *             (in AV_TIME_BASE units), or AV_NOPTS_VALUE if unknown or not
+ *             applicable
+ * @param type the kind of data written starting at the current pos
+ */
+void avio_write_marker(AVIOContext *s, int64_t time, AVIODataMarkerType type);
 
 /**
  * Passing this as the "whence" parameter to a seek function causes it to
@@ -450,21 +525,25 @@ int64_t avio_size(AVIOContext *s);
  */
 int avio_feof(AVIOContext *s);
 static if (FF_API_URL_FEOF) {
-/**
- * @deprecated use avio_feof()
- */
-deprecated
-int url_feof(AVIOContext *s);
+    /**
+     * @deprecated use avio_feof()
+     */
+    deprecated
+        int url_feof(AVIOContext *s);
 }
 
 /** @warning currently size is limited */
 int avio_printf(AVIOContext *s, const char *fmt, ...);
 
 /**
- * Force flushing of buffered data to the output s.
+ * Force flushing of buffered data.
  *
- * Force the buffered data to be immediately written to the output,
+ * For write streams, force the buffered data to be immediately written to the output,
  * without to wait to fill the internal buffer.
+ *
+ * For read streams, discard all currently buffered data, and advance the
+ * reported file position to that of the underlying stream. This does not
+ * read new data, and does not perform any seeks.
  */
 void avio_flush(AVIOContext *s);
 
@@ -719,3 +798,4 @@ int avio_accept(AVIOContext *s, AVIOContext **c);
  *           < 0 for an AVERROR code
  */
 int avio_handshake(AVIOContext *c);
+//#endif /* AVFORMAT_AVIO_H */

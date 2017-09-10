@@ -17,20 +17,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+module ffmpeg.libavformat.url;
+
 /**
  * @file
  * unbuffered private I/O API
  */
 
-module ffmpeg.libavformat.url;
-
 import ffmpeg.libavformat.avio;
 import ffmpeg.libavutil.dict;
 import ffmpeg.libavutil.log;
-
 import std.stdint;
 
 @nogc nothrow extern(C):
+enum URL_PROTOCOL_FLAG_NESTED_SCHEME = 1; /*< The protocol name can be the first part of a nested protocol scheme */
+enum URL_PROTOCOL_FLAG_NETWORK       = 2; /*< The protocol uses network */
 
 struct URLContext {
     const AVClass *av_class;    /**< information for av_log(). Set by url_open(). */
@@ -44,6 +45,7 @@ struct URLContext {
     AVIOInterruptCB interrupt_callback;
     int64_t rw_timeout;         /**< maximum time to wait for (network) read/write operation completion, in mcs */
     const char *protocol_whitelist;
+    const char *protocol_blacklist;
 }
 
 struct URLProtocol {
@@ -74,7 +76,6 @@ struct URLProtocol {
     int     function(URLContext *h, const ubyte *buf, int size) url_write;
     int64_t function( URLContext *h, int64_t pos, int whence) url_seek;
     int     function(URLContext *h) url_close;
-    URLProtocol *next;
     int function(URLContext *h, int pause) url_read_pause;
     int64_t function(URLContext *h, int stream_index,
                              int64_t timestamp, int flags) url_read_seek;

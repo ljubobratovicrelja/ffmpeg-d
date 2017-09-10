@@ -1,4 +1,125 @@
+/*
+ * Copyright (C) 2011-2013 Michael Niedermayer (michaelni@gmx.at)
+ *
+ * This file is part of libswresample
+ *
+ * libswresample is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * libswresample is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with libswresample; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
 module ffmpeg.libswresample.swresample;
+
+
+/**
+ * @file
+ * @ingroup lswr
+ * libswresample public header
+ */
+
+/**
+ * @defgroup lswr Libswresample
+ * @{
+ *
+ * Libswresample (lswr) is a library that handles audio resampling, sample
+ * format conversion and mixing.
+ *
+ * Interaction with lswr is done through SwrContext, which is
+ * allocated with swr_alloc() or swr_alloc_set_opts(). It is opaque, so all parameters
+ * must be set with the @ref avoptions API.
+ *
+ * The first thing you will need to do in order to use lswr is to allocate
+ * SwrContext. This can be done with swr_alloc() or swr_alloc_set_opts(). If you
+ * are using the former, you must set options through the @ref avoptions API.
+ * The latter function provides the same feature, but it allows you to set some
+ * common options in the same statement.
+ *
+ * For example the following code will setup conversion from planar float sample
+ * format to interleaved signed 16-bit integer, downsampling from 48kHz to
+ * 44.1kHz and downmixing from 5.1 channels to stereo (using the default mixing
+ * matrix). This is using the swr_alloc() function.
+ * @code
+ * SwrContext *swr = swr_alloc();
+ * av_opt_set_channel_layout(swr, "in_channel_layout",  AV_CH_LAYOUT_5POINT1, 0);
+ * av_opt_set_channel_layout(swr, "out_channel_layout", AV_CH_LAYOUT_STEREO,  0);
+ * av_opt_set_int(swr, "in_sample_rate",     48000,                0);
+ * av_opt_set_int(swr, "out_sample_rate",    44100,                0);
+ * av_opt_set_sample_fmt(swr, "in_sample_fmt",  AV_SAMPLE_FMT_FLTP, 0);
+ * av_opt_set_sample_fmt(swr, "out_sample_fmt", AV_SAMPLE_FMT_S16,  0);
+ * @endcode
+ *
+ * The same job can be done using swr_alloc_set_opts() as well:
+ * @code
+ * SwrContext *swr = swr_alloc_set_opts(NULL,  // we're allocating a new context
+ *                       AV_CH_LAYOUT_STEREO,  // out_ch_layout
+ *                       AV_SAMPLE_FMT_S16,    // out_sample_fmt
+ *                       44100,                // out_sample_rate
+ *                       AV_CH_LAYOUT_5POINT1, // in_ch_layout
+ *                       AV_SAMPLE_FMT_FLTP,   // in_sample_fmt
+ *                       48000,                // in_sample_rate
+ *                       0,                    // log_offset
+ *                       NULL);                // log_ctx
+ * @endcode
+ *
+ * Once all values have been set, it must be initialized with swr_init(). If
+ * you need to change the conversion parameters, you can change the parameters
+ * using @ref AVOptions, as described above in the first example; or by using
+ * swr_alloc_set_opts(), but with the first argument the allocated context.
+ * You must then call swr_init() again.
+ *
+ * The conversion itself is done by repeatedly calling swr_convert().
+ * Note that the samples may get buffered in swr if you provide insufficient
+ * output space or if sample rate conversion is done, which requires "future"
+ * samples. Samples that do not require future input can be retrieved at any
+ * time by using swr_convert() (in_count can be set to 0).
+ * At the end of conversion the resampling buffer can be flushed by calling
+ * swr_convert() with NULL in and 0 in_count.
+ *
+ * The samples used in the conversion process can be managed with the libavutil
+ * @ref lavu_sampmanip "samples manipulation" API, including av_samples_alloc()
+ * function used in the following example.
+ *
+ * The delay between input and output, can at any time be found by using
+ * swr_get_delay().
+ *
+ * The following code demonstrates the conversion loop assuming the parameters
+ * from above and caller-defined functions get_input() and handle_output():
+ * @code
+ * uint8_t **input;
+ * int in_samples;
+ *
+ * while (get_input(&input, &in_samples)) {
+ *     uint8_t *output;
+ *     int out_samples = av_rescale_rnd(swr_get_delay(swr, 48000) +
+ *                                      in_samples, 44100, 48000, AV_ROUND_UP);
+ *     av_samples_alloc(&output, NULL, 2, out_samples,
+ *                      AV_SAMPLE_FMT_S16, 0);
+ *     out_samples = swr_convert(swr, &output, out_samples,
+ *                                      input, in_samples);
+ *     handle_output(output, out_samples);
+ *     av_freep(&output);
+ * }
+ * @endcode
+ *
+ * When the conversion is finished, the conversion
+ * context and everything associated with it must be freed with swr_free().
+ * A swr_close() function is also available, but it exists mainly for
+ * compatibility with libavresample, and is not required to be called.
+ *
+ * There will be no memory leak if the data is not completely flushed before
+ * swr_free().
+ */
+
 import std.stdint;
 import ffmpeg.libavutil.avutil;
 import ffmpeg.libavutil.frame;
@@ -6,36 +127,21 @@ import ffmpeg.libavutil.samplefmt;
 import ffmpeg.libswresample.swresample_version;
 
 @nogc nothrow extern(C):
-
-/**
-* @defgroup libswresample Color conversion and scaling
-* @{
-*
-* Return the LIBSWRESAMPLE_VERSION_INT constant.
-*/
-uint swresample_version();
-
-/**
-* Return the libswresample build-time configuration.
-*/
-char* swresample_configuration();
-
-/**
-* Return the libswresample license.
-*/
-char* swresample_license();
-
-
-
-static if (LIBSWRESAMPLE_VERSION_MAJOR) {
+static if (LIBSWRESAMPLE_VERSION_MAJOR < 1) {
     enum SWR_CH_MAX = 32;
 }
 
+/**
+ * @name Option constants
+ * These constants are used for the @ref avoptions interface for lswr.
+ * @{
+ *
+ */
+enum SWR_FLAG_RESAMPLE =   1; ///< Force resampling even if equal sample rate
+//TODO use int resample ?
+//long term TODO can we enable this dynamically?
 
-
-/* values for the flags, the stuff on the command line is different */
-enum SWR_FLAG_RESAMPLE =   1;
-
+/** Dithering algorithms */
 enum SwrDitherType {
     SWR_DITHER_NONE = 0,
     SWR_DITHER_RECTANGULAR,
@@ -351,6 +457,37 @@ int swr_get_out_samples(SwrContext *s, int in_samples);
 /**
  * @}
  *
+ * @name Configuration accessors
+ * @{
+ */
+
+/**
+ * Return the @ref LIBSWRESAMPLE_VERSION_INT constant.
+ *
+ * This is useful to check if the build-time libswresample has the same version
+ * as the run-time one.
+ *
+ * @returns     the unsigned int-typed version
+ */
+uint swresample_version();
+
+/**
+ * Return the swr build-time configuration.
+ *
+ * @returns     the build-time @c ./configure flags
+ */
+char* swresample_configuration();
+
+/**
+ * Return the swr license.
+ *
+ * @returns     the license of libswresample, determined at build-time
+ */
+char* swresample_license();
+
+/**
+ * @}
+ *
  * @name AVFrame based API
  * @{
  */
@@ -412,3 +549,5 @@ int swr_config_frame(SwrContext *swr, const AVFrame *out_frame, const AVFrame *i
  * @}
  * @}
  */
+
+//#endif /* SWRESAMPLE_SWRESAMPLE_H */
