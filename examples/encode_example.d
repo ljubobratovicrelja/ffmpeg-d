@@ -1,7 +1,9 @@
 /*
  * copyright (c) 2017 David Bennett <davidbennett@bravevision.com>
  *
- * This is a working encoder used to check everything is linked correcty.
+ * This is a working encoder and is used to check everything is linked correcty.
+ *
+ * It converts any progressive input to a x264 + flac stream.
  *
  * To try it out just compile it using:
  *   dub build --config=encode_example
@@ -10,18 +12,22 @@
  *   ./encode_example in.mkv out.mkv
  */
 
-import std.string : toStringz;
+import ffmpeg.libavcodec.avcodec;
 
 import ffmpeg.libavformat.avformat;
 import ffmpeg.libavformat.avio;
-import ffmpeg.libavcodec.avcodec;
+
 import ffmpeg.libavutil.avutil;
+import ffmpeg.libavutil.channel_layout;
 import ffmpeg.libavutil.frame;
 import ffmpeg.libavutil.mathematics;
-import ffmpeg.libavutil.channel_layout;
-import ffmpeg.libswscale.swscale;
-import ffmpeg.libswresample.swresample;
+
 import ffmpeg.libswresample.audioconvert;
+import ffmpeg.libswresample.swresample;
+
+import ffmpeg.libswscale.swscale;
+
+import std.string : toStringz;
 
 void main(string[] args) {
 
@@ -39,7 +45,7 @@ void main(string[] args) {
     //     SET UP THE THE DEMUXER
     // ##########################
 
-    AVFormatContext* input_fmt_ctx = null;
+    AVFormatContext* input_fmt_ctx;
 
     AVStream* input_video_stream;
     AVStream* input_audio_stream;
@@ -65,8 +71,7 @@ void main(string[] args) {
     av_dump_format(input_fmt_ctx, 0, input_filename.toStringz, 0);
 
     // Copy some information from the input AVFormatContext
-    for(size_t i=0; i<input_fmt_ctx.nb_streams; i++)
-    {
+    for(size_t i=0; i<input_fmt_ctx.nb_streams; i++) {
 
         AVStream* in_stream = input_fmt_ctx.streams[i];
 
@@ -74,19 +79,13 @@ void main(string[] args) {
         if( in_stream.codecpar.codec_type == AVMediaType.AVMEDIA_TYPE_VIDEO) {
             input_video_stream = in_stream;
             input_video_stream_index = i;
-            input_video_codec_ctx = input_video_stream.codec; // TODO remove deprecation. currently needed for time_base in decoding internals
+            input_video_codec_ctx = input_video_stream.codec;
             input_video_codec = avcodec_find_decoder(in_stream.codecpar.codec_id);
-//            input_video_codec_ctx = avcodec_alloc_context3(input_video_codec);
-//            if(avcodec_parameters_to_context(input_video_codec_ctx, in_stream.codecpar) < 0)
-//                throw new Exception("Could not set input context from input video codec parameters");
         } else if(in_stream.codecpar.codec_type == AVMediaType.AVMEDIA_TYPE_AUDIO){
             input_audio_stream = in_stream;
             input_audio_stream_index = i;
-            input_audio_codec_ctx = input_audio_stream.codec; // TODO remove deprecation. currently needed for time_base in decoding internals
+            input_audio_codec_ctx = input_audio_stream.codec;
             input_audio_codec = avcodec_find_decoder(in_stream.codecpar.codec_id);
-//            input_audio_codec_ctx = avcodec_alloc_context3(input_audio_codec);
-//            if(avcodec_parameters_to_context(input_audio_codec_ctx, in_stream.codecpar) < 0)
-//                throw new Exception("Could not set input context from input audio codec parameters");
         } else continue;
 
     }
@@ -94,15 +93,18 @@ void main(string[] args) {
     // Open the decoders, we do this here as it will set some of the codec context
     if(avcodec_open2(input_video_codec_ctx, input_video_codec, null) < 0)
         throw new Exception("Could not open input video codec");
+
     if(avcodec_open2(input_audio_codec_ctx, input_audio_codec, null) < 0)
         throw new Exception("Could not open input audio codec");
+
+
 
     // ##########################
     //   PART 2:
     //     SET UP THE THE MUXER
     // ##########################
 
-    AVFormatContext* output_fmt_ctx = null;
+    AVFormatContext* output_fmt_ctx;
 
     // Create a new output AVFormatContext with infomation with the filename
     if(avformat_alloc_output_context2(&output_fmt_ctx, null, null, output_filename.toStringz) < 0)
@@ -131,18 +133,21 @@ void main(string[] args) {
 
     // init the video codec
     output_video_codec = avcodec_find_encoder(AVCodecID.AV_CODEC_ID_H264);
-    if(!output_video_codec) throw new Exception("Could not find h264 codec");
+
+    if(!output_video_codec)
+        throw new Exception("Could not find h264 codec");
+
     output_fmt_ctx.oformat.video_codec = AVCodecID.AV_CODEC_ID_H264;
 
     // init the video stream
     output_video_stream = avformat_new_stream(output_fmt_ctx, output_video_codec);
-    if(!output_video_stream) throw new Exception("Could not create video stream");
 
-    // copy the stream time_base from the input
-//    output_video_stream.time_base.num    = input_video_stream.time_base.num;
-//    output_video_stream.time_base.den    = input_video_stream.time_base.den;
+    if(!output_video_stream)
+        throw new Exception("Could not create video stream");
+
+    // set the stream time base to 1/10000 of a second
     output_video_stream.time_base.num    = 1;
-    output_video_stream.time_base.den    = 10000;
+    output_video_stream.time_base.den    = 10_000;
 
     // copy the stream avg_frame_rate from the input
     output_video_stream.avg_frame_rate.num = input_video_stream.avg_frame_rate.num;
@@ -153,7 +158,6 @@ void main(string[] args) {
     output_video_stream.sample_aspect_ratio.den = input_video_stream.sample_aspect_ratio.den;
 
     output_video_stream_index = output_video_stream.index;
-//    output_video_codec_ctx   = avcodec_alloc_context3(output_video_codec);
     output_video_codec_ctx   = output_video_stream.codec;
 
     // cody the resolution from the input
@@ -161,19 +165,14 @@ void main(string[] args) {
     output_video_codec_ctx.height        = input_video_codec_ctx.height;
     output_video_codec_ctx.pix_fmt       = input_video_codec_ctx.pix_fmt;
 
-
-//    // cody the codec time base from the input
-//    output_video_codec_ctx.time_base.num = input_video_codec_ctx.time_base.num;
-//    output_video_codec_ctx.time_base.den = input_video_codec_ctx.time_base.den;
-
-    // cody the codec time base from the input
+    // set the codec time based on the avg_frame_rate from the input
     output_video_codec_ctx.time_base.num = input_video_stream.avg_frame_rate.den;
     output_video_codec_ctx.time_base.den = input_video_stream.avg_frame_rate.num;
 
     // Force a max gob of 240
     output_video_codec_ctx.gop_size      = 240;
 
-    if (output_fmt_ctx.oformat.flags & AVFMT_GLOBALHEADER) // 0x0040
+    if(output_fmt_ctx.oformat.flags & AVFMT_GLOBALHEADER) // 0x0040
         output_video_codec_ctx.flags |= AV_CODEC_FLAG_GLOBAL_HEADER; // (1 << 22)
 
     // Setup params for h264
@@ -184,40 +183,32 @@ void main(string[] args) {
     av_opt_set(output_video_codec_ctx.priv_data, "threads", "6", 0);
     av_opt_set(output_video_codec_ctx.priv_data, "x264opts", "threads=6", 0);
 
-//    if(avcodec_parameters_from_context(output_video_stream.codecpar, output_video_codec_ctx) < 0)
-//        throw new Exception("Could not open set stream codec parameters from video codec context");
-
     // Open the video codec
     if(avcodec_open2(output_video_codec_ctx, output_video_codec, null) < 0)
         throw new Exception("Could not open output video codec");
-
-
 
     // AUDIO CODEC
 
     // init the audio codex
     output_audio_codec = avcodec_find_encoder(AVCodecID.AV_CODEC_ID_FLAC);
-    if(!output_audio_codec) throw new Exception("Could not find flac codec");
+
+    if(!output_audio_codec)
+        throw new Exception("Could not find flac codec");
 
     output_fmt_ctx.oformat.audio_codec = AVCodecID.AV_CODEC_ID_FLAC;
 
     // init the audio stream
     output_audio_stream = avformat_new_stream(output_fmt_ctx, output_audio_codec);
-    if(!output_audio_stream) throw new Exception("Could not create audio stream");
 
-    // copy the stream time_base from the input
-//    output_audio_stream.time_base.num    = input_audio_stream.time_base.num;
-//    output_audio_stream.time_base.den    = input_audio_stream.time_base.den;
+    if(!output_audio_stream)
+        throw new Exception("Could not create audio stream");
+
+    // set the stream time base to 1/10000 of a second
     output_audio_stream.time_base.num    = 1;
-    output_audio_stream.time_base.den    = 10000;
+    output_audio_stream.time_base.den    = 10_000;
 
     output_audio_stream_index               = output_audio_stream.index;
-//    output_audio_codec_ctx                  = avcodec_alloc_context3(output_audio_codec);
     output_audio_codec_ctx                  = output_audio_stream.codec;
-
-//    // cody the codec time base from the input
-//    output_audio_codec_ctx.time_base.num    = input_audio_codec_ctx.time_base.num;
-//    output_audio_codec_ctx.time_base.den    = input_audio_codec_ctx.time_base.den;
 
     // set the time_base to the sample rate
     output_audio_codec_ctx.time_base.num    = 1;
@@ -226,15 +217,10 @@ void main(string[] args) {
     output_audio_codec_ctx.channels         = input_audio_codec_ctx.channels;
     output_audio_codec_ctx.channel_layout   = av_get_default_channel_layout(input_audio_codec_ctx.channels);
     output_audio_codec_ctx.sample_rate      = input_audio_codec_ctx.sample_rate;
-//    output_audio_codec_ctx.sample_fmt       = input_audio_codec_ctx.sample_fmt;
     output_audio_codec_ctx.sample_fmt       = output_audio_codec.sample_fmts[0];
 
-
     if(output_fmt_ctx.oformat.flags & 0x0040)
-        output_audio_codec_ctx.flags        |= (1 << 22); //AV_CODEC_FLAG_GLOBAL_HEADER
-
-//    if(avcodec_parameters_from_context(output_audio_stream.codecpar, output_audio_codec_ctx) < 0)
-//        throw new Exception("Could not open set stream codec parameters from audio codec context");
+        output_audio_codec_ctx.flags |= AV_CODEC_FLAG_GLOBAL_HEADER; //(1 << 22)
 
     if(avcodec_open2(output_audio_codec_ctx, output_audio_codec, null) < 0)
         throw new Exception("Could not open output audio codec");
@@ -272,7 +258,9 @@ void main(string[] args) {
     output_video_frame.height  = output_video_codec_ctx.height;
     output_video_frame.format  = output_video_codec_ctx.pix_fmt;
     output_video_frame.pts     = 0;
-    if(av_frame_get_buffer(output_video_frame, 32) < 0) throw new Exception("Could not allocate videoframe data.");
+
+    if(av_frame_get_buffer(output_video_frame, 32) < 0)
+        throw new Exception("Could not allocate videoframe data.");
 
     // Create a tempory audio frame to write the resampled data to.
     AVFrame* output_audio_frame = av_frame_alloc();
@@ -282,7 +270,9 @@ void main(string[] args) {
     output_audio_frame.channel_layout  = output_audio_codec_ctx.channel_layout;
     output_audio_frame.format          = output_audio_codec_ctx.sample_fmt;
     output_audio_frame.sample_rate     = output_audio_codec_ctx.sample_rate;
-    if(av_frame_get_buffer(output_audio_frame, 0) < 0) throw new Exception("Could not allocate audio frame data.");
+
+    if(av_frame_get_buffer(output_audio_frame, 0) < 0)
+        throw new Exception("Could not allocate audio frame data.");
 
     // Init the packets to and from the muxer
     AVPacket* input_packet = av_packet_alloc();
@@ -304,20 +294,20 @@ void main(string[] args) {
     bool reading_input = true;
 
     // Loop over all the packets in the input container
-    while (reading_input) {
+    while(reading_input) {
 
-        if(av_read_frame(input_fmt_ctx, input_packet) >= 0){
+        if(av_read_frame(input_fmt_ctx, input_packet) >= 0) {
             // read packet from the input file
-            if(input_packet.stream_index == input_video_stream_index){
+            if(input_packet.stream_index == input_video_stream_index) {
                 // Send the input packet to the video decoder
                 if(avcodec_send_packet(input_video_codec_ctx, input_packet) < 0)
                     throw new Exception("Error when decoding video packet");
-            }else{
+            } else if(input_packet.stream_index == input_audio_stream_index) {
                 // Send the input packet to the audio decoder
                 if(avcodec_send_packet(input_audio_codec_ctx, input_packet) < 0)
-                    throw new Exception("Error when decoding video packet");
+                    throw new Exception("Error when decoding audio packet");
             }
-        }else{
+        } else {
             // Stoped reading input, change to decoders to flush mode to get all remaining frames out of the decoders
             reading_input = false;
             // send null to put decoders into drain mode
@@ -327,8 +317,7 @@ void main(string[] args) {
 
 
         // Check for decoded video frames
-        while(avcodec_receive_frame(input_video_codec_ctx, input_video_frame) == 0)
-        {
+        while(avcodec_receive_frame(input_video_codec_ctx, input_video_frame) == 0) {
             // scale the input frame to the output frame size
             sws_scale(encode_sws_ctx,
                 input_video_frame.data.ptr,  input_video_frame.linesize.ptr, 0, input_video_frame.height,
@@ -338,15 +327,14 @@ void main(string[] args) {
             output_video_frame.pts = video_pts;
             video_pts += 1;
 
-            // Send decoded frame to the encoder
+            // Send decoded video frame to the encoder
             if(avcodec_send_frame(output_video_codec_ctx, output_video_frame) < 0)
                 throw new Exception("Error when sending video frame to encoder");
 
         }
 
         // Check for decoded audio frames
-        while(avcodec_receive_frame(input_audio_codec_ctx, input_audio_frame) == 0)
-        {
+        while(avcodec_receive_frame(input_audio_codec_ctx, input_audio_frame) == 0) {
 
             // Convert the audio sample rate and chanel layout
             swr_convert_frame(encode_swr_ctx, output_audio_frame, input_audio_frame);
@@ -355,39 +343,38 @@ void main(string[] args) {
             output_audio_frame.pts = audio_pts;
             audio_pts += output_audio_frame.nb_samples;
 
-            // Send decoded frame to the encoder
+            // Send decoded audio frame to the encoder
             if(avcodec_send_frame(output_audio_codec_ctx, output_audio_frame) < 0)
-                throw new Exception("Error when sending video frame to encoder");
+                throw new Exception("Error when sending audio frame to encoder");
 
         }
 
-        if(!reading_input){
+        if(!reading_input) {
             // Finished reading from input and all frames are in the encoders so put the encoders in flush mode!
             avcodec_send_frame(output_video_codec_ctx, null);
             avcodec_send_frame(output_audio_codec_ctx, null);
         }
 
         // Check for encoded video frames
-        while(video_pts > 0 && avcodec_receive_packet(output_video_codec_ctx, output_video_packet) == 0)
-        {
+        while(video_pts > 0 && avcodec_receive_packet(output_video_codec_ctx, output_video_packet) == 0) {
 
             // set video stream index
             output_video_packet.stream_index = output_video_stream_index;
-            // Rescale codec time to stream time
 
+            // Rescale codec time to stream time
             av_packet_rescale_ts(output_video_packet, output_video_codec_ctx.time_base, output_video_stream.time_base);
 
             // Write packet to stream for muxing
             if(av_interleaved_write_frame(output_fmt_ctx, output_video_packet) < 0)
-                throw new Exception("Could not write frame");
+                throw new Exception("Could not write video frame");
 
             av_packet_unref(output_video_packet);
 
         }
 
         // Check for encoded audio frames
-        while(audio_pts > 0 && avcodec_receive_packet(output_audio_codec_ctx, output_audio_packet) == 0)
-        {
+        while(audio_pts > 0 && avcodec_receive_packet(output_audio_codec_ctx, output_audio_packet) == 0) {
+
             // set audio stream index
             output_audio_packet.stream_index = output_audio_stream_index;
 
@@ -396,7 +383,7 @@ void main(string[] args) {
 
             // Write packet to stream for muxing
             if(av_interleaved_write_frame(output_fmt_ctx, output_audio_packet) < 0)
-                throw new Exception("Could not write frame");
+                throw new Exception("Could not write audio frame");
 
             av_packet_unref(output_audio_packet);
 
@@ -410,16 +397,22 @@ void main(string[] args) {
     // close the input file as were not using it anymore
     avformat_close_input(&input_fmt_ctx);
 
+
+
     // ##########################
     //   PART 5:
     //     FINISH WRITING TO MUXER
     // ##########################
 
     // write the container trailer
-    if(av_write_trailer(output_fmt_ctx) < 0) throw new Exception("Could not write the container trailer");
+    if(av_write_trailer(output_fmt_ctx) < 0)
+        throw new Exception("Could not write the container trailer");
 
     // close the output file if needed
-    if (output_fmt_ctx && !(output_fmt_ctx.oformat.flags & AVFMT_NOFILE)) avio_closep(&output_fmt_ctx.pb);
+    if(output_fmt_ctx && !(output_fmt_ctx.oformat.flags & AVFMT_NOFILE))
+        avio_closep(&output_fmt_ctx.pb);
+
+
 
     // ##########################
     //   PART 6:
