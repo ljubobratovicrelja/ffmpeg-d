@@ -20,6 +20,7 @@
 
 module ffmpeg.libavutil.avutil;
 
+
 /**
  * @file
  * external API header
@@ -151,28 +152,12 @@ module ffmpeg.libavutil.avutil;
  */
 
 import std.stdint;
-//import std.format;
-//import std.array;
+
 import core.vararg;
 
-public import ffmpeg.libavutil.common;
-public import ffmpeg.libavutil.rational;
-//public import ffmpeg.libavutil.samplefmt;
-//public import ffmpeg.libavutil.frame;
-public import ffmpeg.libavutil.pixfmt;
-public import ffmpeg.libavutil.log;
-//public import ffmpeg.libavutil.dict;
-public import ffmpeg.libavutil.error;
-public import ffmpeg.libavutil.mathematics;
-//public import ffmpeg.libavutil.channel_layout;
 public import ffmpeg.libavutil.avutil_version;
 
 @nogc nothrow extern(C):
-
-/**
- * @addtogroup lavu_ver
- * @{
- */
 
 /**
  * Return the LIBAVUTIL_VERSION_INT constant.
@@ -301,6 +286,15 @@ char av_get_picture_type_char(AVPictureType pict_type);
 /**
  * @}
  */
+
+public import ffmpeg.libavutil.common;
+public import ffmpeg.libavutil.error;
+public import ffmpeg.libavutil.rational;
+
+
+public import ffmpeg.libavutil.mathematics;
+public import ffmpeg.libavutil.log;
+public import ffmpeg.libavutil.pixfmt;
 
 /**
  * Return x default pointer in case p is NULL.

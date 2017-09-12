@@ -266,12 +266,16 @@ struct AVFrame {
      * Presentation timestamp in time_base units (time when frame should be shown to user).
      */
     int64_t pts;
-    
+
+static if(FF_API_PKT_PTS){
     /**
      * PTS copied from the AVPacket that was decoded to produce this frame.
+     * @deprecated use the pts field instead
      */
-    int64_t pkt_pts;
-    
+    deprecated
+        int64_t pkt_pts;
+}
+
     /**
      * DTS copied from the AVPacket that triggered returning this frame. (if frame threading isn't used)
      * This is also the Presentation time of this AVFrame calculated from
@@ -383,17 +387,22 @@ static if(FF_API_ERROR_FRAME){
     AVFrameSideData **side_data;
     int            nb_side_data;
     
-    /**
+/**
  * @defgroup lavu_frame_flags AV_FRAME_FLAGS
+ * @ingroup lavu_frame
  * Flags describing additional frame properties.
  *
  * @{
  */
     
-    /**
+/**
  * The frame data may be corrupted, e.g. due to decoding errors.
  */
 //#define AV_FRAME_FLAG_CORRUPT       (1 << 0)
+/**
+ * A flag to mark the frames which need to be decoded, but shouldn't be output.
+ */
+//#define AV_FRAME_FLAG_DISCARD   (1 << 2)
     /**
  * @}
  */
@@ -748,3 +757,4 @@ char *av_frame_side_data_name(AVFrameSideDataType type);
 enum FF_DECODE_ERROR_INVALID_BITSTREAM = 1;
 enum FF_DECODE_ERROR_MISSING_REFERENCE = 2;
 enum AV_FRAME_FLAG_CORRUPT   =   (1 << 0);
+enum AV_FRAME_FLAG_DISCARD   =   (1 << 2);

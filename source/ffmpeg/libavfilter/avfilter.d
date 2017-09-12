@@ -27,7 +27,9 @@ module ffmpeg.libavfilter.avfilter;
  */
 
 /**
- * @defgroup lavfi Libavfilter - graph-based frame editing library
+ * @defgroup lavfi libavfilter
+ * Graph-based frame editing library.
+ *
  * @{
  */
 
@@ -64,7 +66,7 @@ char *avfilter_license();
 
 //typedef struct AVFilterContext AVFilterContext;
 //typedef struct AVFilterLink AVFilterLink;
-//typedef struct AVFilterPad AVFilterPad;
+//struct AVFilterPad;
 struct AVFilterFormats;
 
 /**
@@ -262,7 +264,7 @@ struct AVFilter {
      * @return zero on success, a negative value corresponding to an
      * AVERROR code otherwise
      */
-    int function(AVFilterContext *) query_formats;  
+    int function(AVFilterContext *) query_formats;
 
     int priv_size;      ///< size of private data to allocate for the filter
 
@@ -359,6 +361,13 @@ struct AVFilterContext {
      * hardware context information.
      */
     AVBufferRef *hw_device_ctx;
+
+    /**
+     * Max number of threads allowed in this filter instance.
+     * If <= 0, its value is ignored.
+     * Overrides global number of threads set per filter graph.
+     */
+    int nb_threads;
 }
 
 /**
@@ -1113,3 +1122,5 @@ int avfilter_graph_request_oldest(AVFilterGraph *graph);
 /**
  * @}
  */
+
+//#endif /* AVFILTER_AVFILTER_H */

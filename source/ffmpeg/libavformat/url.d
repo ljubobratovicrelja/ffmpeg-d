@@ -33,6 +33,8 @@ import std.stdint;
 enum URL_PROTOCOL_FLAG_NESTED_SCHEME = 1; /*< The protocol name can be the first part of a nested protocol scheme */
 enum URL_PROTOCOL_FLAG_NETWORK       = 2; /*< The protocol uses network */
 
+extern const AVClass ffurl_context_class;
+
 struct URLContext {
     const AVClass *av_class;    /**< information for av_log(). Set by url_open(). */
     URLProtocol *prot;
