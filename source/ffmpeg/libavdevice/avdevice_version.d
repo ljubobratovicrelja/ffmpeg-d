@@ -15,31 +15,26 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+module ffmpeg.libavdevice.avdevice_version;
 
-//#ifndef AVDEVICE_VERSION_H
-//#define AVDEVICE_VERSION_H
+import ffmpeg.libavutil.avutil_version;
+
+extern (C):
+
 
 /**
  * @file
  * @ingroup lavd
  * Libavdevice version macros
  */
-module ffmpeg.libavdevice.avdevice_version;
-import ffmpeg.libavutil.avutil_version;
 
-enum LIBAVDEVICE_VERSION_MAJOR  = 57;
-enum LIBAVDEVICE_VERSION_MINOR  = 0;
-enum LIBAVDEVICE_VERSION_MICRO  = 101;
+enum LIBAVDEVICE_VERSION_MAJOR = 58;
+enum LIBAVDEVICE_VERSION_MINOR = 13;
+enum LIBAVDEVICE_VERSION_MICRO = 100;
 
-enum LIBAVDEVICE_VERSION_INT    = AV_VERSION_INT!(LIBAVDEVICE_VERSION_MAJOR,
-                                                  LIBAVDEVICE_VERSION_MINOR,
-                                                  LIBAVDEVICE_VERSION_MICRO);
-enum LIBAVDEVICE_VERSION        = AV_VERSION!(LIBAVDEVICE_VERSION_MAJOR,
-                                              LIBAVDEVICE_VERSION_MINOR,
-                                              LIBAVDEVICE_VERSION_MICRO);
-enum LIBAVDEVICE_BUILD          = LIBAVDEVICE_VERSION_INT;
-
-enum LIBAVDEVICE_IDENT          = "Lavd"~LIBAVDEVICE_VERSION;
+enum LIBAVDEVICE_VERSION_INT = AV_VERSION_INT(LIBAVDEVICE_VERSION_MAJOR, LIBAVDEVICE_VERSION_MINOR, LIBAVDEVICE_VERSION_MICRO);
+enum LIBAVDEVICE_VERSION = AV_VERSION(LIBAVDEVICE_VERSION_MAJOR, LIBAVDEVICE_VERSION_MINOR, LIBAVDEVICE_VERSION_MICRO);
+enum LIBAVDEVICE_BUILD = LIBAVDEVICE_VERSION_INT;
 
 /**
  * FF_API_* defines may be placed below to indicate public API that will be
@@ -47,4 +42,6 @@ enum LIBAVDEVICE_IDENT          = "Lavd"~LIBAVDEVICE_VERSION;
  * the public API and may change, break or disappear at any time.
  */
 
-//#endif /* AVDEVICE_VERSION_H */
+enum FF_API_DEVICE_CAPABILITIES = LIBAVDEVICE_VERSION_MAJOR < 60;
+
+/* AVDEVICE_VERSION_H */

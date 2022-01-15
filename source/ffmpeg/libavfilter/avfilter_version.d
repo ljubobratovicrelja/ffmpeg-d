@@ -17,8 +17,11 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 module ffmpeg.libavfilter.avfilter_version;
+
+import ffmpeg.libavutil.avutil_version;
+
+extern (C):
 
 /**
  * @file
@@ -26,21 +29,13 @@ module ffmpeg.libavfilter.avfilter_version;
  * Libavfilter version macros
  */
 
-import ffmpeg.libavutil.avutil;
-
-enum LIBAVFILTER_VERSION_MAJOR = 6;
-enum LIBAVFILTER_VERSION_MINOR = 47;
+enum LIBAVFILTER_VERSION_MAJOR = 7;
+enum LIBAVFILTER_VERSION_MINOR = 110;
 enum LIBAVFILTER_VERSION_MICRO = 100;
 
-enum LIBAVFILTER_VERSION_INT = AV_VERSION_INT!(LIBAVFILTER_VERSION_MAJOR, 
-                                               LIBAVFILTER_VERSION_MINOR,
-                                               LIBAVFILTER_VERSION_MICRO);
-enum LIBAVFILTER_VERSION =    AV_VERSION!(LIBAVFILTER_VERSION_MAJOR, 
-                                           LIBAVFILTER_VERSION_MINOR, 
-                                           LIBAVFILTER_VERSION_MICRO);
-enum LIBAVFILTER_BUILD   =    LIBAVFILTER_VERSION_INT;
-
-enum LIBAVFILTER_IDENT  = "Lavfi" ~ LIBAVFILTER_VERSION;
+enum LIBAVFILTER_VERSION_INT = AV_VERSION_INT(LIBAVFILTER_VERSION_MAJOR, LIBAVFILTER_VERSION_MINOR, LIBAVFILTER_VERSION_MICRO);
+enum LIBAVFILTER_VERSION = AV_VERSION(LIBAVFILTER_VERSION_MAJOR, LIBAVFILTER_VERSION_MINOR, LIBAVFILTER_VERSION_MICRO);
+enum LIBAVFILTER_BUILD = LIBAVFILTER_VERSION_INT;
 
 /**
  * FF_API_* defines may be placed below to indicate public API that will be
@@ -48,9 +43,18 @@ enum LIBAVFILTER_IDENT  = "Lavfi" ~ LIBAVFILTER_VERSION;
  * the public API and may change, break or disappear at any time.
  */
 
-enum FF_API_OLD_FILTER_OPTS              = (LIBAVFILTER_VERSION_MAJOR < 7);
-enum FF_API_OLD_FILTER_OPTS_ERROR        = (LIBAVFILTER_VERSION_MAJOR < 7);
-enum FF_API_AVFILTER_OPEN                = (LIBAVFILTER_VERSION_MAJOR < 7);
-enum FF_API_AVFILTER_INIT_FILTER         = (LIBAVFILTER_VERSION_MAJOR < 7);
-enum FF_API_OLD_FILTER_REGISTER          = (LIBAVFILTER_VERSION_MAJOR < 7);
-enum FF_API_NOCONST_GET_NAME             = (LIBAVFILTER_VERSION_MAJOR < 7);
+enum FF_API_OLD_FILTER_OPTS_ERROR = LIBAVFILTER_VERSION_MAJOR < 8;
+
+enum FF_API_LAVR_OPTS = LIBAVFILTER_VERSION_MAJOR < 8;
+
+enum FF_API_FILTER_GET_SET = LIBAVFILTER_VERSION_MAJOR < 8;
+
+enum FF_API_SWS_PARAM_OPTION = LIBAVFILTER_VERSION_MAJOR < 8;
+
+enum FF_API_NEXT = LIBAVFILTER_VERSION_MAJOR < 8;
+
+enum FF_API_FILTER_LINK_SET_CLOSED = LIBAVFILTER_VERSION_MAJOR < 8;
+
+enum FF_API_BUFFERSINK_ALLOC = LIBAVFILTER_VERSION_MAJOR < 9;
+
+/* AVFILTER_VERSION_H */

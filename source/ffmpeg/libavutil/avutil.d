@@ -1,5 +1,5 @@
 /*
- * copyright (c) 2003 Fabrice Bellard
+ * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
  *
@@ -17,12 +17,19 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 module ffmpeg.libavutil.avutil;
+
+import ffmpeg.libavutil.rational;
+
+import core.stdc.stdint;
+import core.stdc.stdio;
+
+extern (C):
 
 /**
  * @file
- * external API header
+ * @ingroup lavu
+ * Convenience header that includes @ref lavu "libavutil"'s core.
  */
 
 /**
@@ -77,14 +84,15 @@ module ffmpeg.libavutil.avutil;
  */
 
 /**
- * @defgroup lavu Common utility functions
+ * @defgroup lavu libavutil
+ * Common code shared across all FFmpeg libraries.
  *
- * @brief
- * libavutil contains the code shared across all the other FFmpeg
- * libraries
- *
- * @note In order to use the functions provided by avutil you must include
- * the specific header.
+ * @note
+ * libavutil is designed to be modular. In most cases, in order to use the
+ * functions provided by one component of libavutil you must explicitly include
+ * the specific header containing that feature. If you are only using
+ * media-related components, you could simply include libavutil/avutil.h, which
+ * brings in most of the "core" components.
  *
  * @{
  *
@@ -93,7 +101,7 @@ module ffmpeg.libavutil.avutil;
  * @{
  * @}
  *
- * @defgroup lavu_math Maths
+ * @defgroup lavu_math Mathematics
  * @{
  *
  * @}
@@ -111,6 +119,12 @@ module ffmpeg.libavutil.avutil;
  * @}
  *
  * @defgroup lavu_data Data Structures
+ * @{
+ *
+ * @}
+ *
+ * @defgroup lavu_video Video related
+ *
  * @{
  *
  * @}
@@ -150,25 +164,6 @@ module ffmpeg.libavutil.avutil;
  * @}
  */
 
-import std.stdint;
-//import std.format;
-//import std.array;
-import core.vararg;
-
-public import ffmpeg.libavutil.common;
-public import ffmpeg.libavutil.rational;
-//public import ffmpeg.libavutil.samplefmt;
-//public import ffmpeg.libavutil.frame;
-public import ffmpeg.libavutil.pixfmt;
-public import ffmpeg.libavutil.log;
-//public import ffmpeg.libavutil.dict;
-public import ffmpeg.libavutil.error;
-public import ffmpeg.libavutil.mathematics;
-//public import ffmpeg.libavutil.channel_layout;
-public import ffmpeg.libavutil.avutil_version;
-
-@nogc nothrow extern(C):
-
 /**
  * @addtogroup lavu_ver
  * @{
@@ -177,24 +172,24 @@ public import ffmpeg.libavutil.avutil_version;
 /**
  * Return the LIBAVUTIL_VERSION_INT constant.
  */
-uint avutil_version();
+uint avutil_version ();
 
 /**
  * Return an informative version string. This usually is the actual release
  * version number or a git commit description. This string has no fixed format
  * and can change any time. It should never be parsed by code.
  */
-char *av_version_info();
+const(char)* av_version_info ();
 
 /**
  * Return the libavutil build-time configuration.
  */
-char *avutil_configuration();
+const(char)* avutil_configuration ();
 
 /**
  * Return the libavutil license.
  */
-char *avutil_license();
+const(char)* avutil_license ();
 
 /**
  * @}
@@ -205,21 +200,22 @@ char *avutil_license();
  * @brief Media Type
  */
 
-enum AVMediaType {
-    AVMEDIA_TYPE_UNKNOWN = -1,  ///< Usually treated as AVMEDIA_TYPE_DATA
-    AVMEDIA_TYPE_VIDEO,
-    AVMEDIA_TYPE_AUDIO,
-    AVMEDIA_TYPE_DATA,          ///< Opaque data information usually continuous
-    AVMEDIA_TYPE_SUBTITLE,
-    AVMEDIA_TYPE_ATTACHMENT,    ///< Opaque data information usually sparse
-    AVMEDIA_TYPE_NB
-} 
+enum AVMediaType
+{
+    AVMEDIA_TYPE_UNKNOWN = -1, ///< Usually treated as AVMEDIA_TYPE_DATA
+    AVMEDIA_TYPE_VIDEO = 0,
+    AVMEDIA_TYPE_AUDIO = 1,
+    AVMEDIA_TYPE_DATA = 2, ///< Opaque data information usually continuous
+    AVMEDIA_TYPE_SUBTITLE = 3,
+    AVMEDIA_TYPE_ATTACHMENT = 4, ///< Opaque data information usually sparse
+    AVMEDIA_TYPE_NB = 5
+}
 
 /**
  * Return a string describing the media_type enum, NULL if media_type
  * is unknown.
  */
-char* av_get_media_type_string(AVMediaType media_type);
+const(char)* av_get_media_type_string (AVMediaType media_type);
 
 /**
  * @defgroup lavu_const Constants
@@ -232,9 +228,9 @@ char* av_get_media_type_string(AVMediaType media_type);
  */
 
 enum FF_LAMBDA_SHIFT = 7;
-enum FF_LAMBDA_SCALE = (1<<FF_LAMBDA_SHIFT);
+enum FF_LAMBDA_SCALE = 1 << FF_LAMBDA_SHIFT;
 enum FF_QP2LAMBDA = 118; ///< factor to convert from H.263 QP to lambda
-enum FF_LAMBDA_MAX = (256*128-1);
+enum FF_LAMBDA_MAX = 256 * 128 - 1;
 
 enum FF_QUALITY_SCALE = FF_LAMBDA_SCALE; //FIXME maybe remove
 
@@ -254,20 +250,17 @@ enum FF_QUALITY_SCALE = FF_LAMBDA_SCALE; //FIXME maybe remove
  * either pts or dts.
  */
 
-enum AV_NOPTS_VALUE = 0x8000000000000000;
-
+enum AV_NOPTS_VALUE = cast(long) UINT64_C(0x8000000000000000);
 
 /**
  * Internal time base represented as integer
  */
 
-enum AV_TIME_BASE = 1000_000;
+enum AV_TIME_BASE = 1000000;
 
 /**
  * Internal time base represented as fractional value
  */
-
-AVRational AV_TIME_BASE_Q = {num:1, den:AV_TIME_BASE};
 
 /**
  * @}
@@ -278,15 +271,17 @@ AVRational AV_TIME_BASE_Q = {num:1, den:AV_TIME_BASE};
  *
  * @{
  */
-enum AVPictureType {
-      AV_PICTURE_TYPE_NONE = 0,
-      AV_PICTURE_TYPE_I,
-      AV_PICTURE_TYPE_P,
-      AV_PICTURE_TYPE_B,
-      AV_PICTURE_TYPE_S,
-      AV_PICTURE_TYPE_SI,
-      AV_PICTURE_TYPE_SP,
-      AV_PICTURE_TYPE_BI
+
+enum AVPictureType
+{
+    AV_PICTURE_TYPE_NONE = 0, ///< Undefined
+    AV_PICTURE_TYPE_I = 1, ///< Intra
+    AV_PICTURE_TYPE_P = 2, ///< Predicted
+    AV_PICTURE_TYPE_B = 3, ///< Bi-dir predicted
+    AV_PICTURE_TYPE_S = 4, ///< S(GMC)-VOP MPEG-4
+    AV_PICTURE_TYPE_SI = 5, ///< Switching Intra
+    AV_PICTURE_TYPE_SP = 6, ///< Switching Predicted
+    AV_PICTURE_TYPE_BI = 7 ///< BI type
 }
 
 /**
@@ -296,7 +291,7 @@ enum AVPictureType {
  * @param[in] pict_type the picture type @return a single character
  * representing the picture type, '?' if pict_type is unknown
  */
-char av_get_picture_type_char(AVPictureType pict_type);
+char av_get_picture_type_char (AVPictureType pict_type);
 
 /**
  * @}
@@ -305,10 +300,7 @@ char av_get_picture_type_char(AVPictureType pict_type);
 /**
  * Return x default pointer in case p is NULL.
  */
-//static inline void *av_x_if_null(const void *p, const void *x)
-//{
-//    return (void *)(intptr_t)(p ? p : x);
-//}
+void* av_x_if_null (const(void)* p, const(void)* x);
 
 /**
  * Compute the length of an integer list.
@@ -318,8 +310,7 @@ char av_get_picture_type_char(AVPictureType pict_type);
  * @param list    pointer to the list
  * @return  length of the list, in elements, not counting the terminator
  */
-//unsigned av_int_list_length_for_size(unsigned elsize,
-//                                    const void *list, uint64_t term) av_pure;
+uint av_int_list_length_for_size (uint elsize, const(void)* list, ulong term);
 
 /**
  * Compute the length of an integer list.
@@ -328,24 +319,38 @@ char av_get_picture_type_char(AVPictureType pict_type);
  * @param list  pointer to the list
  * @return  length of the list, in elements, not counting the terminator
  */
-//#define av_int_list_length(list, term) \
-//av_int_list_length_for_size(sizeof(*(list)), list, term)
+extern (D) auto av_int_list_length(T0, T1)(auto ref T0 list, auto ref T1 term)
+{
+    return av_int_list_length_for_size((*list).sizeof, list, term);
+}
 
 /**
  * Open a file using a UTF-8 filename.
  * The API of this function matches POSIX fopen(), errors are returned through
  * errno.
  */
-//FILE *av_fopen_utf8(const char *path, const char *mode);
+FILE* av_fopen_utf8 (const(char)* path, const(char)* mode);
 
 /**
  * Return the fractional representation of the internal time base.
  */
-AVRational av_get_time_base_q();
+AVRational av_get_time_base_q ();
+
+enum AV_FOURCC_MAX_STRING_SIZE = 32;
+
+/**
+ * Fill the provided buffer with a string containing a FourCC (four-character
+ * code) representation.
+ *
+ * @param buf    a buffer with size in bytes of at least AV_FOURCC_MAX_STRING_SIZE
+ * @param fourcc the fourcc to represent
+ * @return the buffer in input
+ */
+char* av_fourcc_make_string (char* buf, uint fourcc);
 
 /**
  * @}
  * @}
  */
 
-//#endif /* AVUTIL_AVUTIL_H */
+/* AVUTIL_AVUTIL_H */

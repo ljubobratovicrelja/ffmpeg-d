@@ -17,9 +17,11 @@
  * License along with libswresample; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 module ffmpeg.libswresample.swresample;
 
+import ffmpeg.libavutil;
+
+extern (C):
 
 /**
  * @file
@@ -28,11 +30,10 @@ module ffmpeg.libswresample.swresample;
  */
 
 /**
- * @defgroup lswr Libswresample
+ * @defgroup lswr libswresample
  * @{
  *
- * Libswresample (lswr) is a library that handles audio resampling, sample
- * format conversion and mixing.
+ * Audio resampling, sample format conversion and mixing library.
  *
  * Interaction with lswr is done through SwrContext, which is
  * allocated with swr_alloc() or swr_alloc_set_opts(). It is opaque, so all parameters
@@ -120,58 +121,51 @@ module ffmpeg.libswresample.swresample;
  * swr_free().
  */
 
-import std.stdint;
-import ffmpeg.libavutil.avutil;
-import ffmpeg.libavutil.frame;
-import ffmpeg.libavutil.samplefmt;
-import ffmpeg.libswresample.swresample_version;
-
-@nogc nothrow extern(C):
-static if (LIBSWRESAMPLE_VERSION_MAJOR < 1) {
-    enum SWR_CH_MAX = 32;
-}
-
 /**
  * @name Option constants
  * These constants are used for the @ref avoptions interface for lswr.
  * @{
  *
  */
-enum SWR_FLAG_RESAMPLE =   1; ///< Force resampling even if equal sample rate
+
+enum SWR_FLAG_RESAMPLE = 1; ///< Force resampling even if equal sample rate
 //TODO use int resample ?
 //long term TODO can we enable this dynamically?
 
 /** Dithering algorithms */
-enum SwrDitherType {
+enum SwrDitherType
+{
     SWR_DITHER_NONE = 0,
-    SWR_DITHER_RECTANGULAR,
-    SWR_DITHER_TRIANGULAR,
-    SWR_DITHER_TRIANGULAR_HIGHPASS,
+    SWR_DITHER_RECTANGULAR = 1,
+    SWR_DITHER_TRIANGULAR = 2,
+    SWR_DITHER_TRIANGULAR_HIGHPASS = 3,
 
-    SWR_DITHER_NS = 64,         ///< not part of API/ABI
-    SWR_DITHER_NS_LIPSHITZ,
-    SWR_DITHER_NS_F_WEIGHTED,
-    SWR_DITHER_NS_MODIFIED_E_WEIGHTED,
-    SWR_DITHER_NS_IMPROVED_E_WEIGHTED,
-    SWR_DITHER_NS_SHIBATA,
-    SWR_DITHER_NS_LOW_SHIBATA,
-    SWR_DITHER_NS_HIGH_SHIBATA,
-    SWR_DITHER_NB,              ///< not part of API/ABI
-};
+    SWR_DITHER_NS = 64, ///< not part of API/ABI
+    SWR_DITHER_NS_LIPSHITZ = 65,
+    SWR_DITHER_NS_F_WEIGHTED = 66,
+    SWR_DITHER_NS_MODIFIED_E_WEIGHTED = 67,
+    SWR_DITHER_NS_IMPROVED_E_WEIGHTED = 68,
+    SWR_DITHER_NS_SHIBATA = 69,
+    SWR_DITHER_NS_LOW_SHIBATA = 70,
+    SWR_DITHER_NS_HIGH_SHIBATA = 71,
+    SWR_DITHER_NB = 72 ///< not part of API/ABI
+}
 
 /** Resampling Engines */
-enum SwrEngine {
-    SWR_ENGINE_SWR,             /**< SW Resampler */
-    SWR_ENGINE_SOXR,            /**< SoX Resampler */
-    SWR_ENGINE_NB,              ///< not part of API/ABI
-};
+enum SwrEngine
+{
+    SWR_ENGINE_SWR = 0, /**< SW Resampler */
+    SWR_ENGINE_SOXR = 1, /**< SoX Resampler */
+    SWR_ENGINE_NB = 2 ///< not part of API/ABI
+}
 
 /** Resampling Filter Types */
-enum SwrFilterType {
-    SWR_FILTER_TYPE_CUBIC,              /**< Cubic */
-    SWR_FILTER_TYPE_BLACKMAN_NUTTALL,   /**< Blackman Nuttall windowed sinc */
-    SWR_FILTER_TYPE_KAISER,             /**< Kaiser windowed sinc */
-};
+enum SwrFilterType
+{
+    SWR_FILTER_TYPE_CUBIC = 0, /**< Cubic */
+    SWR_FILTER_TYPE_BLACKMAN_NUTTALL = 1, /**< Blackman Nuttall windowed sinc */
+    SWR_FILTER_TYPE_KAISER = 2 /**< Kaiser windowed sinc */
+}
 
 /**
  * @}
@@ -183,7 +177,7 @@ enum SwrFilterType {
  * the @ref avoptions API and cannot directly set values to members of the
  * structure.
  */
-struct SwrContext{}
+struct SwrContext;
 
 /**
  * Get the AVClass for SwrContext. It can be used in combination with
@@ -192,7 +186,7 @@ struct SwrContext{}
  * @see av_opt_find().
  * @return the AVClass of SwrContext
  */
-AVClass *swr_get_class();
+const(AVClass)* swr_get_class ();
 
 /**
  * @name SwrContext constructor functions
@@ -208,7 +202,7 @@ AVClass *swr_get_class();
  * @see swr_alloc_set_opts(), swr_init(), swr_free()
  * @return NULL on error, allocated context otherwise
  */
-SwrContext *swr_alloc();
+SwrContext* swr_alloc ();
 
 /**
  * Initialize context after user parameters have been set.
@@ -220,7 +214,7 @@ SwrContext *swr_alloc();
  * @param[in,out]   s Swr context to initialize
  * @return AVERROR error code in case of failure.
  */
-int swr_init(SwrContext *s);
+int swr_init (SwrContext* s);
 
 /**
  * Check whether an swr context has been initialized or not.
@@ -229,7 +223,7 @@ int swr_init(SwrContext *s);
  * @see swr_init()
  * @return positive if it has been initialized, 0 if not initialized
  */
-int swr_is_initialized(SwrContext *s);
+int swr_is_initialized (SwrContext* s);
 
 /**
  * Allocate SwrContext if needed and set/reset common parameters.
@@ -251,10 +245,16 @@ int swr_is_initialized(SwrContext *s);
  * @see swr_init(), swr_free()
  * @return NULL on error, allocated context otherwise
  */
-SwrContext *swr_alloc_set_opts(SwrContext *s,
-                                      int64_t out_ch_layout, const AVSampleFormat out_sample_fmt, int out_sample_rate,
-                                      int64_t  in_ch_layout, const AVSampleFormat  in_sample_fmt, int  in_sample_rate,
-                                      int log_offset, void *log_ctx);
+SwrContext* swr_alloc_set_opts (
+    SwrContext* s,
+    long out_ch_layout,
+    AVSampleFormat out_sample_fmt,
+    int out_sample_rate,
+    long in_ch_layout,
+    AVSampleFormat in_sample_fmt,
+    int in_sample_rate,
+    int log_offset,
+    void* log_ctx);
 
 /**
  * @}
@@ -268,7 +268,7 @@ SwrContext *swr_alloc_set_opts(SwrContext *s,
  *
  * @param[in] s a pointer to a pointer to Swr context
  */
-void swr_free(SwrContext **s);
+void swr_free (SwrContext** s);
 
 /**
  * Closes the context so that swr_is_initialized() returns 0.
@@ -280,7 +280,7 @@ void swr_free(SwrContext **s);
  *
  * @param[in,out] s Swr context to be closed
  */
-void swr_close(SwrContext *s);
+void swr_close (SwrContext* s);
 
 /**
  * @}
@@ -307,8 +307,12 @@ void swr_close(SwrContext *s);
  *
  * @return number of samples output per channel, negative value on error
  */
-int swr_convert(SwrContext *s, uint8_t **out_b, int out_count,
-                                const uint8_t **in_b, int in_count);
+int swr_convert (
+    SwrContext* s,
+    ubyte** out_,
+    int out_count,
+    const(ubyte*)* in_,
+    int in_count);
 
 /**
  * Convert the next timestamp from input to output
@@ -327,7 +331,7 @@ int swr_convert(SwrContext *s, uint8_t **out_b, int out_count,
  *      function used internally for timestamp compensation.
  * @return the output timestamp for the next output sample
  */
-int64_t swr_next_pts(SwrContext *s, int64_t pts);
+long swr_next_pts (SwrContext* s, long pts);
 
 /**
  * @}
@@ -354,7 +358,7 @@ int64_t swr_next_pts(SwrContext *s, int64_t pts);
  *            @li compensation unsupported by resampler, or
  *            @li swr_init() fails when called.
  */
-int swr_set_compensation(SwrContext *s, int sample_delta, int compensation_distance);
+int swr_set_compensation (SwrContext* s, int sample_delta, int compensation_distance);
 
 /**
  * Set a customized input channel mapping.
@@ -364,7 +368,43 @@ int swr_set_compensation(SwrContext *s, int sample_delta, int compensation_dista
  *                            indexes, -1 for a muted channel)
  * @return >= 0 on success, or AVERROR error code in case of failure.
  */
-int swr_set_channel_mapping(SwrContext *s, const int *channel_map);
+int swr_set_channel_mapping (SwrContext* s, const(int)* channel_map);
+
+/**
+ * Generate a channel mixing matrix.
+ *
+ * This function is the one used internally by libswresample for building the
+ * default mixing matrix. It is made public just as a utility function for
+ * building custom matrices.
+ *
+ * @param in_layout           input channel layout
+ * @param out_layout          output channel layout
+ * @param center_mix_level    mix level for the center channel
+ * @param surround_mix_level  mix level for the surround channel(s)
+ * @param lfe_mix_level       mix level for the low-frequency effects channel
+ * @param rematrix_maxval     if 1.0, coefficients will be normalized to prevent
+ *                            overflow. if INT_MAX, coefficients will not be
+ *                            normalized.
+ * @param[out] matrix         mixing coefficients; matrix[i + stride * o] is
+ *                            the weight of input channel i in output channel o.
+ * @param stride              distance between adjacent input channels in the
+ *                            matrix array
+ * @param matrix_encoding     matrixed stereo downmix mode (e.g. dplii)
+ * @param log_ctx             parent logging context, can be NULL
+ * @return                    0 on success, negative AVERROR code on failure
+ */
+int swr_build_matrix (
+    ulong in_layout,
+    ulong out_layout,
+    double center_mix_level,
+    double surround_mix_level,
+    double lfe_mix_level,
+    double rematrix_maxval,
+    double rematrix_volume,
+    double* matrix,
+    int stride,
+    AVMatrixEncoding matrix_encoding,
+    void* log_ctx);
 
 /**
  * Set a customized remix matrix.
@@ -375,7 +415,7 @@ int swr_set_channel_mapping(SwrContext *s, const int *channel_map);
  * @param stride  offset between lines of the matrix
  * @return  >= 0 on success, or AVERROR error code in case of failure.
  */
-int swr_set_matrix(SwrContext *s, const double *matrix, int stride);
+int swr_set_matrix (SwrContext* s, const(double)* matrix, int stride);
 
 /**
  * @}
@@ -395,7 +435,7 @@ int swr_set_matrix(SwrContext *s, const double *matrix, int stride);
  *
  * @return >= 0 on success, or a negative AVERROR code on failure
  */
-int swr_drop_output(SwrContext *s, int count);
+int swr_drop_output (SwrContext* s, int count);
 
 /**
  * Injects the specified number of silence samples.
@@ -408,7 +448,7 @@ int swr_drop_output(SwrContext *s, int count);
  *
  * @return >= 0 on success, or a negative AVERROR code on failure
  */
-int swr_inject_silence(SwrContext *s, int count);
+int swr_inject_silence (SwrContext* s, int count);
 
 /**
  * Gets the delay the next input sample will experience relative to the next output sample.
@@ -434,7 +474,7 @@ int swr_inject_silence(SwrContext *s, int count);
  *                  returned
  * @returns     the delay in 1 / @c base units.
  */
-int64_t swr_get_delay(SwrContext *s, int64_t base);
+long swr_get_delay (SwrContext* s, long base);
 
 /**
  * Find an upper bound on the number of samples that the next swr_convert
@@ -452,7 +492,7 @@ int64_t swr_get_delay(SwrContext *s, int64_t base);
  * @returns an upper bound on the number of samples that the next swr_convert
  *          will output or a negative value to indicate an error
  */
-int swr_get_out_samples(SwrContext *s, int in_samples);
+int swr_get_out_samples (SwrContext* s, int in_samples);
 
 /**
  * @}
@@ -469,21 +509,21 @@ int swr_get_out_samples(SwrContext *s, int in_samples);
  *
  * @returns     the unsigned int-typed version
  */
-uint swresample_version();
+uint swresample_version ();
 
 /**
  * Return the swr build-time configuration.
  *
  * @returns     the build-time @c ./configure flags
  */
-char* swresample_configuration();
+const(char)* swresample_configuration ();
 
 /**
  * Return the swr license.
  *
  * @returns     the license of libswresample, determined at build-time
  */
-char* swresample_license();
+const(char)* swresample_license ();
 
 /**
  * @}
@@ -526,8 +566,7 @@ char* swresample_license();
  * @return                0 on success, AVERROR on failure or nonmatching
  *                        configuration.
  */
-int swr_convert_frame(SwrContext *swr,
-                      AVFrame *output, const AVFrame *input);
+int swr_convert_frame (SwrContext* swr, AVFrame* output, const(AVFrame)* input);
 
 /**
  * Configure or reconfigure the SwrContext using the information
@@ -543,11 +582,11 @@ int swr_convert_frame(SwrContext *swr,
  * @param input           input AVFrame
  * @return                0 on success, AVERROR on failure.
  */
-int swr_config_frame(SwrContext *swr, const AVFrame *out_frame, const AVFrame *in_frame);
+int swr_config_frame (SwrContext* swr, const(AVFrame)* out_, const(AVFrame)* in_);
 
 /**
  * @}
  * @}
  */
 
-//#endif /* SWRESAMPLE_SWRESAMPLE_H */
+/* SWRESAMPLE_SWRESAMPLE_H */

@@ -15,14 +15,8 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 module ffmpeg.libavutil.samplefmt;
-
-import ffmpeg.libavutil.avutil_version;
-import std.stdint;
-
-
-@nogc nothrow extern(C):
+extern (C):
 
 /**
  * @addtogroup lavu_audio
@@ -55,34 +49,37 @@ import std.stdint;
  * linesize is the buffer size, in bytes, for the 1 plane.
  *
  */
-enum AVSampleFormat {
+enum AVSampleFormat
+{
     AV_SAMPLE_FMT_NONE = -1,
-    AV_SAMPLE_FMT_U8,          ///< unsigned 8 bits
-    AV_SAMPLE_FMT_S16,         ///< signed 16 bits
-    AV_SAMPLE_FMT_S32,         ///< signed 32 bits
-    AV_SAMPLE_FMT_FLT,         ///< float
-    AV_SAMPLE_FMT_DBL,         ///< double
+    AV_SAMPLE_FMT_U8 = 0, ///< unsigned 8 bits
+    AV_SAMPLE_FMT_S16 = 1, ///< signed 16 bits
+    AV_SAMPLE_FMT_S32 = 2, ///< signed 32 bits
+    AV_SAMPLE_FMT_FLT = 3, ///< float
+    AV_SAMPLE_FMT_DBL = 4, ///< double
 
-    AV_SAMPLE_FMT_U8P,         ///< unsigned 8 bits, planar
-    AV_SAMPLE_FMT_S16P,        ///< signed 16 bits, planar
-    AV_SAMPLE_FMT_S32P,        ///< signed 32 bits, planar
-    AV_SAMPLE_FMT_FLTP,        ///< float, planar
-    AV_SAMPLE_FMT_DBLP,        ///< double, planar
+    AV_SAMPLE_FMT_U8P = 5, ///< unsigned 8 bits, planar
+    AV_SAMPLE_FMT_S16P = 6, ///< signed 16 bits, planar
+    AV_SAMPLE_FMT_S32P = 7, ///< signed 32 bits, planar
+    AV_SAMPLE_FMT_FLTP = 8, ///< float, planar
+    AV_SAMPLE_FMT_DBLP = 9, ///< double, planar
+    AV_SAMPLE_FMT_S64 = 10, ///< signed 64 bits
+    AV_SAMPLE_FMT_S64P = 11, ///< signed 64 bits, planar
 
-    AV_SAMPLE_FMT_NB          ///< Number of sample formats. DO NOT USE if linking dynamically
+    AV_SAMPLE_FMT_NB = 12 ///< Number of sample formats. DO NOT USE if linking dynamically
 }
 
 /**
  * Return the name of sample_fmt, or NULL if sample_fmt is not
  * recognized.
  */
-char* av_get_sample_fmt_name(AVSampleFormat sample_fmt);
+const(char)* av_get_sample_fmt_name (AVSampleFormat sample_fmt);
 
 /**
  * Return a sample format corresponding to name, or AV_SAMPLE_FMT_NONE
  * on error.
  */
-AVSampleFormat av_get_sample_fmt(const char* name);
+AVSampleFormat av_get_sample_fmt (const(char)* name);
 
 /**
  * Return the planar<->packed alternative form of the given sample format, or
@@ -90,7 +87,7 @@ AVSampleFormat av_get_sample_fmt(const char* name);
  * requested planar/packed format, the format returned is the same as the
  * input.
  */
-AVSampleFormat av_get_alt_sample_fmt(AVSampleFormat sample_fmt, int planar);
+AVSampleFormat av_get_alt_sample_fmt (AVSampleFormat sample_fmt, int planar);
 
 /**
  * Get the packed alternative form of the given sample format.
@@ -101,7 +98,7 @@ AVSampleFormat av_get_alt_sample_fmt(AVSampleFormat sample_fmt, int planar);
  * @return  the packed alternative form of the given sample format or
             AV_SAMPLE_FMT_NONE on error.
  */
-AVSampleFormat av_get_packed_sample_fmt(AVSampleFormat sample_fmt);
+AVSampleFormat av_get_packed_sample_fmt (AVSampleFormat sample_fmt);
 
 /**
  * Get the planar alternative form of the given sample format.
@@ -112,7 +109,7 @@ AVSampleFormat av_get_packed_sample_fmt(AVSampleFormat sample_fmt);
  * @return  the planar alternative form of the given sample format or
             AV_SAMPLE_FMT_NONE on error.
  */
-AVSampleFormat av_get_planar_sample_fmt(AVSampleFormat sample_fmt);
+AVSampleFormat av_get_planar_sample_fmt (AVSampleFormat sample_fmt);
 
 /**
  * Generate a string corresponding to the sample format with
@@ -126,7 +123,7 @@ AVSampleFormat av_get_planar_sample_fmt(AVSampleFormat sample_fmt);
  * @return the pointer to the filled buffer or NULL if sample_fmt is
  * unknown or in case of other errors
  */
-char *av_get_sample_fmt_string(char *buf, int buf_size, AVSampleFormat sample_fmt);
+char* av_get_sample_fmt_string (char* buf, int buf_size, AVSampleFormat sample_fmt);
 
 /**
  * Return number of bytes per sample.
@@ -135,7 +132,7 @@ char *av_get_sample_fmt_string(char *buf, int buf_size, AVSampleFormat sample_fm
  * @return number of bytes per sample or zero if unknown for the given
  * sample format
  */
-int av_get_bytes_per_sample(AVSampleFormat sample_fmt);
+int av_get_bytes_per_sample (AVSampleFormat sample_fmt);
 
 /**
  * Check if the sample format is planar.
@@ -143,7 +140,7 @@ int av_get_bytes_per_sample(AVSampleFormat sample_fmt);
  * @param sample_fmt the sample format to inspect
  * @return 1 if the sample format is planar, 0 if it is interleaved
  */
-int av_sample_fmt_is_planar(AVSampleFormat sample_fmt);
+int av_sample_fmt_is_planar (AVSampleFormat sample_fmt);
 
 /**
  * Get the required buffer size for the given audio parameters.
@@ -155,8 +152,12 @@ int av_sample_fmt_is_planar(AVSampleFormat sample_fmt);
  * @param align         buffer size alignment (0 = default, 1 = no alignment)
  * @return              required buffer size, or negative error code on failure
  */
-int av_samples_get_buffer_size(int *linesize, int nb_channels, int nb_samples,
-                               AVSampleFormat sample_fmt, int alignment);
+int av_samples_get_buffer_size (
+    int* linesize,
+    int nb_channels,
+    int nb_samples,
+    AVSampleFormat sample_fmt,
+    int align_);
 
 /**
  * @}
@@ -197,10 +198,14 @@ int av_samples_get_buffer_size(int *linesize, int nb_channels, int nb_samples,
  * @todo return minimum size in bytes required for the buffer in case
  * of success at the next bump
  */
-int av_samples_fill_arrays(uint **audio_data, int *linesize,
-                           const uint* buf,
-                           int nb_channels, int nb_samples,
-                           AVSampleFormat sample_fmt, int alignment);
+int av_samples_fill_arrays (
+    ubyte** audio_data,
+    int* linesize,
+    const(ubyte)* buf,
+    int nb_channels,
+    int nb_samples,
+    AVSampleFormat sample_fmt,
+    int align_);
 
 /**
  * Allocate a samples buffer for nb_samples samples, and fill data pointers and
@@ -221,8 +226,13 @@ int av_samples_fill_arrays(uint **audio_data, int *linesize,
  * @see av_samples_fill_arrays()
  * @see av_samples_alloc_array_and_samples()
  */
-int av_samples_alloc(ubyte **audio_data, int *linesize, int nb_channels,
-                     int nb_samples, AVSampleFormat sample_fmt, int alignment);
+int av_samples_alloc (
+    ubyte** audio_data,
+    int* linesize,
+    int nb_channels,
+    int nb_samples,
+    AVSampleFormat sample_fmt,
+    int align_);
 
 /**
  * Allocate a data pointers array, samples buffer for nb_samples
@@ -233,8 +243,13 @@ int av_samples_alloc(ubyte **audio_data, int *linesize, int nb_channels,
  *
  * @see av_samples_alloc()
  */
-int av_samples_alloc_array_and_samples(uint8_t ***audio_data, int *linesize, int nb_channels,
-                                       int nb_samples, AVSampleFormat sample_fmt, int alignment);
+int av_samples_alloc_array_and_samples (
+    ubyte*** audio_data,
+    int* linesize,
+    int nb_channels,
+    int nb_samples,
+    AVSampleFormat sample_fmt,
+    int align_);
 
 /**
  * Copy samples from src to dst.
@@ -247,9 +262,14 @@ int av_samples_alloc_array_and_samples(uint8_t ***audio_data, int *linesize, int
  * @param nb_channels number of audio channels
  * @param sample_fmt audio sample format
  */
-int av_samples_copy(ubyte **dst, const uint **src, int dst_offset,
-                    int src_offset, int nb_samples, int nb_channels,
-                    AVSampleFormat sample_fmt);
+int av_samples_copy (
+    ubyte** dst,
+    ubyte** src,
+    int dst_offset,
+    int src_offset,
+    int nb_samples,
+    int nb_channels,
+    AVSampleFormat sample_fmt);
 
 /**
  * Fill an audio buffer with silence.
@@ -260,11 +280,15 @@ int av_samples_copy(ubyte **dst, const uint **src, int dst_offset,
  * @param nb_channels number of audio channels
  * @param sample_fmt  audio sample format
  */
-int av_samples_set_silence(ubyte **audio_data, int offset, int nb_samples,
-                           int nb_channels, AVSampleFormat sample_fmt);
+int av_samples_set_silence (
+    ubyte** audio_data,
+    int offset,
+    int nb_samples,
+    int nb_channels,
+    AVSampleFormat sample_fmt);
 
 /**
  * @}
  * @}
  */
-//#endif /* AVUTIL_SAMPLEFMT_H */
+/* AVUTIL_SAMPLEFMT_H */

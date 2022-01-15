@@ -18,16 +18,14 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 module ffmpeg.libavutil.channel_layout;
-import std.stdint;
+
+extern (C):
 
 /**
  * @file
  * audio channel layout utility functions
  */
-
-@nogc nothrow extern(C):
 
 /**
  * @addtogroup lavu_audio
@@ -46,80 +44,87 @@ import std.stdint;
  *
  * @{
  */
-enum AV_CH_FRONT_LEFT           = 0x00000001;
-enum AV_CH_FRONT_RIGHT          = 0x00000002;
-enum AV_CH_FRONT_CENTER         = 0x00000004;
-enum AV_CH_LOW_FREQUENCY        = 0x00000008;
-enum AV_CH_BACK_LEFT            = 0x00000010;
-enum AV_CH_BACK_RIGHT           = 0x00000020;
+enum AV_CH_FRONT_LEFT = 0x00000001;
+enum AV_CH_FRONT_RIGHT = 0x00000002;
+enum AV_CH_FRONT_CENTER = 0x00000004;
+enum AV_CH_LOW_FREQUENCY = 0x00000008;
+enum AV_CH_BACK_LEFT = 0x00000010;
+enum AV_CH_BACK_RIGHT = 0x00000020;
 enum AV_CH_FRONT_LEFT_OF_CENTER = 0x00000040;
-enum AV_CH_FRONT_RIGHT_OF_CENTER= 0x00000080;
-enum AV_CH_BACK_CENTER          = 0x00000100;
-enum AV_CH_SIDE_LEFT            = 0x00000200;
-enum AV_CH_SIDE_RIGHT           = 0x00000400;
-enum AV_CH_TOP_CENTER           = 0x00000800;
-enum AV_CH_TOP_FRONT_LEFT       = 0x00001000;
-enum AV_CH_TOP_FRONT_CENTER     = 0x00002000;
-enum AV_CH_TOP_FRONT_RIGHT      = 0x00004000;
-enum AV_CH_TOP_BACK_LEFT        = 0x00008000;
-enum AV_CH_TOP_BACK_CENTER      = 0x00010000;
-enum AV_CH_TOP_BACK_RIGHT       = 0x00020000;
-enum AV_CH_STEREO_LEFT          = 0x20000000; ///< Stereo downmix.
-enum AV_CH_STEREO_RIGHT         = 0x40000000;  ///< See AV_CH_STEREO_LEFT.
-enum AV_CH_WIDE_LEFT            = 0x0000000080000000UL;
-enum AV_CH_WIDE_RIGHT           = 0x0000000100000000UL;
+enum AV_CH_FRONT_RIGHT_OF_CENTER = 0x00000080;
+enum AV_CH_BACK_CENTER = 0x00000100;
+enum AV_CH_SIDE_LEFT = 0x00000200;
+enum AV_CH_SIDE_RIGHT = 0x00000400;
+enum AV_CH_TOP_CENTER = 0x00000800;
+enum AV_CH_TOP_FRONT_LEFT = 0x00001000;
+enum AV_CH_TOP_FRONT_CENTER = 0x00002000;
+enum AV_CH_TOP_FRONT_RIGHT = 0x00004000;
+enum AV_CH_TOP_BACK_LEFT = 0x00008000;
+enum AV_CH_TOP_BACK_CENTER = 0x00010000;
+enum AV_CH_TOP_BACK_RIGHT = 0x00020000;
+enum AV_CH_STEREO_LEFT = 0x20000000; ///< Stereo downmix.
+enum AV_CH_STEREO_RIGHT = 0x40000000; ///< See AV_CH_STEREO_LEFT.
+enum AV_CH_WIDE_LEFT = 0x0000000080000000UL;
+enum AV_CH_WIDE_RIGHT = 0x0000000100000000UL;
 enum AV_CH_SURROUND_DIRECT_LEFT = 0x0000000200000000UL;
-enum AV_CH_SURROUND_DIRECT_RIGHT= 0x0000000400000000UL;
-enum AV_CH_LOW_FREQUENCY_2      = 0x0000000800000000UL;
+enum AV_CH_SURROUND_DIRECT_RIGHT = 0x0000000400000000UL;
+enum AV_CH_LOW_FREQUENCY_2 = 0x0000000800000000UL;
+enum AV_CH_TOP_SIDE_LEFT = 0x0000001000000000UL;
+enum AV_CH_TOP_SIDE_RIGHT = 0x0000002000000000UL;
+enum AV_CH_BOTTOM_FRONT_CENTER = 0x0000004000000000UL;
+enum AV_CH_BOTTOM_FRONT_LEFT = 0x0000008000000000UL;
+enum AV_CH_BOTTOM_FRONT_RIGHT = 0x0000010000000000UL;
 
 /** Channel mask value used for AVCodecContext.request_channel_layout
     to indicate that the user requests the channel order of the decoder output
     to be the native codec channel order. */
-ulong AV_CH_LAYOUT_NATIVE        = 0x8000000000000000UL;
+enum AV_CH_LAYOUT_NATIVE = 0x8000000000000000UL;
 
 /**
  * @}
  * @defgroup channel_mask_c Audio channel layouts
  * @{
  * */
-enum AV_CH_LAYOUT_MONO           =  (AV_CH_FRONT_CENTER);
-enum AV_CH_LAYOUT_STEREO         =  (AV_CH_FRONT_LEFT|AV_CH_FRONT_RIGHT);
-enum AV_CH_LAYOUT_2POINT1        =  (AV_CH_LAYOUT_STEREO|AV_CH_LOW_FREQUENCY);
-enum AV_CH_LAYOUT_2_1            =  (AV_CH_LAYOUT_STEREO|AV_CH_BACK_CENTER);
-enum AV_CH_LAYOUT_SURROUND       =  (AV_CH_LAYOUT_STEREO|AV_CH_FRONT_CENTER);
-enum AV_CH_LAYOUT_3POINT1        =  (AV_CH_LAYOUT_SURROUND|AV_CH_LOW_FREQUENCY);
-enum AV_CH_LAYOUT_4POINT0        =  (AV_CH_LAYOUT_SURROUND|AV_CH_BACK_CENTER);
-enum AV_CH_LAYOUT_4POINT1        =  (AV_CH_LAYOUT_4POINT0|AV_CH_LOW_FREQUENCY);
-enum AV_CH_LAYOUT_2_2            =  (AV_CH_LAYOUT_STEREO|AV_CH_SIDE_LEFT|AV_CH_SIDE_RIGHT);
-enum AV_CH_LAYOUT_QUAD           =  (AV_CH_LAYOUT_STEREO|AV_CH_BACK_LEFT|AV_CH_BACK_RIGHT);
-enum AV_CH_LAYOUT_5POINT0        =  (AV_CH_LAYOUT_SURROUND|AV_CH_SIDE_LEFT|AV_CH_SIDE_RIGHT);
-enum AV_CH_LAYOUT_5POINT1        =  (AV_CH_LAYOUT_5POINT0|AV_CH_LOW_FREQUENCY);
-enum AV_CH_LAYOUT_5POINT0_BACK   =  (AV_CH_LAYOUT_SURROUND|AV_CH_BACK_LEFT|AV_CH_BACK_RIGHT);
-enum AV_CH_LAYOUT_5POINT1_BACK   =  (AV_CH_LAYOUT_5POINT0_BACK|AV_CH_LOW_FREQUENCY);
-enum AV_CH_LAYOUT_6POINT0        =  (AV_CH_LAYOUT_5POINT0|AV_CH_BACK_CENTER);
-enum AV_CH_LAYOUT_6POINT0_FRONT  =  (AV_CH_LAYOUT_2_2|AV_CH_FRONT_LEFT_OF_CENTER|AV_CH_FRONT_RIGHT_OF_CENTER);
-enum AV_CH_LAYOUT_HEXAGONAL      =  (AV_CH_LAYOUT_5POINT0_BACK|AV_CH_BACK_CENTER);
-enum AV_CH_LAYOUT_6POINT1        =  (AV_CH_LAYOUT_5POINT1|AV_CH_BACK_CENTER);
-enum AV_CH_LAYOUT_6POINT1_BACK   =  (AV_CH_LAYOUT_5POINT1_BACK|AV_CH_BACK_CENTER);
-enum AV_CH_LAYOUT_6POINT1_FRONT  =  (AV_CH_LAYOUT_6POINT0_FRONT|AV_CH_LOW_FREQUENCY);
-enum AV_CH_LAYOUT_7POINT0        =  (AV_CH_LAYOUT_5POINT0|AV_CH_BACK_LEFT|AV_CH_BACK_RIGHT);
-enum AV_CH_LAYOUT_7POINT0_FRONT  =  (AV_CH_LAYOUT_5POINT0|AV_CH_FRONT_LEFT_OF_CENTER|AV_CH_FRONT_RIGHT_OF_CENTER);
-enum AV_CH_LAYOUT_7POINT1        =  (AV_CH_LAYOUT_5POINT1|AV_CH_BACK_LEFT|AV_CH_BACK_RIGHT);
-enum AV_CH_LAYOUT_7POINT1_WIDE   =  (AV_CH_LAYOUT_5POINT1|AV_CH_FRONT_LEFT_OF_CENTER|AV_CH_FRONT_RIGHT_OF_CENTER);
-enum AV_CH_LAYOUT_7POINT1_WIDE_BACK=(AV_CH_LAYOUT_5POINT1_BACK|AV_CH_FRONT_LEFT_OF_CENTER|AV_CH_FRONT_RIGHT_OF_CENTER);
-enum AV_CH_LAYOUT_OCTAGONAL      =  (AV_CH_LAYOUT_5POINT0|AV_CH_BACK_LEFT|AV_CH_BACK_CENTER|AV_CH_BACK_RIGHT);
-enum AV_CH_LAYOUT_HEXADECAGONAL  =  (AV_CH_LAYOUT_OCTAGONAL|AV_CH_WIDE_LEFT|AV_CH_WIDE_RIGHT|AV_CH_TOP_BACK_LEFT|AV_CH_TOP_BACK_RIGHT|AV_CH_TOP_BACK_CENTER|AV_CH_TOP_FRONT_CENTER|AV_CH_TOP_FRONT_LEFT|AV_CH_TOP_FRONT_RIGHT);
-enum AV_CH_LAYOUT_STEREO_DOWNMIX =  (AV_CH_STEREO_LEFT|AV_CH_STEREO_RIGHT);
+enum AV_CH_LAYOUT_MONO = AV_CH_FRONT_CENTER;
+enum AV_CH_LAYOUT_STEREO = AV_CH_FRONT_LEFT | AV_CH_FRONT_RIGHT;
+enum AV_CH_LAYOUT_2POINT1 = AV_CH_LAYOUT_STEREO | AV_CH_LOW_FREQUENCY;
+enum AV_CH_LAYOUT_2_1 = AV_CH_LAYOUT_STEREO | AV_CH_BACK_CENTER;
+enum AV_CH_LAYOUT_SURROUND = AV_CH_LAYOUT_STEREO | AV_CH_FRONT_CENTER;
+enum AV_CH_LAYOUT_3POINT1 = AV_CH_LAYOUT_SURROUND | AV_CH_LOW_FREQUENCY;
+enum AV_CH_LAYOUT_4POINT0 = AV_CH_LAYOUT_SURROUND | AV_CH_BACK_CENTER;
+enum AV_CH_LAYOUT_4POINT1 = AV_CH_LAYOUT_4POINT0 | AV_CH_LOW_FREQUENCY;
+enum AV_CH_LAYOUT_2_2 = AV_CH_LAYOUT_STEREO | AV_CH_SIDE_LEFT | AV_CH_SIDE_RIGHT;
+enum AV_CH_LAYOUT_QUAD = AV_CH_LAYOUT_STEREO | AV_CH_BACK_LEFT | AV_CH_BACK_RIGHT;
+enum AV_CH_LAYOUT_5POINT0 = AV_CH_LAYOUT_SURROUND | AV_CH_SIDE_LEFT | AV_CH_SIDE_RIGHT;
+enum AV_CH_LAYOUT_5POINT1 = AV_CH_LAYOUT_5POINT0 | AV_CH_LOW_FREQUENCY;
+enum AV_CH_LAYOUT_5POINT0_BACK = AV_CH_LAYOUT_SURROUND | AV_CH_BACK_LEFT | AV_CH_BACK_RIGHT;
+enum AV_CH_LAYOUT_5POINT1_BACK = AV_CH_LAYOUT_5POINT0_BACK | AV_CH_LOW_FREQUENCY;
+enum AV_CH_LAYOUT_6POINT0 = AV_CH_LAYOUT_5POINT0 | AV_CH_BACK_CENTER;
+enum AV_CH_LAYOUT_6POINT0_FRONT = AV_CH_LAYOUT_2_2 | AV_CH_FRONT_LEFT_OF_CENTER | AV_CH_FRONT_RIGHT_OF_CENTER;
+enum AV_CH_LAYOUT_HEXAGONAL = AV_CH_LAYOUT_5POINT0_BACK | AV_CH_BACK_CENTER;
+enum AV_CH_LAYOUT_6POINT1 = AV_CH_LAYOUT_5POINT1 | AV_CH_BACK_CENTER;
+enum AV_CH_LAYOUT_6POINT1_BACK = AV_CH_LAYOUT_5POINT1_BACK | AV_CH_BACK_CENTER;
+enum AV_CH_LAYOUT_6POINT1_FRONT = AV_CH_LAYOUT_6POINT0_FRONT | AV_CH_LOW_FREQUENCY;
+enum AV_CH_LAYOUT_7POINT0 = AV_CH_LAYOUT_5POINT0 | AV_CH_BACK_LEFT | AV_CH_BACK_RIGHT;
+enum AV_CH_LAYOUT_7POINT0_FRONT = AV_CH_LAYOUT_5POINT0 | AV_CH_FRONT_LEFT_OF_CENTER | AV_CH_FRONT_RIGHT_OF_CENTER;
+enum AV_CH_LAYOUT_7POINT1 = AV_CH_LAYOUT_5POINT1 | AV_CH_BACK_LEFT | AV_CH_BACK_RIGHT;
+enum AV_CH_LAYOUT_7POINT1_WIDE = AV_CH_LAYOUT_5POINT1 | AV_CH_FRONT_LEFT_OF_CENTER | AV_CH_FRONT_RIGHT_OF_CENTER;
+enum AV_CH_LAYOUT_7POINT1_WIDE_BACK = AV_CH_LAYOUT_5POINT1_BACK | AV_CH_FRONT_LEFT_OF_CENTER | AV_CH_FRONT_RIGHT_OF_CENTER;
+enum AV_CH_LAYOUT_OCTAGONAL = AV_CH_LAYOUT_5POINT0 | AV_CH_BACK_LEFT | AV_CH_BACK_CENTER | AV_CH_BACK_RIGHT;
+enum AV_CH_LAYOUT_HEXADECAGONAL = AV_CH_LAYOUT_OCTAGONAL | AV_CH_WIDE_LEFT | AV_CH_WIDE_RIGHT | AV_CH_TOP_BACK_LEFT | AV_CH_TOP_BACK_RIGHT | AV_CH_TOP_BACK_CENTER | AV_CH_TOP_FRONT_CENTER | AV_CH_TOP_FRONT_LEFT | AV_CH_TOP_FRONT_RIGHT;
+enum AV_CH_LAYOUT_STEREO_DOWNMIX = AV_CH_STEREO_LEFT | AV_CH_STEREO_RIGHT;
+enum AV_CH_LAYOUT_22POINT2 = AV_CH_LAYOUT_5POINT1_BACK | AV_CH_FRONT_LEFT_OF_CENTER | AV_CH_FRONT_RIGHT_OF_CENTER | AV_CH_BACK_CENTER | AV_CH_LOW_FREQUENCY_2 | AV_CH_SIDE_LEFT | AV_CH_SIDE_RIGHT | AV_CH_TOP_FRONT_LEFT | AV_CH_TOP_FRONT_RIGHT | AV_CH_TOP_FRONT_CENTER | AV_CH_TOP_CENTER | AV_CH_TOP_BACK_LEFT | AV_CH_TOP_BACK_RIGHT | AV_CH_TOP_SIDE_LEFT | AV_CH_TOP_SIDE_RIGHT | AV_CH_TOP_BACK_CENTER | AV_CH_BOTTOM_FRONT_CENTER | AV_CH_BOTTOM_FRONT_LEFT | AV_CH_BOTTOM_FRONT_RIGHT;
 
-enum AVMatrixEncoding {
-    AV_MATRIX_ENCODING_NONE,
-    AV_MATRIX_ENCODING_DOLBY,
-    AV_MATRIX_ENCODING_DPLII,
-    AV_MATRIX_ENCODING_DPLIIX,
-    AV_MATRIX_ENCODING_DPLIIZ,
-    AV_MATRIX_ENCODING_DOLBYEX,
-    AV_MATRIX_ENCODING_DOLBYHEADPHONE,
-    AV_MATRIX_ENCODING_NB
+enum AVMatrixEncoding
+{
+    AV_MATRIX_ENCODING_NONE = 0,
+    AV_MATRIX_ENCODING_DOLBY = 1,
+    AV_MATRIX_ENCODING_DPLII = 2,
+    AV_MATRIX_ENCODING_DPLIIX = 3,
+    AV_MATRIX_ENCODING_DPLIIZ = 4,
+    AV_MATRIX_ENCODING_DOLBYEX = 5,
+    AV_MATRIX_ENCODING_DOLBYHEADPHONE = 6,
+    AV_MATRIX_ENCODING_NB = 7
 }
 
 /**
@@ -131,20 +136,29 @@ enum AVMatrixEncoding {
  *   5.0(side), 5.1, 5.1(side), 7.1, 7.1(wide), downmix);
  * - the name of a single channel (FL, FR, FC, LFE, BL, BR, FLC, FRC, BC,
  *   SL, SR, TC, TFL, TFC, TFR, TBL, TBC, TBR, DL, DR);
- * - a number of channels, in decimal, optionally followed by 'c', yielding
+ * - a number of channels, in decimal, followed by 'c', yielding
  *   the default channel layout for that number of channels (@see
  *   av_get_default_channel_layout);
  * - a channel layout mask, in hexadecimal starting with "0x" (see the
  *   AV_CH_* macros).
  *
- * @warning Starting from the next major bump the trailing character
- * 'c' to specify a number of channels will be required, while a
- * channel layout mask could also be specified as a decimal number
- * (if and only if not followed by "c").
- *
  * Example: "stereo+FC" = "2c+FC" = "2c+1c" = "0x7"
  */
-uint64_t av_get_channel_layout(const char *name);
+ulong av_get_channel_layout (const(char)* name);
+
+/**
+ * Return a channel layout and the number of channels based on the specified name.
+ *
+ * This function is similar to (@see av_get_channel_layout), but can also parse
+ * unknown channel layout specifications.
+ *
+ * @param[in]  name             channel layout specification string
+ * @param[out] channel_layout   parsed channel layout (0 if unknown)
+ * @param[out] nb_channels      number of channels
+ *
+ * @return 0 on success, AVERROR(EINVAL) if the parsing fails.
+ */
+int av_get_extended_channel_layout (const(char)* name, ulong* channel_layout, int* nb_channels);
 
 /**
  * Return a description of a channel layout.
@@ -153,23 +167,23 @@ uint64_t av_get_channel_layout(const char *name);
  * @param buf put here the string containing the channel layout
  * @param buf_size size in bytes of the buffer
  */
-void av_get_channel_layout_string(char *buf, int buf_size, int nb_channels, uint64_t channel_layout);
+void av_get_channel_layout_string (char* buf, int buf_size, int nb_channels, ulong channel_layout);
 
 struct AVBPrint;
 /**
  * Append a description of a channel layout to a bprint buffer.
  */
-void av_bprint_channel_layout(AVBPrint *bp, int nb_channels, uint64_t channel_layout);
+void av_bprint_channel_layout (AVBPrint* bp, int nb_channels, ulong channel_layout);
 
 /**
  * Return the number of channels in the channel layout.
  */
-int av_get_channel_layout_nb_channels(uint64_t channel_layout);
+int av_get_channel_layout_nb_channels (ulong channel_layout);
 
 /**
  * Return default channel layout for a given number of channels.
  */
-int64_t av_get_default_channel_layout(int nb_channels);
+long av_get_default_channel_layout (int nb_channels);
 
 /**
  * Get the index of a channel in channel_layout.
@@ -180,20 +194,19 @@ int64_t av_get_default_channel_layout(int nb_channels);
  * @return index of channel in channel_layout on success, a negative AVERROR
  *         on error.
  */
-int av_get_channel_layout_channel_index(uint64_t channel_layout,
-                                        uint64_t channel);
+int av_get_channel_layout_channel_index (ulong channel_layout, ulong channel);
 
 /**
  * Get the channel with the given index in channel_layout.
  */
-uint64_t av_channel_layout_extract_channel(uint64_t channel_layout, int index);
+ulong av_channel_layout_extract_channel (ulong channel_layout, int index);
 
 /**
  * Get the name of a given channel.
  *
  * @return channel name on success, NULL on error.
  */
-char *av_get_channel_name(uint64_t channel);
+const(char)* av_get_channel_name (ulong channel);
 
 /**
  * Get the description of a given channel.
@@ -201,7 +214,7 @@ char *av_get_channel_name(uint64_t channel);
  * @param channel  a channel layout with a single channel
  * @return  channel description on success, NULL on error
  */
-char *av_get_channel_description(uint64_t channel);
+const(char)* av_get_channel_description (ulong channel);
 
 /**
  * Get the value and name of a standard channel layout.
@@ -212,12 +225,14 @@ char *av_get_channel_description(uint64_t channel);
  * @return  0  if the layout exists,
  *          <0 if index is beyond the limits
  */
-int av_get_standard_channel_layout(uint index, uint64_t *layout,
-                                   char **name);
+int av_get_standard_channel_layout (
+    uint index,
+    ulong* layout,
+    const(char*)* name);
 
 /**
  * @}
  * @}
  */
 
-//#endif /* AVUTIL_CHANNEL_LAYOUT_H */
+/* AVUTIL_CHANNEL_LAYOUT_H */
