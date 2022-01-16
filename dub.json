@@ -1,32 +1,28 @@
 {
     "name": "ffmpeg-d",
+    "version": "4.4.1+dcv",
     "description": "FFmpeg Bindings",
-    "copyright": "Copyright © 2013",
+    "copyright": "Copyright © 2022",
     "license": "LGPL-2.1",
     "authors": [
         "Sumit Raja",
         "donglei",
-        "Relja Ljubobratovic"
+        "Relja Ljubobratovic",
+        "Ferhat Kurtulmuş"
     ],
 
     "platforms": ["Windows", "Posix"],
 
     "libs": [
         "avcodec",
+        "avdevice",
+        "avfilter",
         "avformat",
         "avutil",
-        "avfilter",
-        "avdevice",
-        "swscale",
-        "swresample"
+        "postproc",
+        "swresample",
+        "swscale"
     ],
-
-    "buildTypes": {
-        "unittest": {
-            "buildOptions": ["unittests"],
-            "sourcePaths": ["./source/ffmpeg", "./test/"]
-        }
-    },
 
     "configurations": [
         {
@@ -36,18 +32,6 @@
         {
             "name": "static",
             "targetType": "staticLibrary"
-        },
-        {
-            "name": "remux_example",
-            "targetType": "executable",
-            "mainSourceFile": "examples/remux_example.d",
-            "targetName": "remux_example"
-        },
-        {
-            "name": "encode_example",
-            "targetType": "executable",
-            "mainSourceFile": "examples/encode_example.d",
-            "targetName": "encode_example"
         }
     ]
 }
