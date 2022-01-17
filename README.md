@@ -2,7 +2,7 @@
 
 - This is a D port of the FFmpeg C headers, created with dstep with some manual fixes.
 - The targeted ffmpeg version: 4.4.1.
-- This branch is intended to be used with [DCV](https://github.com/libmir/dcv) and is not heavily tested.
+- The binding is mainly untested, but I believe it is near to a complete binding.
 
 This is a D port of the FFmpeg C headers. Please check [FFmpeg website](https://www.ffmpeg.org/) for more information on the application and libraries 
 
