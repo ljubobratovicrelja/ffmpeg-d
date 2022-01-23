@@ -15,38 +15,31 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 module ffmpeg.libswscale.swscale_version;
 
 import ffmpeg.libavutil.avutil_version;
 
-//#include "libavutil/version.h"
-
-enum LIBSWSCALE_VERSION_MAJOR = 4;
-enum LIBSWSCALE_VERSION_MINOR = 1;
-enum LIBSWSCALE_VERSION_MICRO = 100;
-
-enum LIBSWSCALE_VERSION_INT = AV_VERSION_INT!(LIBSWSCALE_VERSION_MAJOR, 
-											  LIBSWSCALE_VERSION_MINOR,  
-											  LIBSWSCALE_VERSION_MICRO);
-
-enum LIBSWSCALE_VERSION = AV_VERSION!(LIBSWSCALE_VERSION_MAJOR, 
-										LIBSWSCALE_VERSION_MINOR, 
-										LIBSWSCALE_VERSION_MICRO);
-enum LIBSWSCALE_BUILD = LIBSWSCALE_VERSION_INT;
-
-enum LIBSWSCALE_IDENT = "SwS" ~ LIBSWSCALE_VERSION;
+extern (C):
 
 /**
-* FF_API_* defines may be placed below to indicate public API that will be
-* dropped at a future version bump. The defines themselves are not part of
-* the public API and may change, break or disappear at any time.
-*/
+ * @file
+ * swscale version macros
+ */
 
-enum FF_API_SWS_VECTOR = (LIBSWSCALE_VERSION_MAJOR < 6);
+enum LIBSWSCALE_VERSION_MAJOR = 5;
+enum LIBSWSCALE_VERSION_MINOR = 9;
+enum LIBSWSCALE_VERSION_MICRO = 100;
 
-version(X86_64){
-    enum ARCH_X86_64 = 1;
-}else{
-    enum ARCH_X86_64 = 0;
-}
+enum LIBSWSCALE_VERSION_INT = AV_VERSION_INT(LIBSWSCALE_VERSION_MAJOR, LIBSWSCALE_VERSION_MINOR, LIBSWSCALE_VERSION_MICRO);
+enum LIBSWSCALE_VERSION = AV_VERSION(LIBSWSCALE_VERSION_MAJOR, LIBSWSCALE_VERSION_MINOR, LIBSWSCALE_VERSION_MICRO);
+enum LIBSWSCALE_BUILD = LIBSWSCALE_VERSION_INT;
+
+/**
+ * FF_API_* defines may be placed below to indicate public API that will be
+ * dropped at a future version bump. The defines themselves are not part of
+ * the public API and may change, break or disappear at any time.
+ */
+
+enum FF_API_SWS_VECTOR = LIBSWSCALE_VERSION_MAJOR < 6;
+
+/* SWSCALE_VERSION_H */

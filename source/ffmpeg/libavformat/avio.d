@@ -17,24 +17,29 @@
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 module ffmpeg.libavformat.avio;
+
+import ffmpeg.libavutil;
+
+import core.stdc.config;
+
+extern (C):
 
 /**
  * @file
  * @ingroup lavf_io
  * Buffered I/O operations
  */
-import std.stdint;
-import std.stdio;
-import ffmpeg.libavutil.avutil;
-import ffmpeg.libavformat.avformat_version;
-import ffmpeg.libavformat.url;
-import ffmpeg.libavutil.dict;
 
-@nogc nothrow extern(C):
+/**
+ * Seeking works like for a local file.
+ */
+enum AVIO_SEEKABLE_NORMAL = 1 << 0;
 
-const int AVIO_SEEKABLE_NORMAL = 0x0001; /**< Seeking works like for a local file */
+/**
+ * Seeking by timestamp with avio_seek_time() is possible.
+ */
+enum AVIO_SEEKABLE_TIME = 1 << 1;
 
 /**
  * Callback for checking whether to abort blocking functions.
@@ -47,26 +52,28 @@ const int AVIO_SEEKABLE_NORMAL = 0x0001; /**< Seeking works like for a local fil
  * new elements have been added after this struct in AVFormatContext
  * or AVIOContext.
  */
-struct AVIOInterruptCB {
+struct AVIOInterruptCB
+{
     int function (void*) callback;
-    void *opaque;
+    void* opaque;
 }
 
 /**
  * Directory entry types.
  */
-enum AVIODirEntryType {
-    AVIO_ENTRY_UNKNOWN,
-    AVIO_ENTRY_BLOCK_DEVICE,
-    AVIO_ENTRY_CHARACTER_DEVICE,
-    AVIO_ENTRY_DIRECTORY,
-    AVIO_ENTRY_NAMED_PIPE,
-    AVIO_ENTRY_SYMBOLIC_LINK,
-    AVIO_ENTRY_SOCKET,
-    AVIO_ENTRY_FILE,
-    AVIO_ENTRY_SERVER,
-    AVIO_ENTRY_SHARE,
-    AVIO_ENTRY_WORKGROUP
+enum AVIODirEntryType
+{
+    AVIO_ENTRY_UNKNOWN = 0,
+    AVIO_ENTRY_BLOCK_DEVICE = 1,
+    AVIO_ENTRY_CHARACTER_DEVICE = 2,
+    AVIO_ENTRY_DIRECTORY = 3,
+    AVIO_ENTRY_NAMED_PIPE = 4,
+    AVIO_ENTRY_SYMBOLIC_LINK = 5,
+    AVIO_ENTRY_SOCKET = 6,
+    AVIO_ENTRY_FILE = 7,
+    AVIO_ENTRY_SERVER = 8,
+    AVIO_ENTRY_SHARE = 9,
+    AVIO_ENTRY_WORKGROUP = 10
 }
 
 /**
@@ -75,61 +82,71 @@ enum AVIODirEntryType {
  * Only name and type fields are guaranteed be set.
  * Rest of fields are protocol or/and platform dependent and might be unknown.
  */
-struct AVIODirEntry {
-    char *name;                           /**< Filename */
-    int type;                             /**< Type of the entry */
-    int utf8;                             /**< Set to 1 when name is encoded with UTF-8, 0 otherwise.
-                                               Name can be encoded with UTF-8 even though 0 is set. */
-    int64_t size;                         /**< File size in bytes, -1 if unknown. */
-    int64_t modification_timestamp;       /**< Time of last modification in microseconds since unix
-                                               epoch, -1 if unknown. */
-    int64_t access_timestamp;             /**< Time of last access in microseconds since unix epoch,
-                                               -1 if unknown. */
-    int64_t status_change_timestamp;      /**< Time of last status change in microseconds since unix
-                                               epoch, -1 if unknown. */
-    int64_t user_id;                      /**< User ID of owner, -1 if unknown. */
-    int64_t group_id;                     /**< Group ID of owner, -1 if unknown. */
-    int64_t filemode;                     /**< Unix file mode, -1 if unknown. */
+struct AVIODirEntry
+{
+    char* name; /**< Filename */
+    int type; /**< Type of the entry */
+    int utf8; /**< Set to 1 when name is encoded with UTF-8, 0 otherwise.
+         Name can be encoded with UTF-8 even though 0 is set. */
+    long size; /**< File size in bytes, -1 if unknown. */
+    long modification_timestamp; /**< Time of last modification in microseconds since unix
+         epoch, -1 if unknown. */
+    long access_timestamp; /**< Time of last access in microseconds since unix epoch,
+         -1 if unknown. */
+    long status_change_timestamp; /**< Time of last status change in microseconds since unix
+         epoch, -1 if unknown. */
+    long user_id; /**< User ID of owner, -1 if unknown. */
+    long group_id; /**< Group ID of owner, -1 if unknown. */
+    long filemode; /**< Unix file mode, -1 if unknown. */
 }
 
-struct AVIODirContext {
-    URLContext *url_context;
+struct AVIODirContext
+{
+    struct URLContext;
+    URLContext* url_context;
 }
 
 /**
  * Different data types that can be returned via the AVIO
  * write_data_type callback.
  */
-enum AVIODataMarkerType {
+enum AVIODataMarkerType
+{
     /**
      * Header data; this needs to be present for the stream to be decodeable.
      */
-    AVIO_DATA_MARKER_HEADER,
+    AVIO_DATA_MARKER_HEADER = 0,
     /**
      * A point in the output bytestream where a decoder can start decoding
      * (i.e. a keyframe). A demuxer/decoder given the data flagged with
      * AVIO_DATA_MARKER_HEADER, followed by any AVIO_DATA_MARKER_SYNC_POINT,
      * should give decodeable results.
      */
-    AVIO_DATA_MARKER_SYNC_POINT,
+    AVIO_DATA_MARKER_SYNC_POINT = 1,
     /**
      * A point in the output bytestream where a demuxer can start parsing
      * (for non self synchronizing bytestream formats). That is, any
      * non-keyframe packet start point.
      */
-    AVIO_DATA_MARKER_BOUNDARY_POINT,
+    AVIO_DATA_MARKER_BOUNDARY_POINT = 2,
     /**
      * This is any, unlabelled data. It can either be a muxer not marking
      * any positions at all, it can be an actual boundary/sync point
      * that the muxer chooses not to mark, or a later part of a packet/fragment
      * that is cut into multiple write callbacks due to limited IO buffer size.
      */
-    AVIO_DATA_MARKER_UNKNOWN,
+    AVIO_DATA_MARKER_UNKNOWN = 3,
     /**
      * Trailer data, which doesn't contain actual content, but only for
      * finalizing the output file.
      */
-    AVIO_DATA_MARKER_TRAILER
+    AVIO_DATA_MARKER_TRAILER = 4,
+    /**
+     * A point in the output bytestream where the underlying AVIOContext might
+     * flush the buffer depending on latency or buffering requirements. Typically
+     * means the end of a packet.
+     */
+    AVIO_DATA_MARKER_FLUSH_POINT = 5
 }
 
 /**
@@ -144,7 +161,8 @@ enum AVIODataMarkerType {
  *       when implementing custom I/O. Normally these are set to the
  *       function pointers specified in avio_alloc_context()
  */
-struct AVIOContext {
+struct AVIOContext
+{
     /**
      * A class for private options.
      *
@@ -157,11 +175,12 @@ struct AVIOContext {
      * warning -- this field can be NULL, be sure to not pass this AVIOContext
      * to any av_opt_* functions in that case.
      */
-    const AVClass *av_class;
+    const(AVClass)* av_class;
 
     /*
-     * The following shows the relationship between buffer, buf_ptr, buf_end, buf_size,
-     * and pos, when reading and when writing (since AVIOContext is used for both):
+     * The following shows the relationship between buffer, buf_ptr,
+     * buf_ptr_max, buf_end, buf_size, and pos, when reading and when writing
+     * (since AVIOContext is used for both):
      *
      **********************************************************************************
      *                                   READING
@@ -188,55 +207,60 @@ struct AVIOContext {
      *                                   WRITING
      **********************************************************************************
      *
-     *                                          |          buffer_size          |
-     *                                          |-------------------------------|
-     *                                          |                               |
+     *                             |          buffer_size                 |
+     *                             |--------------------------------------|
+     *                             |                                      |
      *
-     *                                       buffer              buf_ptr     buf_end
-     *                                          +-------------------+-----------+
-     *                                          |/ / / / / / / / / /|           |
-     *  write buffer:                           | / to be flushed / |           |
-     *                                          |/ / / / / / / / / /|           |
-     *                                          +-------------------+-----------+
+     *                                                buf_ptr_max
+     *                          buffer                 (buf_ptr)       buf_end
+     *                             +-----------------------+--------------+
+     *                             |/ / / / / / / / / / / /|              |
+     *  write buffer:              | / / to be flushed / / |              |
+     *                             |/ / / / / / / / / / / /|              |
+     *                             +-----------------------+--------------+
+     *                               buf_ptr can be in this
+     *                               due to a backward seek
      *
-     *                                         pos
-     *               +--------------------------+-----------------------------------+
-     *  output file: |                          |                                   |
-     *               +--------------------------+-----------------------------------+
+     *                            pos
+     *               +-------------+----------------------------------------------+
+     *  output file: |             |                                              |
+     *               +-------------+----------------------------------------------+
      *
      */
-    ubyte *buffer;  /**< Start of the buffer. */
-    int buffer_size;        /**< Maximum buffer size */
-    ubyte *buf_ptr; /**< Current position in the buffer */
-    ubyte *buf_end; /**< End of the data, may be less than
-                                 buffer+buffer_size if the read function returned
-                                 less data than requested, e.g. for streams where
-                                 no more data has been received yet. */
-    void *opaque;           /**< A private pointer, passed to the read/write/seek/...
-                                 functions. */
-    int function(void *opaque, uint8_t *buf, int buf_size) read_packet;
-    int function(void *opaque, uint8_t *buf, int buf_size) write_packet;
-    int64_t function(void *opaque, int64_t offset, int whence) seek;
-    int64_t pos;            /**< position in the file of the current buffer */
-    int must_flush;         /**< true if the next seek should flush */
-    int eof_reached;        /**< true if eof reached */
-    int write_flag;         /**< true if open for writing */
+    ubyte* buffer; /**< Start of the buffer. */
+    int buffer_size; /**< Maximum buffer size */
+    ubyte* buf_ptr; /**< Current position in the buffer */
+    ubyte* buf_end; /**< End of the data, may be less than
+         buffer+buffer_size if the read function returned
+         less data than requested, e.g. for streams where
+         no more data has been received yet. */
+    void* opaque; /**< A private pointer, passed to the read/write/seek/...
+         functions. */
+    int function (void* opaque, ubyte* buf, int buf_size) read_packet;
+    int function (void* opaque, ubyte* buf, int buf_size) write_packet;
+    long function (void* opaque, long offset, int whence) seek;
+    long pos; /**< position in the file of the current buffer */
+    int eof_reached; /**< true if was unable to read due to error or eof */
+    int write_flag; /**< true if open for writing */
     int max_packet_size;
-    uint  checksum;
-    ubyte *checksum_ptr;
-    uint function(uint checksum, const uint8_t *buf, uint size) update_checksum;
-    int error;              /**< contains the error code or 0 if no error happened */
+    c_ulong checksum;
+    ubyte* checksum_ptr;
+    c_ulong function (c_ulong checksum, const(ubyte)* buf, uint size) update_checksum;
+    int error; /**< contains the error code or 0 if no error happened */
     /**
      * Pause or resume playback for network streaming protocols - e.g. MMS.
      */
-    int function(void *opaque, int pause) read_pause;
+    int function (void* opaque, int pause) read_pause;
     /**
      * Seek to a given timestamp in stream with the specified stream_index.
      * Needed for some network streaming protocols which don't support seeking
      * to byte position.
      */
-    int64_t function(void *opaque, int stream_index, 
-                         int64_t timestamp, int flags) read_seek;
+    long function (
+        void* opaque,
+        int stream_index,
+        long timestamp,
+        int flags) read_seek;
     /**
      * A combination of AVIO_SEEKABLE_ flags or 0 when the stream is not seekable.
      */
@@ -246,7 +270,7 @@ struct AVIOContext {
      * max filesize, used to limit allocations
      * This field is internal to libavformat and access from outside is not allowed.
      */
-    int64_t maxsize;
+    long maxsize;
 
     /**
      * avio_read and avio_write should if possible be satisfied directly
@@ -259,7 +283,7 @@ struct AVIOContext {
      * Bytes read statistic
      * This field is internal to libavformat and access from outside is not allowed.
      */
-    int64_t bytes_read;
+    long bytes_read;
 
     /**
      * seek statistic
@@ -289,18 +313,22 @@ struct AVIOContext {
     /**
      * ',' separated list of allowed protocols.
      */
-    const char *protocol_whitelist;
+    const(char)* protocol_whitelist;
 
     /**
      * ',' separated list of disallowed protocols.
      */
-    const char *protocol_blacklist;
+    const(char)* protocol_blacklist;
 
     /**
      * A callback that is used instead of write_packet.
      */
-    int function(void *opaque, uint8_t *buf, int buf_size,
-                           AVIODataMarkerType type, int64_t time) write_data_type;
+    int function (
+        void* opaque,
+        ubyte* buf,
+        int buf_size,
+        AVIODataMarkerType type,
+        long time) write_data_type;
     /**
      * If set, don't call write_data_type separately for AVIO_DATA_MARKER_BOUNDARY_POINT,
      * but ignore them and treat them as AVIO_DATA_MARKER_UNKNOWN (to avoid needlessly
@@ -312,7 +340,26 @@ struct AVIOContext {
      * Internal, not meant to be used from outside of AVIOContext.
      */
     AVIODataMarkerType current_type;
-    int64_t last_time;
+    long last_time;
+
+    /**
+     * A callback that is used instead of short_seek_threshold.
+     * This is current internal only, do not use from outside.
+     */
+    int function (void* opaque) short_seek_get;
+
+    long written;
+
+    /**
+     * Maximum reached position before a backward seek in the write buffer,
+     * used keeping track of already written data for a later flush.
+     */
+    ubyte* buf_ptr_max;
+
+    /**
+     * Try to buffer at least this amount of data before flushing it
+     */
+    int min_packet_size;
 }
 
 /**
@@ -322,7 +369,7 @@ struct AVIOContext {
  *
  * @return Name of the protocol or NULL.
  */
-char *avio_find_protocol_name(const char *url);
+const(char)* avio_find_protocol_name (const(char)* url);
 
 /**
  * Return AVIO_FLAG_* access flags corresponding to the access permissions
@@ -336,7 +383,7 @@ char *avio_find_protocol_name(const char *url);
  * unless you are sure that no other processes are accessing the
  * checked resource.
  */
-int avio_check(const char *url, int flags);
+int avio_check (const(char)* url, int flags);
 
 /**
  * Move or rename a resource.
@@ -347,7 +394,7 @@ int avio_check(const char *url, int flags);
  * @param url_dst new url to resource if the operation succeeded
  * @return >=0 on success or negative on error.
  */
-int avpriv_io_move(const char *url_src, const char *url_dst);
+int avpriv_io_move (const(char)* url_src, const(char)* url_dst);
 
 /**
  * Delete a resource.
@@ -355,7 +402,7 @@ int avpriv_io_move(const char *url_src, const char *url_dst);
  * @param url resource to be deleted.
  * @return >=0 on success or negative on error.
  */
-int avpriv_io_delete(const char *url);
+int avpriv_io_delete (const(char)* url);
 
 /**
  * Open directory for reading.
@@ -367,7 +414,7 @@ int avpriv_io_delete(const char *url);
  *                containing options that were not found. May be NULL.
  * @return >=0 on success or negative on error.
  */
-int avio_open_dir(AVIODirContext **s, const char *url, AVDictionary **options);
+int avio_open_dir (AVIODirContext** s, const(char)* url, AVDictionary** options);
 
 /**
  * Get next directory entry.
@@ -380,7 +427,7 @@ int avio_open_dir(AVIODirContext **s, const char *url, AVDictionary **options);
  * @return >=0 on success or negative on error. End of list is not considered an
  *             error.
  */
-int avio_read_dir(AVIODirContext *s, AVIODirEntry **next);
+int avio_read_dir (AVIODirContext* s, AVIODirEntry** next);
 
 /**
  * Close directory.
@@ -391,18 +438,18 @@ int avio_read_dir(AVIODirContext *s, AVIODirEntry **next);
  * @param s         directory read context.
  * @return >=0 on success or negative on error.
  */
-int avio_close_dir(AVIODirContext **s);
+int avio_close_dir (AVIODirContext** s);
 
 /**
  * Free entry allocated by avio_read_dir().
  *
  * @param entry entry to be freed.
  */
-void avio_free_directory_entry(AVIODirEntry **entry);
+void avio_free_directory_entry (AVIODirEntry** entry);
 
 /**
  * Allocate and initialize an AVIOContext for buffered I/O. It must be later
- * freed with av_free().
+ * freed with avio_context_free().
  *
  * @param buffer Memory block for input/output operations via AVIOContext.
  *        The buffer must be allocated with av_malloc() and friends.
@@ -415,37 +462,47 @@ void avio_free_directory_entry(AVIODirEntry **entry);
  * @param write_flag Set to 1 if the buffer should be writable, 0 otherwise.
  * @param opaque An opaque pointer to user-specific data.
  * @param read_packet  A function for refilling the buffer, may be NULL.
+ *                     For stream protocols, must never return 0 but rather
+ *                     a proper AVERROR code.
  * @param write_packet A function for writing the buffer contents, may be NULL.
  *        The function may not change the input buffers content.
  * @param seek A function for seeking to specified byte position, may be NULL.
  *
  * @return Allocated AVIOContext or NULL on failure.
  */
-AVIOContext *avio_alloc_context(
-                  ubyte *buffer,
-                  int buffer_size,
-                  int write_flag,
-                  void *opaque,
-                  int function(void *opaque, uint8_t *buf, int buf_size) read_packet,
-                  int function(void *opaque, uint8_t *buf, int buf_size) write_packet,
-                  int64_t function(void *opaque, int64_t offset, int whence) seek);
+AVIOContext* avio_alloc_context (
+    ubyte* buffer,
+    int buffer_size,
+    int write_flag,
+    void* opaque,
+    int function (void* opaque, ubyte* buf, int buf_size) read_packet,
+    int function (void* opaque, ubyte* buf, int buf_size) write_packet,
+    long function (void* opaque, long offset, int whence) seek);
 
-void avio_w8(AVIOContext *s, int b);
-void avio_write(AVIOContext *s, const ubyte *buf, int size);
-void avio_wl64(AVIOContext *s, uint64_t val);
-void avio_wb64(AVIOContext *s, uint64_t val);
-void avio_wl32(AVIOContext *s, uint val);
-void avio_wb32(AVIOContext *s, uint val);
-void avio_wl24(AVIOContext *s, uint val);
-void avio_wb24(AVIOContext *s, uint val);
-void avio_wl16(AVIOContext *s, uint val);
-void avio_wb16(AVIOContext *s, uint val);
+/**
+ * Free the supplied IO context and everything associated with it.
+ *
+ * @param s Double pointer to the IO context. This function will write NULL
+ * into s.
+ */
+void avio_context_free (AVIOContext** s);
+
+void avio_w8 (AVIOContext* s, int b);
+void avio_write (AVIOContext* s, const(ubyte)* buf, int size);
+void avio_wl64 (AVIOContext* s, ulong val);
+void avio_wb64 (AVIOContext* s, ulong val);
+void avio_wl32 (AVIOContext* s, uint val);
+void avio_wb32 (AVIOContext* s, uint val);
+void avio_wl24 (AVIOContext* s, uint val);
+void avio_wb24 (AVIOContext* s, uint val);
+void avio_wl16 (AVIOContext* s, uint val);
+void avio_wb16 (AVIOContext* s, uint val);
 
 /**
  * Write a NULL-terminated string.
  * @return number of bytes written.
  */
-int avio_put_str(AVIOContext *s, const char *str);
+int avio_put_str (AVIOContext* s, const(char)* str);
 
 /**
  * Convert an UTF-8 string to UTF-16LE and write it.
@@ -454,7 +511,7 @@ int avio_put_str(AVIOContext *s, const char *str);
  *
  * @return number of bytes written.
  */
-int avio_put_str16le(AVIOContext *s, const char *str);
+int avio_put_str16le (AVIOContext* s, const(char)* str);
 
 /**
  * Convert an UTF-8 string to UTF-16BE and write it.
@@ -463,7 +520,7 @@ int avio_put_str16le(AVIOContext *s, const char *str);
  *
  * @return number of bytes written.
  */
-int avio_put_str16be(AVIOContext *s, const char *str);
+int avio_put_str16be (AVIOContext* s, const(char)* str);
 
 /**
  * Mark the written bytestream as a specific type.
@@ -475,17 +532,17 @@ int avio_put_str16be(AVIOContext *s, const char *str);
  *             applicable
  * @param type the kind of data written starting at the current pos
  */
-void avio_write_marker(AVIOContext *s, int64_t time, AVIODataMarkerType type);
+void avio_write_marker (AVIOContext* s, long time, AVIODataMarkerType type);
 
 /**
- * Passing this as the "whence" parameter to a seek function causes it to
+ * ORing this as the "whence" parameter to a seek function causes it to
  * return the filesize without seeking anywhere. Supporting this is optional.
  * If it is not supported then the seek function will return <0.
  */
 enum AVSEEK_SIZE = 0x10000;
 
 /**
- * Oring this flag as into the "whence" parameter to a seek function causes it to
+ * Passing this flag as the "whence" parameter to a seek function causes it to
  * seek by any means (like reopening and linear reading) or other normally unreasonable
  * means that can be extremely slow.
  * This may be ignored by the seek code.
@@ -496,44 +553,52 @@ enum AVSEEK_FORCE = 0x20000;
  * fseek() equivalent for AVIOContext.
  * @return new position or AVERROR.
  */
-int64_t avio_seek(AVIOContext *s, int64_t offset, int whence);
+long avio_seek (AVIOContext* s, long offset, int whence);
 
 /**
  * Skip given number of bytes forward
  * @return new position or AVERROR.
  */
-int64_t avio_skip(AVIOContext *s, int64_t offset);
+long avio_skip (AVIOContext* s, long offset);
 
 /**
  * ftell() equivalent for AVIOContext.
  * @return position or AVERROR.
  */
-static int64_t avio_tell(AVIOContext *s)
-{
-    return avio_seek(s, 0, SEEK_CUR);
-}
+long avio_tell (AVIOContext* s);
 
 /**
  * Get the filesize.
  * @return filesize or AVERROR
  */
-int64_t avio_size(AVIOContext *s);
+long avio_size (AVIOContext* s);
 
 /**
- * feof() equivalent for AVIOContext.
- * @return non zero if and only if end of file
+ * Similar to feof() but also returns nonzero on read errors.
+ * @return non zero if and only if at end of file or a read error happened when reading.
  */
-int avio_feof(AVIOContext *s);
-static if (FF_API_URL_FEOF) {
-    /**
-     * @deprecated use avio_feof()
-     */
-    deprecated
-        int url_feof(AVIOContext *s);
-}
+int avio_feof (AVIOContext* s);
 
-/** @warning currently size is limited */
-int avio_printf(AVIOContext *s, const char *fmt, ...);
+/**
+ * Writes a formatted string to the context.
+ * @return number of bytes written, < 0 on error.
+ */
+int avio_printf (AVIOContext* s, const(char)* fmt, ...);
+
+/**
+ * Write a NULL terminated array of strings to the context.
+ * Usually you don't need to use this function directly but its macro wrapper,
+ * avio_print.
+ */
+void avio_print_string_array (AVIOContext* s, const(char)** strings);
+
+/**
+ * Write strings (const char *) to the context.
+ * This is a convenience macro around avio_print_string_array and it
+ * automatically creates the string array from the variable argument list.
+ * For simple string concatenations this function is more performant than using
+ * avio_printf since it does not need a temporary buffer.
+ */
 
 /**
  * Force flushing of buffered data.
@@ -545,13 +610,22 @@ int avio_printf(AVIOContext *s, const char *fmt, ...);
  * reported file position to that of the underlying stream. This does not
  * read new data, and does not perform any seeks.
  */
-void avio_flush(AVIOContext *s);
+void avio_flush (AVIOContext* s);
 
 /**
  * Read size bytes from AVIOContext into buf.
  * @return number of bytes read or AVERROR
  */
-int avio_read(AVIOContext *s, ubyte *buf, int size);
+int avio_read (AVIOContext* s, ubyte* buf, int size);
+
+/**
+ * Read size bytes from AVIOContext into buf. Unlike avio_read(), this is allowed
+ * to read fewer bytes than requested. The missing bytes can be read in the next
+ * call. This always tries to read at least 1 byte.
+ * Useful to reduce latency in certain cases.
+ * @return number of bytes read or AVERROR
+ */
+int avio_read_partial (AVIOContext* s, ubyte* buf, int size);
 
 /**
  * @name Functions for reading from AVIOContext
@@ -560,15 +634,15 @@ int avio_read(AVIOContext *s, ubyte *buf, int size);
  * @note return 0 if EOF, so you cannot use it if EOF handling is
  *       necessary
  */
-int          avio_r8  (AVIOContext *s);
-uint avio_rl16(AVIOContext *s);
-uint avio_rl24(AVIOContext *s);
-uint avio_rl32(AVIOContext *s);
-uint64_t     avio_rl64(AVIOContext *s);
-uint avio_rb16(AVIOContext *s);
-uint avio_rb24(AVIOContext *s);
-uint avio_rb32(AVIOContext *s);
-uint64_t     avio_rb64(AVIOContext *s);
+int avio_r8 (AVIOContext* s);
+uint avio_rl16 (AVIOContext* s);
+uint avio_rl24 (AVIOContext* s);
+uint avio_rl32 (AVIOContext* s);
+ulong avio_rl64 (AVIOContext* s);
+uint avio_rb16 (AVIOContext* s);
+uint avio_rb24 (AVIOContext* s);
+uint avio_rb32 (AVIOContext* s);
+ulong avio_rb64 (AVIOContext* s);
 /**
  * @}
  */
@@ -585,7 +659,7 @@ uint64_t     avio_rb64(AVIOContext *s);
  * If reading ends on EOF or error, the return value will be one more than
  * bytes actually read.
  */
-int avio_get_str(AVIOContext *pb, int maxlen, char *buf, int buflen);
+int avio_get_str (AVIOContext* pb, int maxlen, char* buf, int buflen);
 
 /**
  * Read a UTF-16 string from pb and convert it to UTF-8.
@@ -593,9 +667,8 @@ int avio_get_str(AVIOContext *pb, int maxlen, char *buf, int buflen);
  * encountered or maxlen bytes have been read.
  * @return number of bytes read (is always <= maxlen)
  */
-int avio_get_str16le(AVIOContext *pb, int maxlen, char *buf, int buflen);
-int avio_get_str16be(AVIOContext *pb, int maxlen, char *buf, int buflen);
-
+int avio_get_str16le (AVIOContext* pb, int maxlen, char* buf, int buflen);
+int avio_get_str16be (AVIOContext* pb, int maxlen, char* buf, int buflen);
 
 /**
  * @name URL open modes
@@ -603,9 +676,9 @@ int avio_get_str16be(AVIOContext *pb, int maxlen, char *buf, int buflen);
  * constants, optionally ORed with other flags.
  * @{
  */
-enum AVIO_FLAG_READ = 1;                                      /**< read-only */
-enum AVIO_FLAG_WRITE = 2;                                      /**< write-only */
-enum AVIO_FLAG_READ_WRITE = (AVIO_FLAG_READ|AVIO_FLAG_WRITE);  /**< read-write pseudo flag */
+enum AVIO_FLAG_READ = 1; /**< read-only */
+enum AVIO_FLAG_WRITE = 2; /**< write-only */
+enum AVIO_FLAG_READ_WRITE = AVIO_FLAG_READ | AVIO_FLAG_WRITE; /**< read-write pseudo flag */
 /**
  * @}
  */
@@ -646,7 +719,7 @@ enum AVIO_FLAG_DIRECT = 0x8000;
  * @return >= 0 in case of success, a negative value corresponding to an
  * AVERROR code in case of failure
  */
-int avio_open(AVIOContext **s, const char *url, int flags);
+int avio_open (AVIOContext** s, const(char)* url, int flags);
 
 /**
  * Create and initialize a AVIOContext for accessing the
@@ -666,8 +739,12 @@ int avio_open(AVIOContext **s, const char *url, int flags);
  * @return >= 0 in case of success, a negative value corresponding to an
  * AVERROR code in case of failure
  */
-int avio_open2(AVIOContext **s, const char *url, int flags,
-               const AVIOInterruptCB *int_cb, AVDictionary **options);
+int avio_open2 (
+    AVIOContext** s,
+    const(char)* url,
+    int flags,
+    const(AVIOInterruptCB)* int_cb,
+    AVDictionary** options);
 
 /**
  * Close the resource accessed by the AVIOContext s and free it.
@@ -679,7 +756,7 @@ int avio_open2(AVIOContext **s, const char *url, int flags,
  * @return 0 on success, an AVERROR < 0 on error.
  * @see avio_closep
  */
-int avio_close(AVIOContext *s);
+int avio_close (AVIOContext* s);
 
 /**
  * Close the resource accessed by the AVIOContext *s, free it
@@ -692,8 +769,7 @@ int avio_close(AVIOContext *s);
  * @return 0 on success, an AVERROR < 0 on error.
  * @see avio_close
  */
-int avio_closep(AVIOContext **s);
-
+int avio_closep (AVIOContext** s);
 
 /**
  * Open a write only memory stream.
@@ -701,18 +777,30 @@ int avio_closep(AVIOContext **s);
  * @param s new IO context
  * @return zero if no error.
  */
-int avio_open_dyn_buf(AVIOContext **s);
+int avio_open_dyn_buf (AVIOContext** s);
 
 /**
- * Return the written size and a pointer to the buffer. The buffer
- * must be freed with av_free().
- * Padding of FF_INPUT_BUFFER_PADDING_SIZE is added to the buffer.
+ * Return the written size and a pointer to the buffer.
+ * The AVIOContext stream is left intact.
+ * The buffer must NOT be freed.
+ * No padding is added to the buffer.
  *
  * @param s IO context
  * @param pbuffer pointer to a byte buffer
  * @return the length of the byte buffer
  */
-int avio_close_dyn_buf(AVIOContext *s, uint8_t **pbuffer);
+int avio_get_dyn_buf (AVIOContext* s, ubyte** pbuffer);
+
+/**
+ * Return the written size and a pointer to the buffer. The buffer
+ * must be freed with av_free().
+ * Padding of AV_INPUT_BUFFER_PADDING_SIZE is added to the buffer.
+ *
+ * @param s IO context
+ * @param pbuffer pointer to a byte buffer
+ * @return the length of the byte buffer
+ */
+int avio_close_dyn_buf (AVIOContext* s, ubyte** pbuffer);
 
 /**
  * Iterate through names of available protocols.
@@ -725,7 +813,14 @@ int avio_close_dyn_buf(AVIOContext *s, uint8_t **pbuffer);
  *
  * @return A static string containing the name of current protocol or NULL
  */
-char *avio_enum_protocols(void **opaque, int output);
+const(char)* avio_enum_protocols (void** opaque, int output);
+
+/**
+ * Get AVClass by names of available protocols.
+ *
+ * @return A AVClass of input protocol name or NULL
+ */
+const(AVClass)* avio_protocol_get_class (const(char)* name);
 
 /**
  * Pause and resume playing - only meaningful if using a network streaming
@@ -734,7 +829,7 @@ char *avio_enum_protocols(void **opaque, int output);
  * @param h     IO context from which to call the read_pause function pointer
  * @param pause 1 for pause, 0 for resume
  */
-int     avio_pause(AVIOContext *h, int pause);
+int avio_pause (AVIOContext* h, int pause);
 
 /**
  * Seek to a given timestamp relative to some component stream.
@@ -755,11 +850,11 @@ int     avio_pause(AVIOContext *h, int pause);
  * @return >= 0 on success
  * @see AVInputFormat::read_seek
  */
-int64_t avio_seek_time(AVIOContext *h, int stream_index,
-                       int64_t timestamp, int flags);
-
-/* Avoid a warning. The header can not be included because it breaks c++. */
-struct AVBPrint;
+long avio_seek_time (
+    AVIOContext* h,
+    int stream_index,
+    long timestamp,
+    int flags);
 
 /**
  * Read contents of h into print buffer, up to max_size bytes, or up to EOF.
@@ -767,7 +862,7 @@ struct AVBPrint;
  * @return 0 for success (max_size bytes read or EOF reached), negative error
  * code otherwise
  */
-int avio_read_to_bprint(AVIOContext *h, AVBPrint *pb, size_t max_size);
+int avio_read_to_bprint (AVIOContext* h, AVBPrint* pb, size_t max_size);
 
 /**
  * Accept and allocate a client context on a server context.
@@ -776,7 +871,7 @@ int avio_read_to_bprint(AVIOContext *h, AVBPrint *pb, size_t max_size);
  * @return   >= 0 on success or a negative value corresponding
  *           to an AVERROR on failure
  */
-int avio_accept(AVIOContext *s, AVIOContext **c);
+int avio_accept (AVIOContext* s, AVIOContext** c);
 
 /**
  * Perform one step of the protocol handshake to accept a new client.
@@ -797,5 +892,5 @@ int avio_accept(AVIOContext *s, AVIOContext **c);
  *           > 0 if the handshake progressed, but is not complete
  *           < 0 for an AVERROR code
  */
-int avio_handshake(AVIOContext *c);
-//#endif /* AVFORMAT_AVIO_H */
+int avio_handshake (AVIOContext* c);
+/* AVFORMAT_AVIO_H */

@@ -19,44 +19,42 @@
  */
 module ffmpeg.libavutil.log;
 
-import std.stdint;
-import core.vararg;
-import ffmpeg.libavutil.opt;
-import ffmpeg.libavutil.dict;
-import ffmpeg.libavutil.avutil_version;
+import core.stdc.string;
+import core.stdc.stdarg;
 
-@nogc nothrow extern(C):
+extern (C):
 
-enum AVClassCategory {
+enum AVClassCategory
+{
     AV_CLASS_CATEGORY_NA = 0,
-    AV_CLASS_CATEGORY_INPUT,
-    AV_CLASS_CATEGORY_OUTPUT,
-    AV_CLASS_CATEGORY_MUXER,
-    AV_CLASS_CATEGORY_DEMUXER,
-    AV_CLASS_CATEGORY_ENCODER,
-    AV_CLASS_CATEGORY_DECODER,
-    AV_CLASS_CATEGORY_FILTER,
-    AV_CLASS_CATEGORY_BITSTREAM_FILTER,
-    AV_CLASS_CATEGORY_SWSCALER,
-    AV_CLASS_CATEGORY_SWRESAMPLER,
+    AV_CLASS_CATEGORY_INPUT = 1,
+    AV_CLASS_CATEGORY_OUTPUT = 2,
+    AV_CLASS_CATEGORY_MUXER = 3,
+    AV_CLASS_CATEGORY_DEMUXER = 4,
+    AV_CLASS_CATEGORY_ENCODER = 5,
+    AV_CLASS_CATEGORY_DECODER = 6,
+    AV_CLASS_CATEGORY_FILTER = 7,
+    AV_CLASS_CATEGORY_BITSTREAM_FILTER = 8,
+    AV_CLASS_CATEGORY_SWSCALER = 9,
+    AV_CLASS_CATEGORY_SWRESAMPLER = 10,
     AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT = 40,
-    AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT,
-    AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT,
-    AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
-    AV_CLASS_CATEGORY_DEVICE_OUTPUT,
-    AV_CLASS_CATEGORY_DEVICE_INPUT,
-    AV_CLASS_CATEGORY_NB ///< not part of ABI/API
+    AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT = 41,
+    AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT = 42,
+    AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT = 43,
+    AV_CLASS_CATEGORY_DEVICE_OUTPUT = 44,
+    AV_CLASS_CATEGORY_DEVICE_INPUT = 45,
+    AV_CLASS_CATEGORY_NB = 46 ///< not part of ABI/API
 }
 
-//#define AV_IS_INPUT_DEVICE(category) \
-//    (((category) == AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT) || \
-//     ((category) == AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT) || \
-//     ((category) == AV_CLASS_CATEGORY_DEVICE_INPUT))
-//
-//#define AV_IS_OUTPUT_DEVICE(category) \
-//    (((category) == AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT) || \
-//     ((category) == AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT) || \
-//     ((category) == AV_CLASS_CATEGORY_DEVICE_OUTPUT))
+extern (D) auto AV_IS_INPUT_DEVICE(T)(auto ref T category)
+{
+    return (category == AVClassCategory.AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT) || (category == AVClassCategory.AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT) || (category == AVClassCategory.AV_CLASS_CATEGORY_DEVICE_INPUT);
+}
+
+extern (D) auto AV_IS_OUTPUT_DEVICE(T)(auto ref T category)
+{
+    return (category == AVClassCategory.AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT) || (category == AVClassCategory.AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT) || (category == AVClassCategory.AV_CLASS_CATEGORY_DEVICE_OUTPUT);
+}
 
 struct AVOptionRanges;
 
@@ -65,25 +63,27 @@ struct AVOptionRanges;
  * arbitrary struct of which the first field is a pointer to an
  * AVClass struct (e.g. AVCodecContext, AVFormatContext etc.).
  */
-struct AVClass {
+struct AVClass
+{
     /**
      * The name of the class; usually it is the same name as the
      * context structure type to which the AVClass is associated.
      */
-    const char* class_name;
+    const(char)* class_name;
 
     /**
      * A pointer to a function which returns the name of a context
      * instance ctx associated with the class.
      */
-    const char* function(void* ctx) item_name;
+    const(char)* function (void* ctx) item_name;
 
     /**
      * a pointer to the first option specified in the class if any or NULL
      *
      * @see av_set_default_options()
      */
-    const AVOption *option;
+    struct AVOption;
+    const(AVOption)* option;
 
     /**
      * LIBAVUTIL_VERSION with which this structure was created.
@@ -91,7 +91,7 @@ struct AVClass {
      * version bumps everywhere.
      */
 
-    int ver;
+    int version_;
 
     /**
      * Offset in the structure where log_level_offset is stored.
@@ -111,17 +111,17 @@ struct AVClass {
     /**
      * Return next AVOptions-enabled child or NULL
      */
-    void* function(void *obj, void *prev) child_next;
+    void* function (void* obj, void* prev) child_next;
 
     /**
-     * Return an AVClass corresponding to next potential
+     * Return an AVClass corresponding to the next potential
      * AVOptions-enabled child.
      *
      * The difference between child_next and this is that
      * child_next iterates over _already existing_ objects, while
      * child_class_next iterates over _all possible_ children.
      */
-    const AVClass* function(const AVClass *prev) child_class_next;
+    const(AVClass)* function (const(AVClass)* prev) child_class_next;
 
     /**
      * Category used for visualization (like color)
@@ -134,13 +134,28 @@ struct AVClass {
      * Callback to return the category.
      * available since version (51 << 16 | 59 << 8 | 100)
      */
-    AVClassCategory function(void* ctx) get_category;
+    AVClassCategory function (void* ctx) get_category;
 
     /**
      * Callback to return the supported/allowed ranges.
      * available since version (52.12)
      */
-    int function(AVOptionRanges **, void *obj, const char *key, int flags) query_ranges;
+    int function (AVOptionRanges**, void* obj, const(char)* key, int flags) query_ranges;
+
+    /**
+     * Iterate over the AVClasses corresponding to potential AVOptions-enabled
+     * children.
+     *
+     * @param iter pointer to opaque iteration state. The caller must initialize
+     *             *iter to NULL before the first call.
+     * @return AVClass for the next AVOptions-enabled child or NULL if there are
+     *         no more such children.
+     *
+     * @note The difference between child_next and this is that child_next
+     *       iterates over _already existing_ objects, while child_class_iterate
+     *       iterates over _all possible_ children.
+     */
+    const(AVClass)* function (void** iter) child_class_iterate;
 }
 
 /**
@@ -156,53 +171,53 @@ struct AVClass {
 /**
  * Print no output.
  */
-enum AV_LOG_QUIET  = -8;
+enum AV_LOG_QUIET = -8;
 
 /**
  * Something went really wrong and we will crash now.
  */
-enum AV_LOG_PANIC   = 0;
+enum AV_LOG_PANIC = 0;
 
 /**
  * Something went wrong and recovery is not possible.
  * For example, no header was found for a format which depends
  * on headers or an illegal combination of parameters is used.
  */
-enum AV_LOG_FATAL   = 8;
+enum AV_LOG_FATAL = 8;
 
 /**
  * Something went wrong and cannot losslessly be recovered.
  * However, not all future data is affected.
  */
-enum AV_LOG_ERROR   =16;
+enum AV_LOG_ERROR = 16;
 
 /**
  * Something somehow does not look correct. This may or may not
  * lead to problems. An example would be the use of '-vstrict -2'.
  */
-enum AV_LOG_WARNING =24;
+enum AV_LOG_WARNING = 24;
 
 /**
  * Standard information.
  */
-enum AV_LOG_INFO    =32;
+enum AV_LOG_INFO = 32;
 
 /**
  * Detailed information.
  */
-enum AV_LOG_VERBOSE =40;
+enum AV_LOG_VERBOSE = 40;
 
 /**
  * Stuff which is only useful for libav* developers.
  */
-enum AV_LOG_DEBUG   =48;
+enum AV_LOG_DEBUG = 48;
 
 /**
  * Extremely verbose debugging, useful for libav* development.
  */
-enum AV_LOG_TRACE   =56;
+enum AV_LOG_TRACE = 56;
 
-enum AV_LOG_MAX_OFFSET = (AV_LOG_TRACE - AV_LOG_QUIET);
+enum AV_LOG_MAX_OFFSET = AV_LOG_TRACE - AV_LOG_QUIET;
 
 /**
  * @}
@@ -216,7 +231,10 @@ enum AV_LOG_MAX_OFFSET = (AV_LOG_TRACE - AV_LOG_QUIET);
  * Requires 256color terminal support. Uses outside debugging is not
  * recommended.
  */
-//#define AV_LOG_C(x) ((x) << 8)
+extern (D) auto AV_LOG_C(T)(auto ref T x)
+{
+    return x << 8;
+}
 
 /**
  * Send the specified message to the log if the level is less than or equal
@@ -232,8 +250,28 @@ enum AV_LOG_MAX_OFFSET = (AV_LOG_TRACE - AV_LOG_QUIET);
  * @param fmt The format string (printf-compatible) that specifies how
  *        subsequent arguments are converted to output.
  */
-void av_log(void *avcl, int level, const char *fmt, ...);
+void av_log (void* avcl, int level, const(char)* fmt, ...);
 
+/**
+ * Send the specified message to the log once with the initial_level and then with
+ * the subsequent_level. By default, all logging messages are sent to
+ * stderr. This behavior can be altered by setting a different logging callback
+ * function.
+ * @see av_log
+ *
+ * @param avcl A pointer to an arbitrary struct of which the first field is a
+ *        pointer to an AVClass struct or NULL if general log.
+ * @param initial_level importance level of the message expressed using a @ref
+ *        lavu_log_constants "Logging Constant" for the first occurance.
+ * @param subsequent_level importance level of the message expressed using a @ref
+ *        lavu_log_constants "Logging Constant" after the first occurance.
+ * @param fmt The format string (printf-compatible) that specifies how
+ *        subsequent arguments are converted to output.
+ * @param state a variable to keep trak of if a message has already been printed
+ *        this must be initialized to 0 before the first use. The same state
+ *        must not be accessed by 2 Threads simultaneously.
+ */
+void av_log_once (void* avcl, int initial_level, int subsequent_level, int* state, const(char)* fmt, ...);
 
 /**
  * Send the specified message to the log if the level is less than or equal
@@ -250,7 +288,7 @@ void av_log(void *avcl, int level, const char *fmt, ...);
  *        subsequent arguments are converted to output.
  * @param vl The arguments referenced by the format string.
  */
-void av_vlog(void *avcl, int level, const char *fmt, va_list vl);
+void av_vlog (void* avcl, int level, const(char)* fmt, va_list vl);
 
 /**
  * Get the current log level
@@ -259,7 +297,7 @@ void av_vlog(void *avcl, int level, const char *fmt, va_list vl);
  *
  * @return Current log level
  */
-int av_log_get_level();
+int av_log_get_level ();
 
 /**
  * Set the log level
@@ -268,7 +306,7 @@ int av_log_get_level();
  *
  * @param level Logging level
  */
-void av_log_set_level(int);
+void av_log_set_level (int level);
 
 /**
  * Set the logging callback
@@ -280,7 +318,7 @@ void av_log_set_level(int);
  *
  * @param callback A logging function with a compatible signature.
  */
-void av_log_set_callback(void* function(void*, int, const char*, va_list) log_callback);
+void av_log_set_callback (void function (void*, int, const(char)*, va_list) callback);
 
 /**
  * Default logging callback
@@ -295,8 +333,11 @@ void av_log_set_callback(void* function(void*, int, const char*, va_list) log_ca
  *        subsequent arguments are converted to output.
  * @param vl The arguments referenced by the format string.
  */
-void av_log_default_callback(void* ptr, int level, const char* fmt,
-                             va_list vl);
+void av_log_default_callback (
+    void* avcl,
+    int level,
+    const(char)* fmt,
+    va_list vl);
 
 /**
  * Return the context name
@@ -305,18 +346,24 @@ void av_log_default_callback(void* ptr, int level, const char* fmt,
  *
  * @return The AVClass class_name
  */
-char* av_default_item_name(void* ctx);
-AVClassCategory av_default_get_category(void *ptr);
+const(char)* av_default_item_name (void* ctx);
+AVClassCategory av_default_get_category (void* ptr);
 
 /**
  * Format a line of log the same way as the default callback.
- * @param line          buffer to receive the formated line
+ * @param line          buffer to receive the formatted line
  * @param line_size     size of the buffer
  * @param print_prefix  used to store whether the prefix must be printed;
  *                      must point to a persistent integer initially set to 1
  */
-void av_log_format_line(void *ptr, int level, const char *fmt, va_list vl,
-                        char *line, int line_size, int *print_prefix);
+void av_log_format_line (
+    void* ptr,
+    int level,
+    const(char)* fmt,
+    va_list vl,
+    char* line,
+    int line_size,
+    int* print_prefix);
 
 /**
  * Format a line of log the same way as the default callback.
@@ -332,22 +379,14 @@ void av_log_format_line(void *ptr, int level, const char *fmt, va_list vl,
  *         character. If the return value is not less than line_size, it means
  *         that the log message was truncated to fit the buffer.
  */
-int av_log_format_line2(void *ptr, int level, const char *fmt, va_list vl,
-                        char *line, int line_size, int *print_prefix);
-
-static if(FF_API_DLOG){
-/**
- * av_dlog macros
- * @deprecated unused
- * Useful to print debug messages that shouldn't get compiled in normally.
- */
-
-//#ifdef DEBUG
-//#    define av_dlog(pctx, ...) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__)
-//#else
-//#    define av_dlog(pctx, ...) do { if (0) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__); } while (0)
-//#endif
-}
+int av_log_format_line2 (
+    void* ptr,
+    int level,
+    const(char)* fmt,
+    va_list vl,
+    char* line,
+    int line_size,
+    int* print_prefix);
 
 /**
  * Skip repeated messages, this requires the user app to use av_log() instead of
@@ -367,11 +406,11 @@ enum AV_LOG_SKIP_REPEATED = 1;
  */
 enum AV_LOG_PRINT_LEVEL = 2;
 
-void av_log_set_flags(int arg);
-int av_log_get_flags();
+void av_log_set_flags (int arg);
+int av_log_get_flags ();
 
 /**
  * @}
  */
 
-//#endif /* AVUTIL_LOG_H */
+/* AVUTIL_LOG_H */

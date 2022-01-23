@@ -13,12 +13,13 @@
 
     "libs": [
         "avcodec",
+        "avdevice",
+        "avfilter",
         "avformat",
         "avutil",
-        "avfilter",
-        "avdevice",
-        "swscale",
-        "swresample"
+        "postproc",
+        "swresample",
+        "swscale"
     ],
 
     "buildTypes": {

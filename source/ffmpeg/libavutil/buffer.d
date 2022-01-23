@@ -16,17 +16,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-module ffmpeg.libavutil.buffer;
-
 /**
  * @file
  * @ingroup lavu_buffer
  * refcounted data buffer API
  */
+module ffmpeg.libavutil.buffer;
 
-import std.stdint;
+extern (C):
 
-@nogc nothrow extern(C):
 /**
  * @defgroup lavu_buffer AVBuffer
  * @ingroup lavu_data
@@ -78,19 +76,21 @@ struct AVBuffer;
  * The size of this struct is not a part of the public ABI and it is not meant
  * to be allocated directly.
  */
-struct AVBufferRef {
-    AVBuffer *buffer;
+struct AVBufferRef
+{
+    AVBuffer* buffer;
 
     /**
      * The data buffer. It is considered writable if and only if
      * this is the only reference to the buffer, in which case
      * av_buffer_is_writable() returns 1.
      */
-    uint8_t *data;
+    ubyte* data;
     /**
      * Size of data in bytes.
      */
-    int      size;
+
+    int size;
 }
 
 /**
@@ -98,19 +98,19 @@ struct AVBufferRef {
  *
  * @return an AVBufferRef of given size or NULL when out of memory
  */
-AVBufferRef *av_buffer_alloc(int size);
+AVBufferRef* av_buffer_alloc (int size);
 
 /**
  * Same as av_buffer_alloc(), except the returned buffer will be initialized
  * to zero.
  */
-AVBufferRef *av_buffer_allocz(int size);
+AVBufferRef* av_buffer_allocz (int size);
 
 /**
  * Always treat the buffer as read-only, even when it has only one
  * reference.
  */
-enum AV_BUFFER_FLAG_READONLY = (1 << 0);
+enum AV_BUFFER_FLAG_READONLY = 1 << 0;
 
 /**
  * Create an AVBuffer from an existing array.
@@ -127,16 +127,19 @@ enum AV_BUFFER_FLAG_READONLY = (1 << 0);
  *
  * @return an AVBufferRef referring to data on success, NULL on failure.
  */
-AVBufferRef *av_buffer_create(uint8_t *data, int size,
-                              void function(void *opaque, uint8_t *data) free,
-                              void *opaque, int flags);
+AVBufferRef* av_buffer_create (
+    ubyte* data,
+    int size,
+    void function (void* opaque, ubyte* data) free,
+    void* opaque,
+    int flags);
 
 /**
  * Default free callback, which calls av_free() on the buffer data.
  * This function is meant to be passed to av_buffer_create(), not called
  * directly.
  */
-void av_buffer_default_free(void *opaque, uint8_t *data);
+void av_buffer_default_free (void* opaque, ubyte* data);
 
 /**
  * Create a new reference to an AVBuffer.
@@ -144,7 +147,7 @@ void av_buffer_default_free(void *opaque, uint8_t *data);
  * @return a new AVBufferRef referring to the same AVBuffer as buf or NULL on
  * failure.
  */
-AVBufferRef *av_buffer_ref(AVBufferRef *buf);
+AVBufferRef* av_buffer_ref (AVBufferRef* buf);
 
 /**
  * Free a given reference and automatically free the buffer if there are no more
@@ -152,7 +155,7 @@ AVBufferRef *av_buffer_ref(AVBufferRef *buf);
  *
  * @param buf the reference to be freed. The pointer is set to NULL on return.
  */
-void av_buffer_unref(AVBufferRef **buf);
+void av_buffer_unref (AVBufferRef** buf);
 
 /**
  * @return 1 if the caller may write to the data referred to by buf (which is
@@ -160,14 +163,14 @@ void av_buffer_unref(AVBufferRef **buf);
  * Return 0 otherwise.
  * A positive answer is valid until av_buffer_ref() is called on buf.
  */
-int av_buffer_is_writable(const AVBufferRef *buf);
+int av_buffer_is_writable (const(AVBufferRef)* buf);
 
 /**
  * @return the opaque parameter set by av_buffer_create.
  */
-void *av_buffer_get_opaque(const AVBufferRef *buf);
+void* av_buffer_get_opaque (const(AVBufferRef)* buf);
 
-int av_buffer_get_ref_count(const AVBufferRef *buf);
+int av_buffer_get_ref_count (const(AVBufferRef)* buf);
 
 /**
  * Create a writable reference from a given buffer reference, avoiding data copy
@@ -178,7 +181,7 @@ int av_buffer_get_ref_count(const AVBufferRef *buf);
  *            written in its place. On failure, buf is left untouched.
  * @return 0 on success, a negative AVERROR on failure.
  */
-int av_buffer_make_writable(AVBufferRef **buf);
+int av_buffer_make_writable (AVBufferRef** buf);
 
 /**
  * Reallocate a given buffer.
@@ -195,7 +198,23 @@ int av_buffer_make_writable(AVBufferRef **buf);
  * reference to it (i.e. the one passed to this function). In all other cases
  * a new buffer is allocated and the data is copied.
  */
-int av_buffer_realloc(AVBufferRef **buf, int size);
+int av_buffer_realloc (AVBufferRef** buf, int size);
+
+/**
+ * Ensure dst refers to the same data as src.
+ *
+ * When *dst is already equivalent to src, do nothing. Otherwise unreference dst
+ * and replace it with a new reference to src.
+ *
+ * @param dst Pointer to either a valid buffer reference or NULL. On success,
+ *            this will point to a buffer reference equivalent to src. On
+ *            failure, dst will be left untouched.
+ * @param src A buffer reference to replace dst with. May be NULL, then this
+ *            function is equivalent to av_buffer_unref(dst).
+ * @return 0 on success
+ *         AVERROR(ENOMEM) on memory allocation failure.
+ */
+int av_buffer_replace (AVBufferRef** dst, AVBufferRef* src);
 
 /**
  * @}
@@ -246,7 +265,7 @@ struct AVBufferPool;
  * (av_buffer_alloc()).
  * @return newly created buffer pool on success, NULL on error.
  */
-AVBufferPool *av_buffer_pool_init(int size, AVBufferRef* function(int size)alloc);
+AVBufferPool* av_buffer_pool_init (int size, AVBufferRef* function (int size) alloc);
 
 /**
  * Allocate and initialize a buffer pool with a more complex allocator.
@@ -254,16 +273,20 @@ AVBufferPool *av_buffer_pool_init(int size, AVBufferRef* function(int size)alloc
  * @param size size of each buffer in this pool
  * @param opaque arbitrary user data used by the allocator
  * @param alloc a function that will be used to allocate new buffers when the
- *              pool is empty.
+ *              pool is empty. May be NULL, then the default allocator will be
+ *              used (av_buffer_alloc()).
  * @param pool_free a function that will be called immediately before the pool
- *                  is freed. I.e. after av_buffer_pool_can_uninit() is called
- *                  by the pool and all the frames are returned to the pool and
- *                  freed. It is intended to uninitialize the user opaque data.
+ *                  is freed. I.e. after av_buffer_pool_uninit() is called
+ *                  by the caller and all the frames are returned to the pool
+ *                  and freed. It is intended to uninitialize the user opaque
+ *                  data. May be NULL.
  * @return newly created buffer pool on success, NULL on error.
  */
-AVBufferPool *av_buffer_pool_init2(int size, void *opaque,
-                                   AVBufferRef* function(void *opaque, int size) alloc,
-                                   void function(void *opaque) pool_free);
+AVBufferPool* av_buffer_pool_init2 (
+    int size,
+    void* opaque,
+    AVBufferRef* function (void* opaque, int size) alloc,
+    void function (void* opaque) pool_free);
 
 /**
  * Mark the pool as being available for freeing. It will actually be freed only
@@ -273,7 +296,7 @@ AVBufferPool *av_buffer_pool_init2(int size, void *opaque,
  *
  * @param pool pointer to the pool to be freed. It will be set to NULL.
  */
-void av_buffer_pool_uninit(AVBufferPool **pool);
+void av_buffer_pool_uninit (AVBufferPool** pool);
 
 /**
  * Allocate a new AVBuffer, reusing an old buffer from the pool when available.
@@ -281,10 +304,23 @@ void av_buffer_pool_uninit(AVBufferPool **pool);
  *
  * @return a reference to the new buffer on success, NULL on error.
  */
-AVBufferRef *av_buffer_pool_get(AVBufferPool *pool);
+AVBufferRef* av_buffer_pool_get (AVBufferPool* pool);
+
+/**
+ * Query the original opaque parameter of an allocated buffer in the pool.
+ *
+ * @param ref a buffer reference to a buffer returned by av_buffer_pool_get.
+ * @return the opaque parameter set by the buffer allocator function of the
+ *         buffer pool.
+ *
+ * @note the opaque parameter of ref is used by the buffer pool implementation,
+ * therefore you have to use this function to access the original opaque
+ * parameter of an allocated buffer.
+ */
+void* av_buffer_pool_buffer_get_opaque (AVBufferRef* ref_);
 
 /**
  * @}
  */
 
-//#endif /* AVUTIL_BUFFER_H */
+/* AVUTIL_BUFFER_H */
