@@ -9,15 +9,12 @@
         "Relja Ljubobratovic"
     ],
 
-    "platforms": ["Windows", "Posix"],
-
     "libs": [
         "avcodec",
         "avdevice",
         "avfilter",
         "avformat",
         "avutil",
-        "postproc",
         "swresample",
         "swscale"
     ],
@@ -32,11 +29,23 @@
     "configurations": [
         {
             "name": "source",
-            "targetType": "sourceLibrary"
+            "targetType": "sourceLibrary",
+            "excludedSourceFiles": ["source/ffmpeg/libpostproc/*"]
         },
         {
             "name": "static",
-            "targetType": "staticLibrary"
+            "targetType": "staticLibrary",
+            "excludedSourceFiles": ["source/ffmpeg/libpostproc/*"]
+        },
+        {
+            "name": "source-GPL",
+            "targetType": "sourceLibrary",
+            "libs": ["postproc"]
+        },
+        {
+            "name": "static-GPL",
+            "targetType": "staticLibrary",
+            "libs": ["postproc"]
         },
         {
             "name": "remux_example",
