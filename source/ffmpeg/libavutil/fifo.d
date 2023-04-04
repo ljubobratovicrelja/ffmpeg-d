@@ -21,7 +21,7 @@
  * a very simple circular buffer FIFO implementation
  */
 module ffmpeg.libavutil.fifo;
-extern (C):
+extern (C) @nogc nothrow:
 
 struct AVFifoBuffer
 {

@@ -23,7 +23,7 @@
  * DOVI configuration
  */
 module ffmpeg.libavutil.dovi_meta;
-extern (C):
+extern (C) @nogc nothrow:
 
 /*
  * DOVI configuration

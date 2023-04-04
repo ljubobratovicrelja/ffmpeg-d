@@ -26,7 +26,7 @@ import ffmpeg.libavdevice;
 
 import core.stdc.stdio;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

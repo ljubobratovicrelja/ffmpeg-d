@@ -29,7 +29,7 @@ import ffmpeg.libavutil.buffer;
 import ffmpeg.libavutil.rational;
 import ffmpeg.libavutil.pixfmt;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_frame AVFrame

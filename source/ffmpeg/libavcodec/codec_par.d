@@ -22,7 +22,7 @@ module ffmpeg.libavcodec.codec_par;
 import ffmpeg.libavcodec;
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavc_core

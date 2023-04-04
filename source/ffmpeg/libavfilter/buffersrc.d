@@ -20,7 +20,7 @@ module ffmpeg.libavfilter.buffersrc;
 import ffmpeg.libavfilter;
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

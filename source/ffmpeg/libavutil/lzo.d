@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavutil.lzo;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_lzo LZO

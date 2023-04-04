@@ -27,7 +27,7 @@ module ffmpeg.libavutil.timecode;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 enum AV_TIMECODE_STR_SIZE = 23;
 

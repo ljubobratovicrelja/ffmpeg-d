@@ -23,7 +23,7 @@ module ffmpeg.libavcodec.mediacodec;
 
 import ffmpeg.libavcodec;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * This structure holds a reference to a android/view/Surface object that will

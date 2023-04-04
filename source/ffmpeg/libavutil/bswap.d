@@ -24,7 +24,7 @@
  */
 module ffmpeg.libavutil.bswap;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 ushort av_bswap16 (ushort x);
 

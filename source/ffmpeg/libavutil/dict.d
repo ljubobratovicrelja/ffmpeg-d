@@ -27,7 +27,7 @@
  *  where applicable, which uses AVL trees to achieve O(log n) performance.
  */
 module ffmpeg.libavutil.dict;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_dict AVDictionary

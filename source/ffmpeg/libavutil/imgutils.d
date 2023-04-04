@@ -21,7 +21,7 @@ import ffmpeg.libavutil.pixfmt;
 import ffmpeg.libavutil.pixdesc;
 import ffmpeg.libavutil.rational;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

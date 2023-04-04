@@ -23,7 +23,7 @@ module ffmpeg.libavcodec.ac3_parser;
 
 import ffmpeg.libavcodec;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * Extract the bitstream ID and the frame size from AC-3 data.

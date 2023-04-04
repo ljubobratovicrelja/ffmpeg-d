@@ -24,7 +24,7 @@
  * Public header for CRC hash function implementation.
  */
 module ffmpeg.libavutil.crc;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_crc32 CRC

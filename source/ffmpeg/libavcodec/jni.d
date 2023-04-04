@@ -21,7 +21,7 @@
  */
 module ffmpeg.libavcodec.jni;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /*
  * Manually set a Java virtual machine which will be used to retrieve the JNI

@@ -19,7 +19,7 @@ module ffmpeg.libavutil.video_enc_params;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 enum AVVideoEncParamsType
 {

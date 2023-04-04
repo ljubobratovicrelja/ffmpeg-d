@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavutil.cpu;
-extern (C):
+extern (C) @nogc nothrow:
 
 enum AV_CPU_FLAG_FORCE = 0x80000000; /* force usage of selected flags (OR) */
 

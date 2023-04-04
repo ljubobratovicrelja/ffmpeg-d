@@ -24,7 +24,7 @@ import ffmpeg.libavutil.rational;
 import core.stdc.stdint;
 import core.stdc.stdio;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

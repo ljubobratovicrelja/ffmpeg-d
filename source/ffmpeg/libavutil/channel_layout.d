@@ -20,7 +20,7 @@
  */
 module ffmpeg.libavutil.channel_layout;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

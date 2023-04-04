@@ -24,7 +24,7 @@
  * Generic hashing API
  */
 module ffmpeg.libavutil.hash;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_hash Hash Functions

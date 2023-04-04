@@ -22,7 +22,7 @@ module ffmpeg.libavutil.log;
 import core.stdc.string;
 import core.stdc.stdarg;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 enum AVClassCategory
 {

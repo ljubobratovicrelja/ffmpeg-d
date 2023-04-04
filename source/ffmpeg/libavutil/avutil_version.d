@@ -27,7 +27,7 @@ module ffmpeg.libavutil.avutil_version;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup version_utils
@@ -58,10 +58,10 @@ extern (D) auto AV_VERSION_INT(T0, T1, T2)(auto ref T0 a, auto ref T1 b, auto re
     return a << 16 | b << 8 | c;
 }
 
-extern (D) auto AV_VERSION_DOT(T0, T1, T2)(auto ref T0 a, auto ref T1 b, auto ref T2 c)
-{
-    import std.format;
-    return format("%s.%s.%s", a, b, c);
+template AV_VERSION_DOT(int a, int b, int c)
+{	
+	import std.format;
+    enum AV_VERSION_DOT = format!"%s.%s.%s"(a, b, c);
 }
 
 
@@ -104,7 +104,7 @@ enum LIBAVUTIL_VERSION_MINOR = 70;
 enum LIBAVUTIL_VERSION_MICRO = 100;
 
 enum LIBAVUTIL_VERSION_INT = AV_VERSION_INT(LIBAVUTIL_VERSION_MAJOR, LIBAVUTIL_VERSION_MINOR, LIBAVUTIL_VERSION_MICRO);
-enum LIBAVUTIL_VERSION = AV_VERSION(LIBAVUTIL_VERSION_MAJOR, LIBAVUTIL_VERSION_MINOR, LIBAVUTIL_VERSION_MICRO);
+enum LIBAVUTIL_VERSION = AV_VERSION!(LIBAVUTIL_VERSION_MAJOR, LIBAVUTIL_VERSION_MINOR, LIBAVUTIL_VERSION_MICRO);
 enum LIBAVUTIL_BUILD = LIBAVUTIL_VERSION_INT;
 
 /**

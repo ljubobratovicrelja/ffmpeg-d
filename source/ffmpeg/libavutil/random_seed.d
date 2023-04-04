@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavutil.random_seed;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_crypto

@@ -27,7 +27,7 @@ module ffmpeg.libavutil.adler32;
 
 import core.stdc.config;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_adler32 Adler-32

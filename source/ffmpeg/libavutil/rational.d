@@ -26,7 +26,7 @@
  * @author Michael Niedermayer <michaelni@gmx.at>
  */
 module ffmpeg.libavutil.rational;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_math_rational AVRational

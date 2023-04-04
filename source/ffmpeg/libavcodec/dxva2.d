@@ -23,7 +23,7 @@ module ffmpeg.libavcodec.dxva2;
 
 import ffmpeg.libavcodec;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

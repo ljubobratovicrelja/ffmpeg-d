@@ -21,7 +21,7 @@ import ffmpeg.libavformat;
 import ffmpeg.libavutil;
 import ffmpeg.libavcodec;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

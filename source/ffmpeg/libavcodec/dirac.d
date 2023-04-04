@@ -24,7 +24,7 @@ module ffmpeg.libavcodec.dirac;
 import ffmpeg.libavcodec;
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

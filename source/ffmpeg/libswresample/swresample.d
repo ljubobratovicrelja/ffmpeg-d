@@ -21,7 +21,7 @@ module ffmpeg.libswresample.swresample;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

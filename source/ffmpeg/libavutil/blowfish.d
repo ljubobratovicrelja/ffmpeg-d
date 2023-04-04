@@ -20,7 +20,7 @@
  */
 module ffmpeg.libavutil.blowfish;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_blowfish Blowfish

@@ -22,7 +22,7 @@ module ffmpeg.libavutil.hdr_dynamic_metadata;
 import ffmpeg.libavutil.rational;
 import ffmpeg.libavutil.frame;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * Option for overlapping elliptical pixel selectors in an image.

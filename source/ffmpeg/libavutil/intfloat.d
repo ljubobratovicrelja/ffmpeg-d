@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavutil.intfloat;
-extern (C):
+extern (C) @nogc nothrow:
 
 union av_intfloat32
 {

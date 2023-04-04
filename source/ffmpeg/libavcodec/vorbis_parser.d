@@ -26,7 +26,7 @@ module ffmpeg.libavcodec.vorbis_parser;
 
 import ffmpeg.libavcodec;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 struct AVVorbisParseContext;
 

@@ -23,7 +23,7 @@
  * simple arithmetic expression evaluator
  */
 module ffmpeg.libavutil.eval;
-extern (C):
+extern (C) @nogc nothrow:
 
 struct AVExpr;
 

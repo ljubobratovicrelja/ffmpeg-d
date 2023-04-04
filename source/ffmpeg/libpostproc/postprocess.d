@@ -19,7 +19,7 @@
  */
 module ffmpeg.libpostproc.postprocess;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

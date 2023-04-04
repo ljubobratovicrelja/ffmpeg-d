@@ -24,7 +24,7 @@ module ffmpeg.libavcodec.d3d11va;
 
 import ffmpeg.libavcodec;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

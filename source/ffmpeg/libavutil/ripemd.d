@@ -25,7 +25,7 @@
  * Public header for RIPEMD hash function implementation.
  */
 module ffmpeg.libavutil.ripemd;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_ripemd RIPEMD

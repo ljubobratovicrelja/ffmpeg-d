@@ -19,7 +19,7 @@ module ffmpeg.libavutil.film_grain_params;
 
 import ffmpeg.libavutil.frame;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 enum AVFilmGrainParamsType
 {

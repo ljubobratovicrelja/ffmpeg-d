@@ -25,7 +25,7 @@ import ffmpeg.libavutil;
 import core.stdc.limits;
 import core.stdc.string;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

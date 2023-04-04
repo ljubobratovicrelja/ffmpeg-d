@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavutil.hwcontext_mediacodec;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * MediaCodec details.

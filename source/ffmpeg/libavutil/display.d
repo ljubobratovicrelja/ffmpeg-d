@@ -23,7 +23,7 @@
  * Display matrix
  */
 module ffmpeg.libavutil.display;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_video
