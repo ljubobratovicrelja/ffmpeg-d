@@ -20,7 +20,7 @@
  */
 module ffmpeg.libavutil.aes_ctr;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 enum AES_CTR_KEY_SIZE = 16;
 enum AES_CTR_IV_SIZE = 8;

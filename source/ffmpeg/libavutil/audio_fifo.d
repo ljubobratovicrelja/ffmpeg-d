@@ -27,7 +27,7 @@ module ffmpeg.libavutil.audio_fifo;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_audio

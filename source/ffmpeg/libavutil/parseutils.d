@@ -22,7 +22,7 @@ import ffmpeg.libavutil;
 import core.stdc.limits;
 import core.stdc.time;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

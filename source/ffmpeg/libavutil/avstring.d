@@ -19,7 +19,7 @@
  */
 module ffmpeg.libavutil.avstring;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_string

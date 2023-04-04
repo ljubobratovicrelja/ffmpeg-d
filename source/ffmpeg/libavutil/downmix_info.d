@@ -21,7 +21,7 @@ module ffmpeg.libavutil.downmix_info;
 
 import ffmpeg.libavutil.frame;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

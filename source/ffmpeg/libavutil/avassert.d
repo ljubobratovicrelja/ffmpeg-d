@@ -25,7 +25,7 @@
  */
 module ffmpeg.libavutil.avassert;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * assert() equivalent, that is always enabled.

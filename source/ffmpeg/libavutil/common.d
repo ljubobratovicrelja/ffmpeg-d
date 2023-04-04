@@ -23,7 +23,7 @@
  * common internal and external API header
  */
 module ffmpeg.libavutil.common;
-extern (C):
+extern (C) @nogc nothrow:
 
 extern (D) auto AV_NE(T0, T1)(auto ref T0 be, auto ref T1 le)
 {

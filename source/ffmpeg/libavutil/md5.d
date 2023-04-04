@@ -24,7 +24,7 @@
  * Public header for MD5 hash function implementation.
  */
 module ffmpeg.libavutil.md5;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_md5 MD5

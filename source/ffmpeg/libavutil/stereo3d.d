@@ -27,7 +27,7 @@ module ffmpeg.libavutil.stereo3d;
 import ffmpeg.libavutil;
 
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_video

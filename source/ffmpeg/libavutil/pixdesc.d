@@ -22,7 +22,7 @@ module ffmpeg.libavutil.pixdesc;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 struct AVComponentDescriptor
 {

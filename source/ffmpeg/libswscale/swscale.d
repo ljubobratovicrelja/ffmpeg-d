@@ -21,7 +21,7 @@ module ffmpeg.libswscale.swscale;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

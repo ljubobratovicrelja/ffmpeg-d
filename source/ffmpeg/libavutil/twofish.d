@@ -22,7 +22,7 @@ module ffmpeg.libavutil.twofish;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
   * @file

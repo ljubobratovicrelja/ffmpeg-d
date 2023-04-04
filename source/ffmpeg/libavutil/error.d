@@ -24,7 +24,7 @@ module ffmpeg.libavutil.error;
 
 import ffmpeg.libavutil.common;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_error

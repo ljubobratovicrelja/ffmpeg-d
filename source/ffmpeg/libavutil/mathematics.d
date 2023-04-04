@@ -27,7 +27,7 @@ module ffmpeg.libavutil.mathematics;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 enum M_E = 2.7182818284590452354; /* e */
 

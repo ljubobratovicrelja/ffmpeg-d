@@ -24,7 +24,7 @@
  * Public header for SHA-1 & SHA-256 hash function implementations.
  */
 module ffmpeg.libavutil.sha;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_sha SHA

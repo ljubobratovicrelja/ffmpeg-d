@@ -24,7 +24,7 @@ import ffmpeg.libavutil;
 import core.stdc.stdint;
 import core.stdc.stdarg;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * Define a structure with extra padding to a fixed size

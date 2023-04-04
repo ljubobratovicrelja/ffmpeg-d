@@ -20,7 +20,7 @@ module ffmpeg.libavcodec.dv_profile;
 import ffmpeg.libavcodec;
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /* minimum number of bytes to read from a DV stream in order to
  * determine the profile */

@@ -22,7 +22,7 @@
  * Utility Preprocessor macros
  */
 module ffmpeg.libavutil.macros;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup preproc_misc Preprocessor String Macros

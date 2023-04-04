@@ -27,7 +27,7 @@ module ffmpeg.libavutil.tree;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_tree AVTree

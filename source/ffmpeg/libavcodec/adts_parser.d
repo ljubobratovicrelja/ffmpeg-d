@@ -19,7 +19,7 @@ module ffmpeg.libavcodec.adts_parser;
 
 import ffmpeg.libavcodec;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 enum AV_AAC_ADTS_HEADER_SIZE = 7;
 

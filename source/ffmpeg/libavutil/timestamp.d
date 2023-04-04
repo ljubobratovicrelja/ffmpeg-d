@@ -24,7 +24,7 @@ module ffmpeg.libavutil.timestamp;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 enum AV_TS_MAX_STRING_SIZE = 32;
 

@@ -24,7 +24,7 @@ module ffmpeg.libavcodec.vaapi;
 
 import ffmpeg.libavcodec;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

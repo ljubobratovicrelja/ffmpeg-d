@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 module ffmpeg.libavutil.threadmessage;
-extern (C):
+extern (C) @nogc nothrow:
 
 struct AVThreadMessageQueue;
 

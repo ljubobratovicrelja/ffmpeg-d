@@ -24,7 +24,7 @@
  * Public header for MurmurHash3 hash function implementation.
  */
 module ffmpeg.libavutil.murmur3;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_murmur3 Murmur3

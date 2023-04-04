@@ -21,7 +21,7 @@ module ffmpeg.libavutil.mastering_display_metadata;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * Mastering display metadata capable of representing the color volume of

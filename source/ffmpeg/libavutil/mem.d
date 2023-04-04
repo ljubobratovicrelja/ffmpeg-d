@@ -24,7 +24,7 @@
  * Memory handling functions
  */
 module ffmpeg.libavutil.mem;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_mem

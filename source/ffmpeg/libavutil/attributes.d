@@ -24,7 +24,7 @@
  */
 module ffmpeg.libavutil.attributes;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 extern (D) int AV_GCC_VERSION_AT_LEAST(T0, T1)(auto ref T0 x, auto ref T1 y)
 {

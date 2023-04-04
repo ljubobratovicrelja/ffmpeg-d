@@ -23,7 +23,7 @@
  */
 module ffmpeg.libavutil.buffer;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_buffer AVBuffer

@@ -22,7 +22,7 @@ module ffmpeg.libavutil.xtea;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

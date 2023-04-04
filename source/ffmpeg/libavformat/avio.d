@@ -23,7 +23,7 @@ import ffmpeg.libavutil;
 
 import core.stdc.config;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file

@@ -25,7 +25,7 @@
  * Public header for SHA-512 implementation.
  */
 module ffmpeg.libavutil.sha512;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_sha512 SHA-512

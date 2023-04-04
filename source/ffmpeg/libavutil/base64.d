@@ -19,7 +19,7 @@
  */
 module ffmpeg.libavutil.base64;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavu_base64 Base64

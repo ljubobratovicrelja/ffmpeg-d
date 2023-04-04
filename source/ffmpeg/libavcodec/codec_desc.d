@@ -23,7 +23,7 @@ import ffmpeg.libavcodec;
 import ffmpeg.libavutil;
 import ffmpeg.libavutil.avutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavc_core

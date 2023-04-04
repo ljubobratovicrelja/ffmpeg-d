@@ -23,7 +23,7 @@
  * Spherical video
  */
 module ffmpeg.libavutil.spherical;
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @addtogroup lavu_video

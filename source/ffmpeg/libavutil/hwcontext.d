@@ -19,7 +19,7 @@ module ffmpeg.libavutil.hwcontext;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 enum AVHWDeviceType
 {

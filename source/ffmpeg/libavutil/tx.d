@@ -19,7 +19,7 @@ module ffmpeg.libavutil.tx;
 
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 struct AVTXContext;
 

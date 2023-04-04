@@ -22,7 +22,7 @@ module ffmpeg.libavcodec.packet;
 import ffmpeg.libavcodec;
 import ffmpeg.libavutil;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @defgroup lavc_packet AVPacket

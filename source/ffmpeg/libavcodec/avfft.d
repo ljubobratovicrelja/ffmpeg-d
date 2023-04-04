@@ -19,7 +19,7 @@ module ffmpeg.libavcodec.avfft;
 
 import ffmpeg.libavcodec;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 /**
  * @file
